@@ -42,19 +42,22 @@ class LocalStoreCityDistrictSubDistrict(BaseModel):
 
     class Config:
         from_attributes = True
-    
+
+
 class BusinessAreaCategoryReportOutput(BaseModel):
     business_area_category_id: int
 
     class Config:
-        from_attributes = True   
+        from_attributes = True
+
 
 class BizDetailCategoryIdOutPut(BaseModel):
     rep_id: int
     biz_detail_category_name: str
 
     class Config:
-        from_attributes = True  
+        from_attributes = True
+
 
 class BizCategoriesNameOutPut(BaseModel):
     biz_main_category_name: str
@@ -101,7 +104,6 @@ class RisingMenuOutPut(BaseModel):
         from_attributes = True
 
 
-
 class LocalStoreInfo(BaseModel):
     road_name_address: Optional[str] = ""
     store_name: Optional[str] = ""
@@ -129,6 +131,7 @@ class WeatherInfo(BaseModel):
     class Config:
         from_attributes = True
 
+
 class WeatherToday(BaseModel):
     weather: str
     temp: float
@@ -138,12 +141,22 @@ class WeatherToday(BaseModel):
         from_attributes = True
 
 
-class LocalStoreInfoWeaterInfo(BaseModel):
-    localStoreInfo: LocalStoreInfo
-    weatherInfo: WeatherInfo
+class AqiInfo(BaseModel):
+    aqi: int
+    description: str
 
     class Config:
         from_attributes = True
+
+
+class LocalStoreInfoWeaterInfo(BaseModel):
+    localStoreInfo: LocalStoreInfo
+    weatherInfo: WeatherInfo
+    aqi_info: AqiInfo
+
+    class Config:
+        from_attributes = True
+
 
 class LocalStoreCityDistrictSubDistrict(BaseModel):
     local_store_id: int
@@ -161,5 +174,3 @@ class LocalStoreCityDistrictSubDistrict(BaseModel):
 
     class Config:
         from_attributes = True
-
-  

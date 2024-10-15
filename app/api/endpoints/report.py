@@ -16,6 +16,7 @@ from app.service.population import (
     select_report_population_by_store_business_number as service_select_report_population_by_store_business_number,
 )
 from app.service.loc_context import (
+    get_pm_info_by_city_name as service_get_pm_info_by_city_name,
     get_weather_info_by_lat_lng as service_get_weather_info_by_lat_lng,
 )
 from app.service.rising_business import (
@@ -34,7 +35,12 @@ from app.service.gpt_generate import (
     report_today_tip,
 )
 
-from app.schemas.loc_store import LocalStoreInfoWeaterInfo, WeatherInfo, WeatherToday
+from app.schemas.loc_store import (
+    AqiInfo,
+    LocalStoreInfoWeaterInfo,
+    WeatherInfo,
+    WeatherToday,
+)
 from app.schemas.population import PopulationJScoreOutput
 from app.schemas.statistics import (
     LocInfoAvgJscoreOutput,
@@ -62,13 +68,14 @@ def get_report_store_info(store_business_id: str):
         lng = location.longitude
 
         weather_data = service_get_weather_info_by_lat_lng(lat, lng)
+        pm_data: AqiInfo = service_get_pm_info_by_city_name(lat, lng)
 
         weather_info = WeatherInfo(
             icon=weather_data["weather"][0]["icon"], temp=weather_data["main"]["temp"]
         )
 
         response_data = LocalStoreInfoWeaterInfo(
-            localStoreInfo=results, weatherInfo=weather_info
+            localStoreInfo=results, weatherInfo=weather_info, aqi_info=pm_data
         )
 
         return response_data
@@ -255,7 +262,7 @@ def generate_report_today_tip_from_gpt(store_business_id: str):
 # @router.get("/commercialDistrict", response_model=CommercialStatisticsData)
 @router.get("/commercialDistrict")
 def select_loc_info_report_data(store_business_id: str):
-    print(store_business_id)
+    # print(store_business_id)
     # try:
     #     statistics_data: CommercialStatisticsData = (
     #         service_select_statistics_by_store_business_number(store_business_id)
@@ -268,3 +275,4 @@ def select_loc_info_report_data(store_business_id: str):
     # except Exception as e:
     #     raise HTTPException(status_code=500, detail=f"{e}Internal Server Error")
     # return "hi"
+    pass
