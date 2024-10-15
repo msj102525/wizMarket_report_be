@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 from typing import List
 from fastapi.responses import PlainTextResponse
 
+from app.schemas.commercial_district import CommercialStatisticsData
 from app.service.common_information import (
     get_all_report_common_information as service_get_all_report_common_information,
 )
@@ -262,17 +263,16 @@ def generate_report_today_tip_from_gpt(store_business_id: str):
 # @router.get("/commercialDistrict", response_model=CommercialStatisticsData)
 @router.get("/commercialDistrict")
 def select_loc_info_report_data(store_business_id: str):
-    # print(store_business_id)
-    # try:
-    #     statistics_data: CommercialStatisticsData = (
-    #         service_select_statistics_by_store_business_number(store_business_id)
-    #     )
+    print(store_business_id)
+    try:
+        statistics_data = service_select_statistics_by_store_business_number(
+            store_business_id
+        )
+        
+        return "hi"
+        return statistics_data
 
-    #     return statistics_data
-
-    # except HTTPException as http_ex:
-    #     raise http_ex
-    # except Exception as e:
-    #     raise HTTPException(status_code=500, detail=f"{e}Internal Server Error")
-    # return "hi"
-    pass
+    except HTTPException as http_ex:
+        raise http_ex
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"{e}Internal Server Error")
