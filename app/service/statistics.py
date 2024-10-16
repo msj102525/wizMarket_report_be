@@ -126,6 +126,19 @@ def fetch_living_env(store_business_id: str) -> PopulationCompareResidentWorkPop
     return result
 
 
+
+################## 유동인구 비교 하기 ###################
+def fetch_loc_info_move_pop(store_business_id: str):
+    local_store_sub_district_data: LocalStoreSubdistrict = (
+        crud_select_local_store_sub_distirct_id_by_store_business_number(
+            store_business_id
+        )
+    )
+    sub_district_id = local_store_sub_district_data.get("SUB_DISTRICT_ID")
+    sub_district_name = local_store_sub_district_data.get("SUB_DISTRICT_NAME")
+    pass
+
+
 def select_statistics_by_sub_district_detail_category(
     city_name: str,
     district_name: str,

@@ -96,6 +96,17 @@ class PopulationCompareResidentWorkPop(BaseModel):
         from_attributes = True
 
 
+class LocInfoMovePop(BaseModel):
+    city_name: str
+    district_name: str
+    city_avg_move_pop: float
+    move_pop: int
+    j_score: float
+
+    class Config:
+        from_attributes = True
+
+
 class CommercialStatistics(BaseModel):
     avg_val: Optional[float] = 0.0
     med_val: Optional[float] = 0.0

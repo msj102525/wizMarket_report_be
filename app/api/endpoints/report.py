@@ -26,6 +26,7 @@ from app.service.statistics import (
     fetch_living_env as service_fetch_living_env,
     select_avg_j_score as service_select_avg_j_score,
     select_statistics_by_store_business_number as service_select_statistics_by_store_business_number,
+    fetch_loc_info_move_pop as service_fetch_loc_info_move_pop
 )
 
 from app.service.gpt_generate import (
@@ -40,6 +41,7 @@ from app.schemas.statistics import (
     LocInfoAvgJscoreOutput,
     LocInfoStatisticsDataRefOutput,
     PopulationCompareResidentWorkPop,
+    LocInfoMovePop,
     GPTReport,
 )
 from app.schemas.common_information import CommonInformationOutput
@@ -166,6 +168,22 @@ def select_population_compare_resident_work(store_business_id: str):
     # print(store_business_id)
     try:
         compare_resident_work_data = service_fetch_living_env(store_business_id)
+
+        # print(loc_info_avg_j_score)
+
+        return compare_resident_work_data
+
+    except HTTPException as http_ex:
+        raise http_ex
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"{e}Internal Server Error")
+    
+
+@router.get("/location/move_pop", response_model=LocInfoMovePop)
+def select_population_compare_resident_work(store_business_id: str):
+    # print(store_business_id)
+    try:
+        compare_resident_work_data = service_fetch_loc_info_move_pop(store_business_id)
 
         # print(loc_info_avg_j_score)
 
