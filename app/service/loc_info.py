@@ -27,6 +27,8 @@ def select_report_loc_info_by_store_business_number(
             )
         )
 
+        print(local_store_sub_district_data)
+
         sub_district_id = local_store_sub_district_data.get("SUB_DISTRICT_ID")
         sub_district_name = local_store_sub_district_data.get("SUB_DISTRICT_NAME")
 

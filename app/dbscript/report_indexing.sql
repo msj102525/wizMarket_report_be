@@ -1,0 +1,1 @@
+CREATE INDEX idx_store_business_number ON REPORT (STORE_BUSINESS_NUMBER);
