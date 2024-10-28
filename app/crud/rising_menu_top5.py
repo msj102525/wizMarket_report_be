@@ -14,7 +14,7 @@ from app.schemas.report import (
 logger = logging.getLogger(__name__)
 
 
-def select_rising_menu_top5(
+def select_rising_menu_top5_by_store_business_number(
     store_business_id: str,
 ) -> LocalStoreTop5Menu:
 
@@ -39,10 +39,6 @@ def select_rising_menu_top5(
 
                 row = cursor.fetchone()
 
-                # logger.info(row)
-
-                print(row)
-
                 if not row:
                     raise HTTPException(
                         status_code=404,
@@ -66,8 +62,6 @@ def select_rising_menu_top5(
                         "DETAIL_CATEGORY_TOP5_ORDERED_MENU"
                     ],
                 )
-
-                print(f"result!!!!!!!!!!!!:{result}")
 
                 return result
 

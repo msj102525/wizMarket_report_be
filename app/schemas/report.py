@@ -213,6 +213,36 @@ class LocalStoreTop5MenuAdviceOutput(BaseModel):
 
 
 #######################################################################
+# 동별 인구 분포
+class LocalStorePopulationDataOutPut(BaseModel):
+    population_total: Optional[int] = None
+    population_male_percent: Optional[float] = None
+    population_female_percent: Optional[float] = None
+    population_age_10_under: Optional[int] = None
+    population_age_10s: Optional[int] = None
+    population_age_20s: Optional[int] = None
+    population_age_30s: Optional[int] = None
+    population_age_40s: Optional[int] = None
+    population_age_50s: Optional[int] = None
+    population_age_60_over: Optional[int] = None
+
+    loc_info_resident_k: Optional[float] = None
+    loc_info_work_pop_k: Optional[float] = None
+    loc_info_move_pop_k: Optional[float] = None
+    loc_info_shop_k: Optional[float] = None
+    loc_info_income_won: Optional[int] = None
+
+    loc_info_resident_j_score: Optional[float] = None
+    loc_info_work_pop_j_score: Optional[float] = None
+    loc_info_move_pop_j_score: Optional[float] = None
+    loc_info_shop_j_score: Optional[float] = None
+    loc_info_income_j_score: Optional[float] = None
+
+    class Config:
+        from_attributes = True
+
+
+#######################################################################
 
 
 class FilterRequest(BaseModel):
@@ -226,25 +256,6 @@ class FilterRequest(BaseModel):
     detailCategory: Optional[str] = None
     page: Optional[int] = 1  # 페이지 번호 (기본값 1)
     page_size: Optional[int] = 20  # 페이지 크기 (기본값 20)
-
-
-# 매장 소분류 비즈맵 매핑 대표 id
-class LocalStoreMappingRepId(BaseModel):
-    store_business_number: str
-    sub_district_id: int
-    rep_id: Optional[int] = 3  # 3: 비즈맵 소분류 없음 default 값
-
-    class Config:
-        from_attributes = True
-
-
-# 매장별 읍/면/동 id 조회
-class LocalStoreSubdistrictId(BaseModel):
-    store_business_number: str
-    sub_district_id: int
-
-    class Config:
-        from_attributes = True
 
 
 # 매장별 읍/면/동 id 조회

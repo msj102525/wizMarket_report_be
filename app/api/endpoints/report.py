@@ -7,6 +7,7 @@ from app.schemas.common_information import CommonInformationOutput
 from app.schemas.report import (
     AqiInfo,
     LocalStoreInfoWeaterInfoOutput,
+    LocalStorePopulationDataOutPut,
     LocalStoreRedux,
     LocalStoreTop5Menu,
     LocalStoreTop5MenuAdviceOutput,
@@ -21,11 +22,14 @@ from app.service.local_store_basic_info import (
     select_local_store_info_by_store_business_number as service_select_local_store_info_by_store_business_number,
 )
 from app.service.rising_menu_top5 import (
-    select_rising_menu_top5 as service_select_rising_menu_top5,
+    select_rising_menu_top5_by_store_business_number as service_select_rising_menu_top5_by_store_business_number,
 )
 
 from app.service.common_information import (
     get_all_report_common_information as service_get_all_report_common_information,
+)
+from app.service.population import (
+    select_population_by_store_business_number as service_select_population_by_store_business_number,
 )
 
 router = APIRouter()
@@ -125,8 +129,8 @@ def get_report_rising_menu_gpt(
         #     f"Successfully retrieved store info for business ID: {store_business_id}"
         # )
 
-        rising_menu_top5: LocalStoreTop5Menu = service_select_rising_menu_top5(
-            store_business_id
+        rising_menu_top5: LocalStoreTop5Menu = (
+            service_select_rising_menu_top5_by_store_business_number(store_business_id)
         )
         logger.info(f"rising_menu_top5: {rising_menu_top5}")
 
@@ -157,10 +161,34 @@ def get_all_report_common_information():
         results = service_get_all_report_common_information()
         return results
     except HTTPException as http_ex:
+        logger.error(f"HTTP error occurred: {http_ex.detail}")
         raise http_ex
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Internal Server Error")
 
+    except Exception as e:
+        error_msg = f"Unexpected error while processing request: {str(e)}"
+        logger.error(error_msg)
+        raise HTTPException(status_code=500, detail=error_msg)
+
+
+@router.get("/population", response_model=LocalStorePopulationDataOutPut)
+def get_population_data(store_business_id: str):
+    try:
+
+        return service_select_population_by_store_business_number(store_business_id)
+
+    except HTTPException as http_ex:
+        logger.error(f"HTTP error occurred: {http_ex.detail}")
+        raise http_ex
+
+    except Exception as e:
+        error_msg = f"Unexpected error while processing request: {str(e)}"
+        logger.error(error_msg)
+        raise HTTPException(status_code=500, detail=error_msg)
+
+
+##########################################################################################
+##########################################################################################
+##########################################################################################
 
 # @router.get("/rising", response_model=RisingBusinessNationwideTop5AndSubDistrictTop3)
 # def select_rising_business_top5_top3(store_business_id: str):
@@ -168,6 +196,7 @@ def get_all_report_common_information():
 #         nationwide_top5: List[RisingBusinessOutput] = (
 #             service_select_top5_rising_business()
 #         )
+# sub_district_population_data = select_population_by_store_business_number(
 
 #         sub_district_top3_data: List[RisingBusinessOutput] = (
 #             service_select_top3_rising_business_by_store_business_number(
@@ -186,21 +215,6 @@ def get_all_report_common_information():
 #         raise http_ex
 #     except Exception as e:
 #         raise HTTPException(status_code=500, detail="Internal Server Error")
-
-
-# @router.get("/population", response_model=PopulationJScoreOutput)
-# def select_population_report_data(store_business_id: str):
-#     try:
-#         sub_district_population_data = (
-#             service_select_report_population_by_store_business_number(store_business_id)
-#         )
-
-#         return sub_district_population_data
-
-#     except HTTPException as http_ex:
-#         raise http_ex
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=f"{e}Internal Server Error")
 
 
 # @router.get("/location/info", response_model=LocInfoStatisticsDataRefOutput)

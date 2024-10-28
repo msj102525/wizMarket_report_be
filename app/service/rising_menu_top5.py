@@ -4,7 +4,7 @@ from fastapi import HTTPException
 
 
 from app.crud.rising_menu_top5 import (
-    select_rising_menu_top5 as crud_select_rising_menu_top5,
+    select_rising_menu_top5_by_store_business_number as crud_select_rising_menu_top5_by_store_business_number,
 )
 from app.schemas.report import (
     LocalStoreTop5Menu,
@@ -13,13 +13,13 @@ from app.schemas.report import (
 logger = logging.getLogger(__name__)
 
 
-def select_rising_menu_top5(
+def select_rising_menu_top5_by_store_business_number(
     store_business_id: str,
 ) -> LocalStoreTop5Menu:
     # logger.info(f"Fetching store info for business ID: {store_business_id}")
 
     try:
-        return crud_select_rising_menu_top5(store_business_id)
+        return crud_select_rising_menu_top5_by_store_business_number(store_business_id)
     except HTTPException:
         raise
     except Exception as e:
