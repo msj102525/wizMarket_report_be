@@ -1,17 +1,14 @@
 from logging.config import dictConfig
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import os
 from dotenv import load_dotenv
 from fastapi.staticfiles import StaticFiles
-from app.api.endpoints import (
-    report,
-)
+from app.api.endpoints import report
 
 app = FastAPI()
 
@@ -45,18 +42,10 @@ log_config = {
             "formatter": "default",
             "level": "INFO",
         },
-        "file": {
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": "app.log",
-            "maxBytes": 1024 * 1024,  # 1MB
-            "backupCount": 3,
-            "formatter": "default",
-            "level": "INFO",
-        },
     },
     "root": {
         "level": "INFO",
-        "handlers": ["console", "file"],
+        "handlers": ["console"],
     },
 }
 
@@ -66,8 +55,9 @@ dictConfig(log_config)
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 app.include_router(report.router, prefix="/report")
 
-
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("main:app", host="0.0.0.0", port=8001, reload=True)
+    uvicorn.run(
+        "app.main:app", host="0.0.0.0", port=8001, reload=True, reload_dirs=["app/"]
+    )

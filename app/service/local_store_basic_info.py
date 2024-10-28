@@ -6,16 +6,40 @@ from fastapi import HTTPException
 import requests
 
 from app.crud.local_store_basic_info import (
+    select_local_store_info_redux_by_store_business_number as crud_select_local_store_info_redux_by_store_business_number,
     select_local_store_info_by_store_business_number as crud_select_local_store_info_by_store_business_number,
 )
-from app.schemas.report import AqiInfo, LocalStoreBasicInfo, WeatherInfo
+from app.schemas.report import (
+    AqiInfo,
+    LocalStoreBasicInfo,
+    LocalStoreRedux,
+    WeatherInfo,
+)
 
 logger = logging.getLogger(__name__)
 
 
+def select_local_store_info_redux_by_store_business_number(
+    store_business_id: str,
+) -> LocalStoreRedux:
+    # logger.info(f"Fetching store info for business ID: {store_business_id}")
+
+    try:
+        return crud_select_local_store_info_redux_by_store_business_number(
+            store_business_id
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Service LocalStoreRedux Error: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Service LocalStoreRedux Error: {str(e)}"
+        )
+
+
 def select_local_store_info_by_store_business_number(
     store_business_id: str,
-) -> List[LocalStoreBasicInfo]:
+) -> LocalStoreBasicInfo:
     # logger.info(f"Fetching store info for business ID: {store_business_id}")
 
     try:
@@ -42,7 +66,7 @@ def get_weather_info_by_lat_lng(
 
         api_url = f"http://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lng}&appid={apikey}&lang={lang}&units=metric"
 
-        logger.info(f"Requesting weather data for lat={lat}, lng={lng}")
+        # logger.info(f"Requesting weather data for lat={lat}, lng={lng}")
         weather_response = requests.get(api_url)
         weather_data = weather_response.json()
 
@@ -92,6 +116,8 @@ def get_pm_info_by_city_name(lat: float, lng: float, lang: str = "kr") -> AqiInf
                 status_code=500,
                 detail="Weather API key not found in environment variables.",
             )
+
+        # logger.info(f"Requesting weather data for lat={lat}, lng={lng}")
 
         # OpenWeatherMap의 미세먼지 정보 API (위도 및 경도 기준)
         api_url = f"http://api.openweathermap.org/data/2.5/air_pollution?lat={lat}&lon={lng}&appid={apikey}"

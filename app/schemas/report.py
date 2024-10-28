@@ -113,14 +113,33 @@ class LocalStoreImage(BaseModel):
 
 
 ##########################################################################################
-
-
-# 매장 기본 정보
-class LocalStoreBasicInfo(BaseModel):
+# 리덕스로 관리할 정보들
+class LocalStoreRedux(BaseModel):
     city_name: str
     district_name: str
     sub_district_name: str
     detail_category_name: str
+    loc_info_data_ref_date: Optional[date] = None
+    nice_biz_map_data_ref_date: Optional[date] = None
+    population_data_ref_date: Optional[date] = None
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        if self.loc_info_data_ref_date is None:
+            self.loc_info_data_ref_date = date(2024, 1, 1)
+
+        if self.nice_biz_map_data_ref_date is None:
+            self.nice_biz_map_data_ref_date = date(2024, 1, 1)
+
+        if self.population_data_ref_date is None:
+            self.population_data_ref_date = date(2024, 1, 1)
+
+    class Config:
+        from_attributes = True
+
+
+# 매장 기본 정보
+class LocalStoreBasicInfo(BaseModel):
     store_name: str
     road_name: Optional[str] = None
     building_name: Optional[str] = None
@@ -173,6 +192,27 @@ class LocalStoreInfoWeaterInfoOutput(BaseModel):
 
 
 #################################################################
+# 매장별 top5 메뉴
+class LocalStoreTop5Menu(BaseModel):
+    detail_category_top1_ordered_menu: Optional[str] = None
+    detail_category_top2_ordered_menu: Optional[str] = None
+    detail_category_top3_ordered_menu: Optional[str] = None
+    detail_category_top4_ordered_menu: Optional[str] = None
+    detail_category_top5_ordered_menu: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class LocalStoreTop5MenuAdviceOutput(BaseModel):
+    local_store_top5_orderd_menu: LocalStoreTop5Menu
+    rising_menu_advice: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+#######################################################################
 
 
 class FilterRequest(BaseModel):
@@ -193,20 +233,6 @@ class LocalStoreMappingRepId(BaseModel):
     store_business_number: str
     sub_district_id: int
     rep_id: Optional[int] = 3  # 3: 비즈맵 소분류 없음 default 값
-
-    class Config:
-        from_attributes = True
-
-
-# 매장별 top5 메뉴
-class LocalStoreTop5Menu(BaseModel):
-    store_business_number: str
-    detail_category_top1_ordered_menu: Optional[str] = None
-    detail_category_top2_ordered_menu: Optional[str] = None
-    detail_category_top3_ordered_menu: Optional[str] = None
-    detail_category_top4_ordered_menu: Optional[str] = None
-    detail_category_top5_ordered_menu: Optional[str] = None
-    nice_biz_map_data_ref_date: date
 
     class Config:
         from_attributes = True

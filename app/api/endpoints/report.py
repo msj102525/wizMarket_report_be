@@ -5,21 +5,59 @@ from fastapi.responses import PlainTextResponse
 
 from app.schemas.report import (
     AqiInfo,
-    LocalStoreBasicInfo,
     LocalStoreInfoWeaterInfoOutput,
+    LocalStoreRedux,
+    LocalStoreTop5Menu,
+    LocalStoreTop5MenuAdviceOutput,
     WeatherInfo,
 )
 from app.service.local_store_basic_info import (
-    get_pm_info_by_city_name,
+    select_local_store_info_redux_by_store_business_number as service_select_local_store_info_redux_by_store_business_number,
     get_weather_info_by_lat_lng as service_get_weather_info_by_lat_lng,
+    get_pm_info_by_city_name as service_get_pm_info_by_city_name,
 )
 from app.service.local_store_basic_info import (
     select_local_store_info_by_store_business_number as service_select_local_store_info_by_store_business_number,
 )
+from app.service.rising_menu_top5 import select_rising_menu_top5
 
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
+
+
+@router.get("/store/info/redux", response_model=LocalStoreRedux)
+def get_report_store_info_redux(store_business_id: str):
+
+    # logger.info(
+    #     f"Received request for store info with business ID: {store_business_id}"
+    # )
+
+    try:
+        # logger.info(
+        #     f"Successfully retrieved store info for business ID: {store_business_id}"
+        # )
+
+        return service_select_local_store_info_redux_by_store_business_number(
+            store_business_id
+        )
+
+    except HTTPException as http_ex:
+        # service 계층에서 발생한 HTTP 예외는 그대로 전달
+        logger.error(f"HTTP error occurred: {http_ex.detail}")
+        raise http_ex
+
+    # except ValueError as ve:
+    #     # 입력값 검증 실패 등의 에러
+    #     error_msg = f"Invalid input: {str(ve)}"
+    #     logger.error(error_msg)
+    #     raise HTTPException(status_code=422, detail=error_msg)
+
+    except Exception as e:
+        # 예상치 못한 에러
+        error_msg = f"Unexpected error while processing request: {str(e)}"
+        logger.error(error_msg)
+        raise HTTPException(status_code=500, detail=error_msg)
 
 
 @router.get("/store/info", response_model=LocalStoreInfoWeaterInfoOutput)
@@ -29,12 +67,13 @@ def get_report_store_info(store_business_id: str):
     # )
 
     try:
-        local_store_info = service_select_local_store_info_by_store_business_number(
-            store_business_id
-        )
         # logger.info(
         #     f"Successfully retrieved store info for business ID: {store_business_id}"
         # )
+
+        local_store_info = service_select_local_store_info_by_store_business_number(
+            store_business_id
+        )
 
         # logger.info(f"local_store_info{local_store_info}")
         # logger.info(f"local_store_info.latitude{local_store_info.latitude}")
@@ -46,10 +85,10 @@ def get_report_store_info(store_business_id: str):
 
         # logger.info(f"weather_data: {weather_data}")
 
-        pm_data: AqiInfo = get_pm_info_by_city_name(
+        pm_data: AqiInfo = service_get_pm_info_by_city_name(
             local_store_info.latitude, local_store_info.longitude
         )
-        logger.info(f"pm_data: {pm_data}")
+        # logger.info(f"pm_data: {pm_data}")
 
         response_data = LocalStoreInfoWeaterInfoOutput(
             localStoreInfo=local_store_info, weatherInfo=weather_data, aqi_info=pm_data
@@ -57,18 +96,50 @@ def get_report_store_info(store_business_id: str):
         return response_data
 
     except HTTPException as http_ex:
-        # service 계층에서 발생한 HTTP 예외는 그대로 전달
         logger.error(f"HTTP error occurred: {http_ex.detail}")
         raise http_ex
 
-    except ValueError as ve:
-        # 입력값 검증 실패 등의 에러
-        error_msg = f"Invalid input: {str(ve)}"
+    except Exception as e:
+        error_msg = f"Unexpected error while processing request: {str(e)}"
         logger.error(error_msg)
-        raise HTTPException(status_code=400, detail=error_msg)
+        raise HTTPException(status_code=500, detail=error_msg)
+
+
+# RisingMenu
+@router.get("/rising/menu/advice", response_model=LocalStoreTop5MenuAdviceOutput)
+def get_report_rising_menu_gpt(
+    store_business_id: str,
+):
+    # logger.info(
+    #     f"Received request for store info with business ID: {store_business_id}"
+    # )
+
+    try:
+        # logger.info(
+        #     f"Successfully retrieved store info for business ID: {store_business_id}"
+        # )
+
+        rising_menu_top5: LocalStoreTop5Menu = select_rising_menu_top5(
+            store_business_id
+        )
+        logger.info(f"rising_menu_top5: {rising_menu_top5}")
+
+        # # report_content = report_rising_menu(store_business_id)
+        # # report = PlainTextResponse(report_content)
+        report_dummy = """Dummy Data<br/> 삼겹살이랑 돼지갈비가 인기가 많으니까,<br/> 그 두 가지를 묶어서 세트 메뉴로 한번 내봐유.<br/>금요일엔 사람들이 술도 많이 먹으니까 병맥주나<br/>소주 할인 이벤트 하나 해주면 딱 좋을 거여.<br/>된장찌개는 그냥 기본으로 맛있게 준비해주면 손님들 만족도가 더 높아질 거유!"""
+
+        result = LocalStoreTop5MenuAdviceOutput(
+            local_store_top5_orderd_menu=rising_menu_top5,
+            rising_menu_advice=report_dummy,
+        )
+
+        return result
+
+    except HTTPException as http_ex:
+        logger.error(f"HTTP error occurred: {http_ex.detail}")
+        raise http_ex
 
     except Exception as e:
-        # 예상치 못한 에러
         error_msg = f"Unexpected error while processing request: {str(e)}"
         logger.error(error_msg)
         raise HTTPException(status_code=500, detail=error_msg)
@@ -214,28 +285,6 @@ def get_report_store_info(store_business_id: str):
 #         # 에러 로그 출력
 #         print(f"Unhandled exception: {e}")
 #         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
-
-
-# # RisingMenu
-# @router.get("/gpt/report_rising_menu", response_model=GPTReport)
-# def generate_report_rising_menu_from_gpt(store_business_id: str):
-#     # print(store_business_id)
-#     try:
-#         # report_content = report_rising_menu(store_business_id)
-#         # report = PlainTextResponse(report_content)
-#         report = PlainTextResponse(
-#             """Dummy Data 신길5동에서 백반집 운영하신다구요?
-#         좋습니다, 백반이랑 돼지고기, 소주가 뜬다니 집중할 포인트가 생겼네요!
-#         첫째, '백반' 메뉴를 다양하게 준비하셔서 매일 다른 반찬으로 고객들 기대치를 높이세요.
-#         둘째, 돼지고기구이랑 볶음을 잘 준비해, 식사와 술 한 잔 곁들이기 좋은 메뉴로 만드시면 손님이 자주 찾을 겁니다.
-#         마지막으로는, 소고기구이는 약간의 고급 메뉴로 포지셔닝해서 가족이나 친구들끼리 모임 장소로 만들면 좋겠어요. 화이팅입니다!"""
-#         )
-#         return report
-
-#     except HTTPException as http_ex:
-#         raise http_ex
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=f"{e}Internal Server Error")
 
 
 # @router.get("/gpt/report_today_tip")
