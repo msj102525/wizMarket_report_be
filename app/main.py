@@ -1,3 +1,4 @@
+from logging.config import dictConfig
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -27,14 +28,42 @@ app.add_middleware(
 
 print(os.getenv("ALLOWED_ORIGINS", ""))
 
+# 로깅 설정
+log_config = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "default": {
+            "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stdout",
+            "formatter": "default",
+            "level": "INFO",
+        },
+        "file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": "app.log",
+            "maxBytes": 1024 * 1024,  # 1MB
+            "backupCount": 3,
+            "formatter": "default",
+            "level": "INFO",
+        },
+    },
+    "root": {
+        "level": "INFO",
+        "handlers": ["console", "file"],
+    },
+}
+
+# 로깅 설정 적용
+dictConfig(log_config)
+
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
-
-
-@app.get("/")
-async def read_root():
-    return {"message": "Welcome to FastAPI!"}
-
-
 app.include_router(report.router, prefix="/report")
 
 
