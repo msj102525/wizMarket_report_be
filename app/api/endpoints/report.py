@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException
 from typing import List
 from fastapi.responses import PlainTextResponse
 
+from app.schemas.common_information import CommonInformationOutput
 from app.schemas.report import (
     AqiInfo,
     LocalStoreInfoWeaterInfoOutput,
@@ -19,8 +20,13 @@ from app.service.local_store_basic_info import (
 from app.service.local_store_basic_info import (
     select_local_store_info_by_store_business_number as service_select_local_store_info_by_store_business_number,
 )
-from app.service.rising_menu_top5 import select_rising_menu_top5
+from app.service.rising_menu_top5 import (
+    select_rising_menu_top5 as service_select_rising_menu_top5,
+)
 
+from app.service.common_information import (
+    get_all_report_common_information as service_get_all_report_common_information,
+)
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -119,7 +125,7 @@ def get_report_rising_menu_gpt(
         #     f"Successfully retrieved store info for business ID: {store_business_id}"
         # )
 
-        rising_menu_top5: LocalStoreTop5Menu = select_rising_menu_top5(
+        rising_menu_top5: LocalStoreTop5Menu = service_select_rising_menu_top5(
             store_business_id
         )
         logger.info(f"rising_menu_top5: {rising_menu_top5}")
@@ -145,15 +151,15 @@ def get_report_rising_menu_gpt(
         raise HTTPException(status_code=500, detail=error_msg)
 
 
-# @router.get("/common/info", response_model=List[CommonInformationOutput])
-# def get_all_report_common_information():
-#     try:
-#         results = service_get_all_report_common_information()
-#         return results
-#     except HTTPException as http_ex:
-#         raise http_ex
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail="Internal Server Error")
+@router.get("/common/info", response_model=List[CommonInformationOutput])
+def get_all_report_common_information():
+    try:
+        results = service_get_all_report_common_information()
+        return results
+    except HTTPException as http_ex:
+        raise http_ex
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
 # @router.get("/rising", response_model=RisingBusinessNationwideTop5AndSubDistrictTop3)
