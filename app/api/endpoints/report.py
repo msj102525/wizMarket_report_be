@@ -6,11 +6,13 @@ from fastapi.responses import PlainTextResponse
 from app.schemas.common_information import CommonInformationOutput
 from app.schemas.report import (
     AqiInfo,
+    LocalStoreCDJSWeightedAverage,
     LocalStoreInfoWeaterInfoOutput,
     LocalStoreLIJSWeightedAverage,
     LocalStoreLocInfoJscoreData,
     LocalStorePopulationDataOutPut,
     LocalStoreRedux,
+    LocalStoreResidentWorkPopData,
     LocalStoreTop5Menu,
     LocalStoreTop5MenuAdviceOutput,
     WeatherInfo,
@@ -36,6 +38,10 @@ from app.service.population import (
 from app.service.loc_info import (
     select_loc_info_j_score_average_by_store_business_number as select_select_loc_info_j_score_average_by_store_business_number,
     select_loc_info_j_score_by_store_business_number as service_select_loc_info_j_score_by_store_business_number,
+    select_loc_info_resident_work_compare_by_store_business_number as service_select_loc_info_resident_work_compare_by_store_business_number,
+)
+from app.service.commercial_district import (
+    select_c_d_j_score_average_by_store_business_number as service_select_c_d_j_score_average_by_store_business_number,
 )
 
 router = APIRouter()
@@ -221,9 +227,55 @@ def select_loc_info_j_scorereport_data(store_business_id: str):
         return sub_district_population_data
 
     except HTTPException as http_ex:
+        logger.error(f"HTTP error occurred: {http_ex.detail}")
         raise http_ex
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"{e}Internal Server Error")
+        error_msg = f"Unexpected error while processing request: {str(e)}"
+        logger.error(error_msg)
+        raise HTTPException(status_code=500, detail=error_msg)
+
+
+@router.get(
+    "/location/resident/work/compare", response_model=LocalStoreResidentWorkPopData
+)
+def select_loc_info_resident_work_compare_by_store_business_number(
+    store_business_id: str,
+):
+    # print(store_business_id)
+    try:
+        return service_select_loc_info_resident_work_compare_by_store_business_number(
+            store_business_id
+        )
+
+    except HTTPException as http_ex:
+        logger.error(f"HTTP error occurred: {http_ex.detail}")
+        raise http_ex
+
+    except Exception as e:
+        error_msg = f"Unexpected error while processing request: {str(e)}"
+        logger.error(error_msg)
+        raise HTTPException(status_code=500, detail=error_msg)
+
+
+@router.get(
+    "/commercialDistrict/jscore/average", response_model=LocalStoreCDJSWeightedAverage
+)
+def select_c_d_j_score_average_by_store_business_number(store_business_id: str):
+    print(store_business_id)
+    try:
+        return service_select_c_d_j_score_average_by_store_business_number(
+            store_business_id
+        )
+
+    except HTTPException as http_ex:
+        logger.error(f"HTTP error occurred: {http_ex.detail}")
+        raise http_ex
+
+    except Exception as e:
+        error_msg = f"Unexpected error while processing request: {str(e)}"
+        logger.error(error_msg)
+        raise HTTPException(status_code=500, detail=error_msg)
 
 
 ##########################################################################################
@@ -255,22 +307,6 @@ def select_loc_info_j_scorereport_data(store_business_id: str):
 #         raise http_ex
 #     except Exception as e:
 #         raise HTTPException(status_code=500, detail="Internal Server Error")
-
-
-# @router.get("/population/compare", response_model=PopulationCompareResidentWorkPop)
-# def select_population_compare_resident_work(store_business_id: str):
-#     # print(store_business_id)
-#     try:
-#         compare_resident_work_data = service_fetch_living_env(store_business_id)
-
-#         # print(loc_info_avg_j_score)
-
-#         return compare_resident_work_data
-
-#     except HTTPException as http_ex:
-#         raise http_ex
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=f"{e}Internal Server Error")
 
 
 # @router.get("/location/move_pop", response_model=LocInfoMovePop)

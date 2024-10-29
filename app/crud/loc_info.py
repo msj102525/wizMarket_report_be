@@ -10,6 +10,7 @@ from app.db.connect import (
 from app.schemas.report import (
     LocalStoreLIJSWeightedAverage,
     LocalStoreLocInfoJscoreData,
+    LocalStoreResidentWorkPopData,
 )
 
 logger = logging.getLogger(__name__)
@@ -125,5 +126,62 @@ def select_loc_info_j_score_by_store_business_number(
     except Exception as e:
         logger.error(
             f"Unexpected error occurred in select_loc_info_j_score_by_store_business_number: {str(e)}"
+        )
+        raise HTTPException(status_code=500, detail=f"내부 서버 오류: {str(e)}")
+
+
+def select_loc_info_resident_work_compare_by_store_business_number(
+    store_business_id: str,
+) -> LocalStoreResidentWorkPopData:
+
+    try:
+        with get_db_connection() as connection:
+            with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+                select_query = """
+                    SELECT 
+                        LOC_INFO_RESIDENT,
+                        LOC_INFO_WORK_POP,
+                        LOC_INFO_RESIDENT_PERCENT,
+                        LOC_INFO_WORK_POP_PERCENT
+                    FROM
+                        REPORT 
+                    WHERE STORE_BUSINESS_NUMBER = %s
+                    ;
+                """
+
+                # logger.info(
+                #     f"Executing query: {select_query} with business ID: {store_business_id}"
+                # )
+                cursor.execute(select_query, (store_business_id,))
+
+                row = cursor.fetchone()
+                logger.info(f"{row}")
+
+                if not row:
+                    raise HTTPException(
+                        status_code=404,
+                        detail=f"LocalStoreResidentWorkPopData {store_business_id}에 해당하는 매장 정보를 찾을 수 없습니다.",
+                    )
+
+                result = LocalStoreResidentWorkPopData(
+                    loc_info_resident=row.get("LOC_INFO_RESIDENT"),
+                    loc_info_work_pop=row.get("LOC_INFO_WORK_POP"),
+                    loc_info_resident_percent=round(
+                        row.get("LOC_INFO_RESIDENT_PERCENT")
+                    ),
+                    loc_info_work_pop_percent=round(
+                        row.get("LOC_INFO_WORK_POP_PERCENT")
+                    ),
+                )
+
+                logger.info(f"Result for business ID {store_business_id}: {result}")
+                return result
+
+    except pymysql.Error as e:
+        logger.error(f"Database error occurred: {str(e)}")
+        raise HTTPException(status_code=503, detail=f"데이터베이스 연결 오류: {str(e)}")
+    except Exception as e:
+        logger.error(
+            f"Unexpected error occurred in select_loc_info_resident_work_compare_by_store_business_number: {str(e)}"
         )
         raise HTTPException(status_code=500, detail=f"내부 서버 오류: {str(e)}")

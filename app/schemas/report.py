@@ -298,6 +298,53 @@ class LocalStoreLocInfoJscoreData(BaseModel):
 
 
 #######################################################################
+
+
+# 읍/면/동 입지정보 주거인구/직장인구
+class LocalStoreResidentWorkPopData(BaseModel):
+    loc_info_resident: int
+    loc_info_work_pop: int
+    loc_info_resident_percent: float
+    loc_info_work_pop_percent: float
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        if self.loc_info_resident is None:
+            self.loc_info_resident = 0
+
+        if self.loc_info_work_pop is None:
+            self.loc_info_work_pop = 0
+
+        if self.loc_info_resident_percent is None:
+            self.loc_info_resident_percent = 0.0
+
+        if self.loc_info_work_pop_percent is None:
+            self.loc_info_work_pop_percent = 0.0
+
+    class Config:
+        from_attributes = True
+
+
+#######################################################################
+
+
+# 상권분석 읍/면/동 소분류 J_Score 가중치 평균 합
+class LocalStoreCDJSWeightedAverage(BaseModel):
+    commercial_district_j_score_average: float
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        if self.commercial_district_j_score_average is None:
+            self.commercial_district_j_score_average = 0
+
+    class Config:
+        from_attributes = True
+
+
+#######################################################################
+
+
+#######################################################################
 #######################################################################
 #######################################################################
 
@@ -348,32 +395,11 @@ class LocalStoreLocInfoData(BaseModel):
         from_attributes = True
 
 
-# 읍/면/동 입지정보 주거인구/직장인구
-class LocalStoreResidentWorkPopData(BaseModel):
-    store_business_number: str
-    loc_info_resident: int
-    loc_info_work_pop: int
-    loc_info_resident_percent: float
-    loc_info_work_pop_percent: float
-
-    class Config:
-        from_attributes = True
-
-
 # 읍/면/동 입지정보 유동인구, 시/도 평균 유동인구
 class LocalStoreMovePopData(BaseModel):
     store_business_number: str
     loc_info_move_pop: int
     loc_info_city_move_pop: int
-
-    class Config:
-        from_attributes = True
-
-
-# 상권분석 읍/면/동 소분류 J_Score 가중치 평균 합
-class LocalStoreCDJSWeightedAverage(BaseModel):
-    store_business_number: str
-    commercial_district_j_score_average: float
 
     class Config:
         from_attributes = True
