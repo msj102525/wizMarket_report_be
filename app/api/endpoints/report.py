@@ -10,6 +10,7 @@ from app.schemas.report import (
     LocalStoreInfoWeaterInfoOutput,
     LocalStoreLIJSWeightedAverage,
     LocalStoreLocInfoJscoreData,
+    LocalStoreMovePopData,
     LocalStorePopulationDataOutPut,
     LocalStoreRedux,
     LocalStoreResidentWorkPopData,
@@ -39,6 +40,7 @@ from app.service.loc_info import (
     select_loc_info_j_score_average_by_store_business_number as select_select_loc_info_j_score_average_by_store_business_number,
     select_loc_info_j_score_by_store_business_number as service_select_loc_info_j_score_by_store_business_number,
     select_loc_info_resident_work_compare_by_store_business_number as service_select_loc_info_resident_work_compare_by_store_business_number,
+    select_loc_info_move_pop_by_store_business_number as service_select_loc_info_move_pop_by_store_business_number,
 )
 from app.service.commercial_district import (
     select_c_d_j_score_average_by_store_business_number as service_select_c_d_j_score_average_by_store_business_number,
@@ -265,6 +267,24 @@ def select_c_d_j_score_average_by_store_business_number(store_business_id: str):
     print(store_business_id)
     try:
         return service_select_c_d_j_score_average_by_store_business_number(
+            store_business_id
+        )
+
+    except HTTPException as http_ex:
+        logger.error(f"HTTP error occurred: {http_ex.detail}")
+        raise http_ex
+
+    except Exception as e:
+        error_msg = f"Unexpected error while processing request: {str(e)}"
+        logger.error(error_msg)
+        raise HTTPException(status_code=500, detail=error_msg)
+
+
+@router.get("/location/move/population", response_model=LocalStoreMovePopData)
+def select_loc_info_move_pop_by_store_business_number(store_business_id: str):
+    print(store_business_id)
+    try:
+        return service_select_loc_info_move_pop_by_store_business_number(
             store_business_id
         )
 

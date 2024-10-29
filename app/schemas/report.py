@@ -344,6 +344,29 @@ class LocalStoreCDJSWeightedAverage(BaseModel):
 #######################################################################
 
 
+# 읍/면/동 입지정보 유동인구, 시/도 평균 유동인구
+class LocalStoreMovePopData(BaseModel):
+    loc_info_move_pop_j_score: float
+    loc_info_move_pop: int
+    loc_info_city_move_pop: int
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        if self.loc_info_move_pop_j_score is None:
+            self.loc_info_move_pop_j_score = 0.0
+
+        if self.loc_info_move_pop is None:
+            self.loc_info_move_pop = 0
+
+        if self.loc_info_city_move_pop is None:
+            self.loc_info_city_move_pop = 0
+
+    class Config:
+        from_attributes = True
+
+
+#######################################################################
+
 #######################################################################
 #######################################################################
 #######################################################################
@@ -390,16 +413,6 @@ class LocalStoreLocInfoData(BaseModel):
     loc_info_shop_k: Optional[float] = 0.0
     loc_info_income_won: Optional[int] = 0
     loc_info_data_ref_date: date
-
-    class Config:
-        from_attributes = True
-
-
-# 읍/면/동 입지정보 유동인구, 시/도 평균 유동인구
-class LocalStoreMovePopData(BaseModel):
-    store_business_number: str
-    loc_info_move_pop: int
-    loc_info_city_move_pop: int
 
     class Config:
         from_attributes = True
