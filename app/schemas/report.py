@@ -244,9 +244,54 @@ class LocalStorePopulationDataOutPut(BaseModel):
 
 #######################################################################
 
+
 # 입지분석 읍/면/동 소분류 J_Score 가중치 평균 합
 class LocalStoreLIJSWeightedAverage(BaseModel):
-    loc_info_j_score_average: float
+    loc_info_j_score_average: Optional[float] = None
+
+    class Config:
+        from_attributes = True
+
+
+#######################################################################
+
+
+# 매장별 입지정보 J_Score
+class LocalStoreLocInfoJscoreData(BaseModel):
+    loc_info_resident_j_score: Optional[float] = None
+    loc_info_move_pop_j_score: Optional[float] = None
+    loc_info_shop_j_score: Optional[float] = None
+    loc_info_income_j_score: Optional[float] = None
+    loc_info_average_spend_j_score: Optional[float] = None
+    loc_info_average_sales_j_score: Optional[float] = None
+    loc_info_house_j_score: Optional[float] = None
+    population_mz_population_j_score: Optional[float] = None
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        if self.loc_info_resident_j_score is None:
+            self.loc_info_resident_j_score = 0.0
+
+        if self.population_mz_population_j_score is None:
+            self.population_mz_population_j_score = 0.0
+
+        if self.loc_info_move_pop_j_score is None:
+            self.loc_info_move_pop_j_score = 0.0
+
+        if self.loc_info_shop_j_score is None:
+            self.loc_info_shop_j_score = 0.0
+
+        if self.loc_info_income_j_score is None:
+            self.loc_info_income_j_score = 0.0
+
+        if self.loc_info_average_spend_j_score is None:
+            self.loc_info_average_spend_j_score = 0.0
+
+        if self.loc_info_average_sales_j_score is None:
+            self.loc_info_average_sales_j_score = 0.0
+
+        if self.loc_info_house_j_score is None:
+            self.loc_info_house_j_score = 0.0
 
     class Config:
         from_attributes = True
@@ -298,23 +343,6 @@ class LocalStoreLocInfoData(BaseModel):
     loc_info_shop_k: Optional[float] = 0.0
     loc_info_income_won: Optional[int] = 0
     loc_info_data_ref_date: date
-
-    class Config:
-        from_attributes = True
-
-
-# 매장별 입지정보 J_Score
-class LocalStoreLocInfoJscoreData(BaseModel):
-    store_business_number: str
-    loc_info_resident_j_score: float
-    loc_info_work_pop_j_score: float
-    loc_info_move_pop_j_score: float
-    loc_info_shop_j_score: float
-    loc_info_income_j_score: float
-    loc_info_average_spend_j_score: float
-    loc_info_average_sales_j_score: float
-    loc_info_house_j_score: float
-    population_mz_population_j_score: float
 
     class Config:
         from_attributes = True

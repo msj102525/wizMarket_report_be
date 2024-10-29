@@ -3,9 +3,13 @@ from dotenv import load_dotenv
 from fastapi import HTTPException
 
 
-from app.schemas.report import LocalStoreLIJSWeightedAverage
+from app.schemas.report import (
+    LocalStoreLIJSWeightedAverage,
+    LocalStoreLocInfoJscoreData,
+)
 from app.crud.loc_info import (
     select_loc_info_j_score_average_by_store_business_number as crud_select_loc_info_j_score_average_by_store_business_number,
+    select_loc_info_j_score_by_store_business_number as crud_select_loc_info_j_score_by_store_business_number,
 )
 
 
@@ -28,4 +32,23 @@ def select_loc_info_j_score_average_by_store_business_number(
         raise HTTPException(
             status_code=500,
             detail=f"Service LocalStoreLIJSWeightedAverage Error: {str(e)}",
+        )
+
+
+def select_loc_info_j_score_by_store_business_number(
+    store_business_id: str,
+) -> LocalStoreLocInfoJscoreData:
+    # logger.info(f"Fetching store info for business ID: {store_business_id}")
+
+    try:
+        return crud_select_loc_info_j_score_by_store_business_number(
+            store_business_id
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Service LocalStoreLocInfoJscoreData Error: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Service LocalStoreLocInfoJscoreData Error: {str(e)}",
         )

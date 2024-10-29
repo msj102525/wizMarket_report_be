@@ -8,6 +8,7 @@ from app.schemas.report import (
     AqiInfo,
     LocalStoreInfoWeaterInfoOutput,
     LocalStoreLIJSWeightedAverage,
+    LocalStoreLocInfoJscoreData,
     LocalStorePopulationDataOutPut,
     LocalStoreRedux,
     LocalStoreTop5Menu,
@@ -33,7 +34,8 @@ from app.service.population import (
     select_population_by_store_business_number as service_select_population_by_store_business_number,
 )
 from app.service.loc_info import (
-    select_loc_info_j_score_average_by_store_business_number as crud_select_loc_info_j_score_average_by_store_business_number,
+    select_loc_info_j_score_average_by_store_business_number as select_select_loc_info_j_score_average_by_store_business_number,
+    select_loc_info_j_score_by_store_business_number as service_select_loc_info_j_score_by_store_business_number,
 )
 
 router = APIRouter()
@@ -41,7 +43,7 @@ logger = logging.getLogger(__name__)
 
 
 @router.get("/store/info/redux", response_model=LocalStoreRedux)
-def get_report_store_info_redux(store_business_id: str):
+def select_report_store_info_redux(store_business_id: str):
 
     # logger.info(
     #     f"Received request for store info with business ID: {store_business_id}"
@@ -75,7 +77,7 @@ def get_report_store_info_redux(store_business_id: str):
 
 
 @router.get("/store/info", response_model=LocalStoreInfoWeaterInfoOutput)
-def get_report_store_info(store_business_id: str):
+def select_report_store_info(store_business_id: str):
     # logger.info(
     #     f"Received request for store info with business ID: {store_business_id}"
     # )
@@ -160,7 +162,7 @@ def get_report_rising_menu_gpt(
 
 
 @router.get("/common/info", response_model=List[CommonInformationOutput])
-def get_all_report_common_information():
+def select_all_report_common_information():
     try:
         results = service_get_all_report_common_information()
         return results
@@ -175,7 +177,7 @@ def get_all_report_common_information():
 
 
 @router.get("/population", response_model=LocalStorePopulationDataOutPut)
-def get_population_data(store_business_id: str):
+def select_population_data(store_business_id: str):
     try:
 
         return service_select_population_by_store_business_number(store_business_id)
@@ -194,7 +196,7 @@ def get_population_data(store_business_id: str):
 def select_loc_info_j_score_average_by_store_business_number(store_business_id: str):
     print(store_business_id)
     try:
-        return crud_select_loc_info_j_score_average_by_store_business_number(
+        return select_select_loc_info_j_score_average_by_store_business_number(
             store_business_id
         )
 
@@ -206,6 +208,22 @@ def select_loc_info_j_score_average_by_store_business_number(store_business_id: 
         error_msg = f"Unexpected error while processing request: {str(e)}"
         logger.error(error_msg)
         raise HTTPException(status_code=500, detail=error_msg)
+
+
+@router.get("/location/jscore", response_model=LocalStoreLocInfoJscoreData)
+def select_loc_info_j_scorereport_data(store_business_id: str):
+    # print(store_business_id)
+    try:
+        sub_district_population_data = (
+            service_select_loc_info_j_score_by_store_business_number(store_business_id)
+        )
+
+        return sub_district_population_data
+
+    except HTTPException as http_ex:
+        raise http_ex
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"{e}Internal Server Error")
 
 
 ##########################################################################################
@@ -237,22 +255,6 @@ def select_loc_info_j_score_average_by_store_business_number(store_business_id: 
 #         raise http_ex
 #     except Exception as e:
 #         raise HTTPException(status_code=500, detail="Internal Server Error")
-
-
-# @router.get("/location/info", response_model=LocInfoStatisticsDataRefOutput)
-# def select_loc_info_report_data(store_business_id: str):
-#     # print(store_business_id)
-#     try:
-#         sub_district_population_data = (
-#             service_select_report_loc_info_by_store_business_number(store_business_id)
-#         )
-
-#         return sub_district_population_data
-
-#     except HTTPException as http_ex:
-#         raise http_ex
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=f"{e}Internal Server Error")
 
 
 # @router.get("/population/compare", response_model=PopulationCompareResidentWorkPop)
