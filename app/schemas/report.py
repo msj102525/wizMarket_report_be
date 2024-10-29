@@ -244,6 +244,18 @@ class LocalStorePopulationDataOutPut(BaseModel):
 
 #######################################################################
 
+# 입지분석 읍/면/동 소분류 J_Score 가중치 평균 합
+class LocalStoreLIJSWeightedAverage(BaseModel):
+    loc_info_j_score_average: float
+
+    class Config:
+        from_attributes = True
+
+
+#######################################################################
+#######################################################################
+#######################################################################
+
 
 class FilterRequest(BaseModel):
     city: Optional[int] = None  # 기본값 None을 설정
@@ -325,15 +337,6 @@ class LocalStoreMovePopData(BaseModel):
     store_business_number: str
     loc_info_move_pop: int
     loc_info_city_move_pop: int
-
-    class Config:
-        from_attributes = True
-
-
-# 입지분석 읍/면/동 소분류 J_Score 가중치 평균 합
-class LocalStoreLIJSWeightedAverage(BaseModel):
-    store_business_number: str
-    loc_info_j_score_average: float
 
     class Config:
         from_attributes = True

@@ -7,6 +7,7 @@ from app.schemas.common_information import CommonInformationOutput
 from app.schemas.report import (
     AqiInfo,
     LocalStoreInfoWeaterInfoOutput,
+    LocalStoreLIJSWeightedAverage,
     LocalStorePopulationDataOutPut,
     LocalStoreRedux,
     LocalStoreTop5Menu,
@@ -30,6 +31,9 @@ from app.service.common_information import (
 )
 from app.service.population import (
     select_population_by_store_business_number as service_select_population_by_store_business_number,
+)
+from app.service.loc_info import (
+    select_loc_info_j_score_average_by_store_business_number as crud_select_loc_info_j_score_average_by_store_business_number,
 )
 
 router = APIRouter()
@@ -186,6 +190,24 @@ def get_population_data(store_business_id: str):
         raise HTTPException(status_code=500, detail=error_msg)
 
 
+@router.get("/location/jscore/average", response_model=LocalStoreLIJSWeightedAverage)
+def select_loc_info_j_score_average_by_store_business_number(store_business_id: str):
+    print(store_business_id)
+    try:
+        return crud_select_loc_info_j_score_average_by_store_business_number(
+            store_business_id
+        )
+
+    except HTTPException as http_ex:
+        logger.error(f"HTTP error occurred: {http_ex.detail}")
+        raise http_ex
+
+    except Exception as e:
+        error_msg = f"Unexpected error while processing request: {str(e)}"
+        logger.error(error_msg)
+        raise HTTPException(status_code=500, detail=error_msg)
+
+
 ##########################################################################################
 ##########################################################################################
 ##########################################################################################
@@ -226,22 +248,6 @@ def get_population_data(store_business_id: str):
 #         )
 
 #         return sub_district_population_data
-
-#     except HTTPException as http_ex:
-#         raise http_ex
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=f"{e}Internal Server Error")
-
-
-# @router.get("/location/average/jscore", response_model=LocInfoAvgJscoreOutput)
-# def select_loc_info_avg_j_score(store_business_id: str):
-#     # print(store_business_id)
-#     try:
-#         loc_info_avg_j_score = service_select_avg_j_score(store_business_id)
-
-#         # print(loc_info_avg_j_score)
-
-#         return loc_info_avg_j_score
 
 #     except HTTPException as http_ex:
 #         raise http_ex
