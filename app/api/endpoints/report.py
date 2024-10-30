@@ -18,6 +18,7 @@ from app.schemas.report import (
     LocalStorePopulationDataOutPut,
     LocalStoreRedux,
     LocalStoreResidentWorkPopData,
+    LocalStoreRisingBusinessNTop5SDTop3,
     LocalStoreTop5Menu,
     LocalStoreTop5MenuAdviceOutput,
     WeatherInfo,
@@ -31,10 +32,6 @@ from app.service.local_store_basic_info import (
 from app.service.local_store_basic_info import (
     select_local_store_info_by_store_business_number as service_select_local_store_info_by_store_business_number,
 )
-from app.service.rising_menu_top5 import (
-    select_rising_menu_top5_by_store_business_number as service_select_rising_menu_top5_by_store_business_number,
-)
-
 from app.service.common_information import (
     get_all_report_common_information as service_get_all_report_common_information,
 )
@@ -48,6 +45,7 @@ from app.service.loc_info import (
     select_loc_info_move_pop_by_store_business_number as service_select_loc_info_move_pop_by_store_business_number,
 )
 from app.service.commercial_district import (
+    select_rising_menu_top5_by_store_business_number as service_select_rising_menu_top5_by_store_business_number,
     select_c_d_j_score_average_by_store_business_number as service_select_c_d_j_score_average_by_store_business_number,
     select_commercial_district_j_score_by_store_business_number as service_select_commercial_district_j_score_by_store_business_number,
     select_commercial_district_weekday_average_sales_by_store_business_number as service_select_commercial_district_weekday_average_sales_by_store_business_number,
@@ -55,6 +53,9 @@ from app.service.commercial_district import (
 )
 from app.service.commercial_district import (
     select_c_d_main_category_count_by_store_business_number as service_select_c_d_main_category_count_by_store_business_number,
+)
+from app.service.rising_business import (
+    select_rising_business_by_store_business_id as service_select_rising_business_by_store_business_id,
 )
 
 router = APIRouter()
@@ -391,6 +392,26 @@ def select_commercial_district_time_average_sales_by_store_business_number(
         return service_select_commercial_district_time_average_sales_by_store_business_number(
             store_business_id
         )
+
+    except HTTPException as http_ex:
+        logger.error(f"HTTP error occurred: {http_ex.detail}")
+        raise http_ex
+
+    except Exception as e:
+        error_msg = f"Unexpected error while processing request: {str(e)}"
+        logger.error(error_msg)
+        raise HTTPException(status_code=500, detail=error_msg)
+
+
+@router.get(
+    "/rising/business",
+    response_model=LocalStoreRisingBusinessNTop5SDTop3,
+)
+def select_rising_business_by_store_business_id(store_business_id: str):
+    # print(store_business_id)
+    try:
+
+        return service_select_rising_business_by_store_business_id(store_business_id)
 
     except HTTPException as http_ex:
         logger.error(f"HTTP error occurred: {http_ex.detail}")

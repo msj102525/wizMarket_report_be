@@ -508,6 +508,25 @@ class LocalStoreCDTiemAverageSalesPercent(BaseModel):
 
 
 #######################################################################
+
+
+# 상권 분석 시/군/구에서 매핑된 소분류들 매출합 TOP5
+class LocalStoreRisingBusinessNTop5SDTop3(BaseModel):
+    rising_business_national_rising_sales_top1_info: Optional[str] = ","
+    rising_business_national_rising_sales_top2_info: Optional[str] = ","
+    rising_business_national_rising_sales_top3_info: Optional[str] = ","
+    rising_business_national_rising_sales_top4_info: Optional[str] = ","
+    rising_business_national_rising_sales_top5_info: Optional[str] = ","
+
+    rising_business_sub_district_rising_sales_top1_info: Optional[str] = ","
+    rising_business_sub_district_rising_sales_top2_info: Optional[str] = ","
+    rising_business_sub_district_rising_sales_top3_info: Optional[str] = ","
+
+    class Config:
+        from_attributes = True
+
+
+#######################################################################
 #######################################################################
 #######################################################################
 #######################################################################
@@ -577,23 +596,6 @@ class LocalStoreCDDistrictAverageSalesTop5(BaseModel):
     commercial_districdt_detail_category_average_sales_top3_info: Optional[str] = ","
     commercial_districdt_detail_category_average_sales_top4_info: Optional[str] = ","
     commercial_districdt_detail_category_average_sales_top5_info: Optional[str] = ","
-
-    class Config:
-        from_attributes = True
-
-
-# 상권 분석 시/군/구에서 매핑된 소분류들 매출합 TOP5
-class LocalStoreRisingBusinessNTop5SDTop3(BaseModel):
-    store_business_number: str
-    rising_business_national_rising_sales_top1_info: Optional[str] = ","
-    rising_business_national_rising_sales_top2_info: Optional[str] = ","
-    rising_business_national_rising_sales_top3_info: Optional[str] = ","
-    rising_business_national_rising_sales_top4_info: Optional[str] = ","
-    rising_business_national_rising_sales_top5_info: Optional[str] = ","
-
-    rising_business_sub_district_rising_sales_top1_info: Optional[str] = ","
-    rising_business_sub_district_rising_sales_top2_info: Optional[str] = ","
-    rising_business_sub_district_rising_sales_top3_info: Optional[str] = ","
 
     class Config:
         from_attributes = True
