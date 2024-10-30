@@ -26,6 +26,7 @@ from app.service.local_store_basic_info import (
     select_local_store_info_redux_by_store_business_number as service_select_local_store_info_redux_by_store_business_number,
     get_weather_info_by_lat_lng as service_get_weather_info_by_lat_lng,
     get_pm_info_by_city_name as service_get_pm_info_by_city_name,
+    get_currnet_datetime as service_get_currnet_datetime,
 )
 from app.service.local_store_basic_info import (
     select_local_store_info_by_store_business_number as service_select_local_store_info_by_store_business_number,
@@ -124,8 +125,13 @@ def select_report_store_info(store_business_id: str):
         )
         # logger.info(f"pm_data: {pm_data}")
 
+        format_current_datetime: str = service_get_currnet_datetime()
+
         response_data = LocalStoreInfoWeaterInfoOutput(
-            localStoreInfo=local_store_info, weatherInfo=weather_data, aqi_info=pm_data
+            localStoreInfo=local_store_info,
+            weatherInfo=weather_data,
+            aqi_info=pm_data,
+            format_current_datetime=format_current_datetime,
         )
         return response_data
 

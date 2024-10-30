@@ -1,8 +1,10 @@
+from datetime import datetime
 import logging
 import os
 from typing import List
 from dotenv import load_dotenv
 from fastapi import HTTPException
+import pytz
 import requests
 
 from app.crud.local_store_basic_info import (
@@ -86,9 +88,9 @@ def get_weather_info_by_lat_lng(
             temp=weather_data["main"]["temp"],
         )
 
-        logger.info(
-            f"Processed weather info: icon='{weather_info.icon}' temp={weather_info.temp}"
-        )
+        # logger.info(
+        #     f"Processed weather info: icon='{weather_info.icon}' temp={weather_info.temp}"
+        # )
         return weather_info
 
     except requests.RequestException as e:
@@ -162,3 +164,36 @@ def get_pm_info_by_city_name(lat: float, lng: float, lang: str = "kr") -> AqiInf
         error_msg = f"Weather service AQI error: {str(e)}"
         logger.error(error_msg)
         raise HTTPException(status_code=500, detail=error_msg)
+
+
+from datetime import datetime
+import pytz
+
+
+def get_currnet_datetime() -> str:
+    try:
+        timezone = pytz.timezone("Asia/Seoul")
+        current_time = datetime.now(timezone)
+
+        week_days = {
+            0: "월",  # Monday
+            1: "화",  # Tuesday
+            2: "수",  # Wednesday
+            3: "목",  # Thursday
+            4: "금",  # Friday
+            5: "토",  # Saturday
+            6: "일",  # Sunday
+        }
+
+        day_of_week = week_days[current_time.weekday()]
+
+        result = current_time.strftime(f"%m.%d({day_of_week}) %I:%M%p")
+
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Service LocalStoreBasicInfo Error: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Service LocalStoreBasicInfo Error: {str(e)}"
+        )

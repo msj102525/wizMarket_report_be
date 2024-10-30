@@ -147,7 +147,7 @@ class LocalStoreBasicInfo(BaseModel):
     latitude: Optional[float] = None
     longitude: Optional[float] = None
 
-    local_store_image_url: Optional[float] = None
+    local_store_image_url: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -186,6 +186,7 @@ class LocalStoreInfoWeaterInfoOutput(BaseModel):
     localStoreInfo: LocalStoreBasicInfo
     weatherInfo: WeatherInfo
     aqi_info: AqiInfo
+    format_current_datetime: str
 
     class Config:
         from_attributes = True
