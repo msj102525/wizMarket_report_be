@@ -10,6 +10,7 @@ from app.schemas.report import (
     LocalStoreInfoWeaterInfoOutput,
     LocalStoreLIJSWeightedAverage,
     LocalStoreLocInfoJscoreData,
+    LocalStoreMainCategoryCount,
     LocalStoreMovePopData,
     LocalStorePopulationDataOutPut,
     LocalStoreRedux,
@@ -44,6 +45,9 @@ from app.service.loc_info import (
 )
 from app.service.commercial_district import (
     select_c_d_j_score_average_by_store_business_number as service_select_c_d_j_score_average_by_store_business_number,
+)
+from app.service.commercial_district import (
+    select_c_d_main_category_count_by_store_business_number as service_select_c_d_main_category_count_by_store_business_number,
 )
 
 router = APIRouter()
@@ -282,9 +286,29 @@ def select_c_d_j_score_average_by_store_business_number(store_business_id: str):
 
 @router.get("/location/move/population", response_model=LocalStoreMovePopData)
 def select_loc_info_move_pop_by_store_business_number(store_business_id: str):
-    print(store_business_id)
+    # print(store_business_id)
     try:
         return service_select_loc_info_move_pop_by_store_business_number(
+            store_business_id
+        )
+
+    except HTTPException as http_ex:
+        logger.error(f"HTTP error occurred: {http_ex.detail}")
+        raise http_ex
+
+    except Exception as e:
+        error_msg = f"Unexpected error while processing request: {str(e)}"
+        logger.error(error_msg)
+        raise HTTPException(status_code=500, detail=error_msg)
+
+
+@router.get(
+    "/commercialDistrict/mainCategory/count", response_model=LocalStoreMainCategoryCount
+)
+def select_c_d_main_category_count_by_store_business_number(store_business_id: str):
+    # print(store_business_id)
+    try:
+        return service_select_c_d_main_category_count_by_store_business_number(
             store_business_id
         )
 

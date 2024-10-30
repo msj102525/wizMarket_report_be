@@ -302,10 +302,10 @@ class LocalStoreLocInfoJscoreData(BaseModel):
 
 # 읍/면/동 입지정보 주거인구/직장인구
 class LocalStoreResidentWorkPopData(BaseModel):
-    loc_info_resident: int
-    loc_info_work_pop: int
-    loc_info_resident_percent: float
-    loc_info_work_pop_percent: float
+    loc_info_resident: Optional[int] = None
+    loc_info_work_pop: Optional[int] = None
+    loc_info_resident_percent: Optional[float] = None
+    loc_info_work_pop_percent: Optional[float] = None
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -330,7 +330,7 @@ class LocalStoreResidentWorkPopData(BaseModel):
 
 # 상권분석 읍/면/동 소분류 J_Score 가중치 평균 합
 class LocalStoreCDJSWeightedAverage(BaseModel):
-    commercial_district_j_score_average: float
+    commercial_district_j_score_average: Optional[float] = None
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -346,9 +346,9 @@ class LocalStoreCDJSWeightedAverage(BaseModel):
 
 # 읍/면/동 입지정보 유동인구, 시/도 평균 유동인구
 class LocalStoreMovePopData(BaseModel):
-    loc_info_move_pop_j_score: float
-    loc_info_move_pop: int
-    loc_info_city_move_pop: int
+    loc_info_move_pop_j_score: Optional[float] = None
+    loc_info_move_pop: Optional[int] = None
+    loc_info_city_move_pop: Optional[int] = None
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -366,6 +366,40 @@ class LocalStoreMovePopData(BaseModel):
 
 
 #######################################################################
+
+
+# 상권분석 읍/면/동 대분류 갯수
+class LocalStoreMainCategoryCount(BaseModel):
+    commercial_district_food_business_count: Optional[int] = None
+    commercial_district_healthcare_business_count: Optional[int] = None
+    commercial_district_education_business_count: Optional[int] = None
+    commercial_district_entertainment_business_count: Optional[int] = None
+    commercial_district_lifestyle_business_count: Optional[int] = None
+    commercial_district_retail_business_count: Optional[int] = None
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        if self.commercial_district_food_business_count is None:
+            self.commercial_district_food_business_count = 0
+
+        if self.commercial_district_healthcare_business_count is None:
+            self.commercial_district_healthcare_business_count = 0
+
+        if self.commercial_district_education_business_count is None:
+            self.commercial_district_education_business_count = 0
+
+        if self.commercial_district_entertainment_business_count is None:
+            self.commercial_district_entertainment_business_count = 0
+
+        if self.commercial_district_lifestyle_business_count is None:
+            self.commercial_district_lifestyle_business_count = 0
+
+        if self.commercial_district_retail_business_count is None:
+            self.commercial_district_retail_business_count = 0
+
+    class Config:
+        from_attributes = True
+
 
 #######################################################################
 #######################################################################
@@ -413,20 +447,6 @@ class LocalStoreLocInfoData(BaseModel):
     loc_info_shop_k: Optional[float] = 0.0
     loc_info_income_won: Optional[int] = 0
     loc_info_data_ref_date: date
-
-    class Config:
-        from_attributes = True
-
-
-# 상권분석 읍/면/동 대분류 갯수
-class LocalStoreMainCategoryCount(BaseModel):
-    store_business_number: str
-    commercial_district_food_business_count: int
-    commercial_district_healthcare_business_count: int
-    commercial_district_education_business_count: int
-    commercial_district_entertainment_business_count: int
-    commercial_district_lifestyle_business_count: int
-    commercial_district_retail_business_count: int
 
     class Config:
         from_attributes = True
