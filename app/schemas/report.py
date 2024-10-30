@@ -599,3 +599,27 @@ class LocalStoreCDDistrictAverageSalesTop5(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+
+#######################################################################
+#######################################################################
+#######################################################################
+#######################################################################
+
+# gpt 대답 생성용
+class GPTAnswerByRisingMenu(BaseModel):
+    gpt_answer: str
+
+    class Config:
+        from_attributes = True
+
+
+class GPTAnswerRegionDetailCategoryName(BaseModel):
+    city_name: str
+    district_name: str
+    sub_district_name: str
+    detail_category_name: str
+
+    class Config:
+        from_attributes = True
