@@ -434,6 +434,79 @@ class LocalStoreCommercialDistrictJscoreAverage(BaseModel):
 
 
 #######################################################################
+
+
+# 매장 상권분석 동별 소분류별 요일 매출 비중
+class LocalStoreCDWeekdayAverageSalesPercent(BaseModel):
+    commercial_district_average_sales_percent_mon: Optional[float] = 0.0
+    commercial_district_average_sales_percent_tue: Optional[float] = 0.0
+    commercial_district_average_sales_percent_wed: Optional[float] = 0.0
+    commercial_district_average_sales_percent_thu: Optional[float] = 0.0
+    commercial_district_average_sales_percent_fri: Optional[float] = 0.0
+    commercial_district_average_sales_percent_sat: Optional[float] = 0.0
+    commercial_district_average_sales_percent_sun: Optional[float] = 0.0
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        if self.commercial_district_average_sales_percent_mon is None:
+            self.commercial_district_average_sales_percent_mon = 0.0
+
+        if self.commercial_district_average_sales_percent_tue is None:
+            self.commercial_district_average_sales_percent_tue = 0.0
+
+        if self.commercial_district_average_sales_percent_wed is None:
+            self.commercial_district_average_sales_percent_wed = 0.0
+
+        if self.commercial_district_average_sales_percent_thu is None:
+            self.commercial_district_average_sales_percent_thu = 0.0
+
+        if self.commercial_district_average_sales_percent_fri is None:
+            self.commercial_district_average_sales_percent_fri = 0.0
+
+        if self.commercial_district_average_sales_percent_fri is None:
+            self.commercial_district_average_sales_percent_fri = 0.0
+
+        if self.commercial_district_average_sales_percent_sun is None:
+            self.commercial_district_average_sales_percent_sun = 0.0
+
+    class Config:
+        from_attributes = True
+
+
+# 매장 상권분석 동별 소분류별 시간대 매출 비중
+class LocalStoreCDTiemAverageSalesPercent(BaseModel):
+    commercial_district_average_sales_percent_06_09: Optional[float] = 0.0
+    commercial_district_average_sales_percent_09_12: Optional[float] = 0.0
+    commercial_district_average_sales_percent_12_15: Optional[float] = 0.0
+    commercial_district_average_sales_percent_15_18: Optional[float] = 0.0
+    commercial_district_average_sales_percent_18_21: Optional[float] = 0.0
+    commercial_district_average_sales_percent_21_24: Optional[float] = 0.0
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        if self.commercial_district_average_sales_percent_06_09 is None:
+            self.commercial_district_average_sales_percent_06_09 = 0.0
+
+        if self.commercial_district_average_sales_percent_09_12 is None:
+            self.commercial_district_average_sales_percent_09_12 = 0.0
+
+        if self.commercial_district_average_sales_percent_12_15 is None:
+            self.commercial_district_average_sales_percent_12_15 = 0.0
+
+        if self.commercial_district_average_sales_percent_15_18 is None:
+            self.commercial_district_average_sales_percent_15_18 = 0.0
+
+        if self.commercial_district_average_sales_percent_18_21 is None:
+            self.commercial_district_average_sales_percent_18_21 = 0.0
+
+        if self.commercial_district_average_sales_percent_21_24 is None:
+            self.commercial_district_average_sales_percent_21_24 = 0.0
+
+    class Config:
+        from_attributes = True
+
+
+#######################################################################
 #######################################################################
 #######################################################################
 #######################################################################
@@ -490,27 +563,6 @@ class LocalStoreMappingSubDistrictDetailCategoryId(BaseModel):
     store_business_number: str
     sub_district_id: int
     detail_category_id: Optional[int] = 3  # 3: 비즈맵 소분류 없음 default 값
-
-    class Config:
-        from_attributes = True
-
-
-# 매장 상권분석 동별 소분류별 요일,시간대 매출 비중
-class LocalStoreCDWeekdayTiemAveragePercent(BaseModel):
-    store_business_number: str
-    commercial_district_average_sales_percent_mon: Optional[float] = 0.0  # FLOAT
-    commercial_district_average_sales_percent_tue: Optional[float] = 0.0  # FLOAT
-    commercial_district_average_sales_percent_wed: Optional[float] = 0.0  # FLOAT
-    commercial_district_average_sales_percent_thu: Optional[float] = 0.0  # FLOAT
-    commercial_district_average_sales_percent_fri: Optional[float] = 0.0  # FLOAT
-    commercial_district_average_sales_percent_sat: Optional[float] = 0.0  # FLOAT
-    commercial_district_average_sales_percent_sun: Optional[float] = 0.0  # FLOAT
-    commercial_district_average_sales_percent_06_09: Optional[float] = 0.0  # FLOAT
-    commercial_district_average_sales_percent_09_12: Optional[float] = 0.0  # FLOAT
-    commercial_district_average_sales_percent_12_15: Optional[float] = 0.0  # FLOAT
-    commercial_district_average_sales_percent_15_18: Optional[float] = 0.0  # FLOAT
-    commercial_district_average_sales_percent_18_21: Optional[float] = 0.0  # FLOAT
-    commercial_district_average_sales_percent_21_24: Optional[float] = 0.0  # FLOAT
 
     class Config:
         from_attributes = True

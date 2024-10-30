@@ -79,17 +79,19 @@ def select_population_by_store_business_number(
                     loc_info_shop_k=row.get("LOC_INFO_SHOP_K"),
                     loc_info_income_won=row.get("LOC_INFO_INCOME_WON"),
                     loc_info_resident_j_score=round(
-                        row.get("LOC_INFO_RESIDENT_J_SCORE"), 1
+                        row.get("LOC_INFO_RESIDENT_J_SCORE") or 0, 1
                     ),
                     loc_info_work_pop_j_score=round(
-                        row.get("LOC_INFO_WORK_POP_J_SCORE"), 1
+                        row.get("LOC_INFO_WORK_POP_J_SCORE") or 0, 1
                     ),
                     loc_info_move_pop_j_score=round(
-                        row.get("LOC_INFO_MOVE_POP_J_SCORE"), 1
+                        row.get("LOC_INFO_MOVE_POP_J_SCORE") or 0, 1
                     ),
-                    loc_info_shop_j_score=round(row.get("LOC_INFO_SHOP_J_SCORE"), 1),
+                    loc_info_shop_j_score=round(
+                        row.get("LOC_INFO_SHOP_J_SCORE") or 0, 1
+                    ),
                     loc_info_income_j_score=round(
-                        row.get("LOC_INFO_INCOME_J_SCORE"), 1
+                        row.get("LOC_INFO_INCOME_J_SCORE") or 0, 1
                     ),
                 )
 
