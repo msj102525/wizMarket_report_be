@@ -7,6 +7,7 @@ from app.schemas.common_information import CommonInformationOutput
 from app.schemas.report import (
     AqiInfo,
     LocalStoreCDJSWeightedAverage,
+    LocalStoreCommercialDistrictJscoreAverage,
     LocalStoreInfoWeaterInfoOutput,
     LocalStoreLIJSWeightedAverage,
     LocalStoreLocInfoJscoreData,
@@ -45,6 +46,7 @@ from app.service.loc_info import (
 )
 from app.service.commercial_district import (
     select_c_d_j_score_average_by_store_business_number as service_select_c_d_j_score_average_by_store_business_number,
+    select_commercial_district_j_score_by_store_business_number as service_select_commercial_district_j_score_by_store_business_number,
 )
 from app.service.commercial_district import (
     select_c_d_main_category_count_by_store_business_number as service_select_c_d_main_category_count_by_store_business_number,
@@ -176,8 +178,7 @@ def get_report_rising_menu_gpt(
 @router.get("/common/info", response_model=List[CommonInformationOutput])
 def select_all_report_common_information():
     try:
-        results = service_get_all_report_common_information()
-        return results
+        return service_get_all_report_common_information()
     except HTTPException as http_ex:
         logger.error(f"HTTP error occurred: {http_ex.detail}")
         raise http_ex
@@ -226,11 +227,10 @@ def select_loc_info_j_score_average_by_store_business_number(store_business_id: 
 def select_loc_info_j_scorereport_data(store_business_id: str):
     # print(store_business_id)
     try:
-        sub_district_population_data = (
-            service_select_loc_info_j_score_by_store_business_number(store_business_id)
-        )
 
-        return sub_district_population_data
+        return service_select_loc_info_j_score_by_store_business_number(
+            store_business_id
+        )
 
     except HTTPException as http_ex:
         logger.error(f"HTTP error occurred: {http_ex.detail}")
@@ -268,7 +268,7 @@ def select_loc_info_resident_work_compare_by_store_business_number(
     "/commercialDistrict/jscore/average", response_model=LocalStoreCDJSWeightedAverage
 )
 def select_c_d_j_score_average_by_store_business_number(store_business_id: str):
-    print(store_business_id)
+    # print(store_business_id)
     try:
         return service_select_c_d_j_score_average_by_store_business_number(
             store_business_id
@@ -309,6 +309,28 @@ def select_c_d_main_category_count_by_store_business_number(store_business_id: s
     # print(store_business_id)
     try:
         return service_select_c_d_main_category_count_by_store_business_number(
+            store_business_id
+        )
+
+    except HTTPException as http_ex:
+        logger.error(f"HTTP error occurred: {http_ex.detail}")
+        raise http_ex
+
+    except Exception as e:
+        error_msg = f"Unexpected error while processing request: {str(e)}"
+        logger.error(error_msg)
+        raise HTTPException(status_code=500, detail=error_msg)
+
+
+@router.get(
+    "/commercialDistrict/jscore",
+    response_model=LocalStoreCommercialDistrictJscoreAverage,
+)
+def select_commercial_district_j_score_by_store_business_number(store_business_id: str):
+    # print(store_business_id)
+    try:
+
+        return service_select_commercial_district_j_score_by_store_business_number(
             store_business_id
         )
 

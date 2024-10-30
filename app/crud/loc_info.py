@@ -118,7 +118,7 @@ def select_loc_info_j_score_by_store_business_number(
                     ),
                 )
 
-                logger.info(f"Result for business ID {store_business_id}: {result}")
+                # logger.info(f"Result for business ID {store_business_id}: {result}")
                 return result
 
     except pymysql.Error as e:
