@@ -8,6 +8,7 @@ from app.db.connect import (
     get_db_connection,
 )
 from app.schemas.report import (
+    LocalStoreCDDistrictAverageSalesTop5,
     LocalStoreCDJSWeightedAverage,
     LocalStoreCDTiemAverageSalesPercent,
     LocalStoreCDWeekdayAverageSalesPercent,
@@ -17,6 +18,7 @@ from app.schemas.report import (
 )
 
 logger = logging.getLogger(__name__)
+
 
 def select_rising_menu_top5_by_store_business_number(
     store_business_id: str,
@@ -75,7 +77,6 @@ def select_rising_menu_top5_by_store_business_number(
     except Exception as e:
         logger.error(f"Unexpected error occurred LocalStoreTop5Menu: {str(e)}")
         raise HTTPException(status_code=500, detail=f"내부 서버 오류: {str(e)}")
-
 
 
 def select_c_d_j_score_average_by_store_business_number(
@@ -405,5 +406,74 @@ def select_commercial_district_time_average_sales_by_store_business_number(
     except Exception as e:
         logger.error(
             f"Unexpected error occurred in select_commercial_district_time_average_sales_by_store_business_number: {str(e)}"
+        )
+        raise HTTPException(status_code=500, detail=f"내부 서버 오류: {str(e)}")
+
+
+def select_commercial_district_rising_sales_by_store_business_number(
+    store_business_id: str,
+) -> LocalStoreCDDistrictAverageSalesTop5:
+
+    try:
+        with get_db_connection() as connection:
+            with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+                select_query = """
+                    SELECT 
+                        COMMERCIAL_DISTRICT_DETAIL_CATEGORY_AVERAGE_SALES_TOP1_INFO,
+                        COMMERCIAL_DISTRICT_DETAIL_CATEGORY_AVERAGE_SALES_TOP2_INFO,
+                        COMMERCIAL_DISTRICT_DETAIL_CATEGORY_AVERAGE_SALES_TOP3_INFO,
+                        COMMERCIAL_DISTRICT_DETAIL_CATEGORY_AVERAGE_SALES_TOP4_INFO,
+                        COMMERCIAL_DISTRICT_DETAIL_CATEGORY_AVERAGE_SALES_TOP5_INFO
+                    FROM
+                        REPORT 
+                    WHERE STORE_BUSINESS_NUMBER = %s
+                    ;
+                """
+
+                # logger.info(
+                #     f"Executing query: {select_query} with business ID: {store_business_id}"
+                # )
+
+                cursor.execute(select_query, (store_business_id,))
+
+                row = cursor.fetchone()
+
+                logger.info(f"row: {row} with business ID: {store_business_id}")
+
+                if not row:
+                    raise HTTPException(
+                        status_code=404,
+                        detail=f"LocalStoreCDDistrictAverageSalesTop5 {store_business_id}에 해당하는 매장 정보를 찾을 수 없습니다.",
+                    )
+
+                result = LocalStoreCDDistrictAverageSalesTop5(
+                    commercial_district_detail_category_average_sales_top1_info=(
+                        row.get(
+                            "COMMERCIAL_DISTRICT_DETAIL_CATEGORY_AVERAGE_SALES_TOP1_INFO"
+                        )
+                    ),
+                    commercial_district_detail_category_average_sales_top2_info=row.get(
+                        "COMMERCIAL_DISTRICT_DETAIL_CATEGORY_AVERAGE_SALES_TOP2_INFO"
+                    ),
+                    commercial_district_detail_category_average_sales_top3_info=row.get(
+                        "COMMERCIAL_DISTRICT_DETAIL_CATEGORY_AVERAGE_SALES_TOP3_INFO"
+                    ),
+                    commercial_district_detail_category_average_sales_top4_info=row.get(
+                        "COMMERCIAL_DISTRICT_DETAIL_CATEGORY_AVERAGE_SALES_TOP4_INFO"
+                    ),
+                    commercial_district_detail_category_average_sales_top5_info=row.get(
+                        "COMMERCIAL_DISTRICT_DETAIL_CATEGORY_AVERAGE_SALES_TOP5_INFO"
+                    ),
+                )
+
+                logger.info(f"Result for business ID {store_business_id}: {result}")
+                return result
+
+    except pymysql.Error as e:
+        logger.error(f"Database error occurred: {str(e)}")
+        raise HTTPException(status_code=503, detail=f"데이터베이스 연결 오류: {str(e)}")
+    except Exception as e:
+        logger.error(
+            f"Unexpected error occurred in select_commercial_district_rising_sales_by_store_business_number: {str(e)}"
         )
         raise HTTPException(status_code=500, detail=f"내부 서버 오류: {str(e)}")

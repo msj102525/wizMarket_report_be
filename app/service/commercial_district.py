@@ -10,8 +10,10 @@ from app.crud.commercial_district import (
     select_commercial_district_j_score_by_store_business_number as crud_select_commercial_district_j_score_by_store_business_number,
     select_commercial_district_weekday_average_sales_by_store_business_number as crud_select_commercial_district_weekday_average_sales_by_store_business_number,
     select_commercial_district_time_average_sales_by_store_business_number as crud_select_commercial_district_time_average_sales_by_store_business_number,
+    select_commercial_district_rising_sales_by_store_business_number as crud_select_commercial_district_rising_sales_by_store_business_number,
 )
 from app.schemas.report import (
+    LocalStoreCDDistrictAverageSalesTop5,
     LocalStoreCDJSWeightedAverage,
     LocalStoreCDTiemAverageSalesPercent,
     LocalStoreCDWeekdayAverageSalesPercent,
@@ -135,4 +137,23 @@ def select_commercial_district_time_average_sales_by_store_business_number(
         raise HTTPException(
             status_code=500,
             detail=f"Service LocalStoreCDTiemAverageSalesPercent Error: {str(e)}",
+        )
+
+
+def select_commercial_district_rising_sales_by_store_business_number(
+    store_business_id: str,
+) -> LocalStoreCDDistrictAverageSalesTop5:
+    # logger.info(f"Fetching store info for business ID: {store_business_id}")
+
+    try:
+        return crud_select_commercial_district_rising_sales_by_store_business_number(
+            store_business_id
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Service LocalStoreCDDistrictAverageSalesTop5 Error: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Service LocalStoreCDDistrictAverageSalesTop5 Error: {str(e)}",
         )
