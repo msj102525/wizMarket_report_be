@@ -704,3 +704,10 @@ class GPTAnswerRegionDetailCategoryName(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class GPTAnswerByLocInfo(BaseModel):
+    gpt_answer: str
+
+    class Config:
+        from_attributes = True

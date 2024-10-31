@@ -4,12 +4,10 @@ import openai
 from dotenv import load_dotenv
 import openai
 from datetime import datetime
-from app.schemas.report import GPTAnswerByRisingMenu,LocalStoreTop5Menu 
+from app.schemas.report import GPTAnswerByRisingMenu,LocalStoreTop5Menu, LocalStoreRedux
 import logging
 from fastapi import HTTPException
-from app.crud.gpt_answer import (
-    select_region_detail_category_name_by_store_business_number as crud_select_region_detail_category_name_by_store_business_number
-)
+
 
 gpt_content = """
     당신은 전문 조언자입니다. 
@@ -24,20 +22,31 @@ current_time = now.strftime("%Y년 %m월 %d일 %H:%M")
 weekday = now.strftime("%A")
 
 
-# 업종 별 뜨는 메뉴 리포트 생성
+# 업종 별 뜨는 메뉴 gpt 대답 생성
 def get_gpt_answer_by_rising_business(
-    store_business_id: str, rising_menu_top5: LocalStoreTop5Menu 
+    rising_menu_top5: LocalStoreTop5Menu , store_info_redux = LocalStoreRedux
 ) -> GPTAnswerByRisingMenu:
     # 상권정보 소분류 카테고리, 지역 동까지, 날짜
+
     try:
-        city_name, district_name, sub_district_name, detail_category_name,  = crud_select_region_detail_category_name_by_store_business_number(store_business_id)
+        # 각 속성을 직접 가져오기
+        city_name = store_info_redux.city_name
+        district_name = store_info_redux.district_name
+        sub_district_name = store_info_redux.sub_district_name
+        detail_category_name = store_info_redux.detail_category_name
         region_name = f"{city_name} {district_name} {sub_district_name}"
-        top_menu_1, top_menu_2, top_menu_3, top_menu_4, top_menu_5 = rising_menu_top5
+
+        top_menu_1 = rising_menu_top5.detail_category_top1_ordered_menu
+        top_menu_2 = rising_menu_top5.detail_category_top2_ordered_menu
+        top_menu_3 = rising_menu_top5.detail_category_top3_ordered_menu
+        top_menu_4 = rising_menu_top5.detail_category_top4_ordered_menu
+        top_menu_5 = rising_menu_top5.detail_category_top5_ordered_menu
+
         # 3. 보낼 프롬프트 설정
         content = f"""
             아래 지역 업종의 뜨는 메뉴가 다음과 같습니다. 
             해당 업종의 매장이 고객을 위해 주요 전략으로 가져가야 할 점이 무엇일지 백종원 쉐프 스타일로 조언을 해주세요.
-            단, 말투나 전문적 용어는 점주 성향에 맞추고 조언은 4줄 이하로 해주세요. 
+            단, 말투나 전문적 용어는 점주 성향에 맞추고 조언은 4줄 이하로 해주며 html 요소를 칸 나눔과 함께 포함시켜 주세요. 
 
             - 매장 업종 : {detail_category_name}
             - 매장 위치 : {region_name}
@@ -45,27 +54,12 @@ def get_gpt_answer_by_rising_business(
             - 적용날짜 : {current_time}  {weekday} 
 
         """
-
-        print(content)
-        return content
-        # openai_api_key = os.getenv("GPT_KEY")
-        
-        # # OpenAI API 키 설정
-        # openai.api_key = openai_api_key
-
-        # completion = openai.chat.completions.create(
-        # model="gpt-4o",
-        # messages=[
-        #     {
-        #         "role": "system", 
-        #         "content": gpt_content
-        #     },
-        #     {"role": "user", "content": content}  
-        # ]
-        # )
-        # report = completion.choices[0].message.content
-
-        # return report
+        openai_api_key = os.getenv("GPT_KEY")
+        # OpenAI API 키 설정
+        openai.api_key = openai_api_key
+        completion = openai.ChatCompletion.create(model="gpt-4o", messages=[{"role": "system", "content": gpt_content}, {"role": "user", "content": content}])
+        report = completion.choices[0].message.content
+        return report
     
     except HTTPException:
         raise
@@ -74,7 +68,65 @@ def get_gpt_answer_by_rising_business(
         raise HTTPException(
             status_code=500, detail=f"Service GPTAnswerByRisingMenu Error: {str(e)}"
         )
-            
+
+
+# 입지 정보 전략 gpt 대답 생성
+def get_gpt_answer_by_loc_info_strategy(
+    store_info_redux = LocalStoreRedux
+) -> GPTAnswerByRisingMenu:
+    # 상권정보 소분류 카테고리, 지역 동까지, 날짜
+
+    try:
+        # 각 속성을 직접 가져오기
+        city_name = store_info_redux.city_name
+        district_name = store_info_redux.district_name
+        sub_district_name = store_info_redux.sub_district_name
+        detail_category_name = store_info_redux.detail_category_name
+        region_name = f"{city_name} {district_name} {sub_district_name}"
+
+        # 3. 보낼 프롬프트 설정
+        content = f"""
+            다음과 같은 매장정보 입지 현황을 바탕으로 매장 입지 특징을 분석하시고 입지에 따른 매장운영 가이드를 제시해주세요. 
+            각 항목의 점수는 전체 지역 대비 순위를 나타낸것으로 0~10점으로 구성됩니다.
+            단, 말투나 전문적 용어는 점주 성향에 맞추고 조언은 4줄 이하로 해주며 html 요소를 칸 나눔과 함께 포함시켜 주세요. 
+
+            매장 정보 입지 현황
+
+            - 매장 업종 : {detail_category_name}
+            - 매장 위치 : {region_name}
+
+            ###########################
+
+
+            - 위치 : 서울시 광진구 화양동 
+            - 업종 : 예술.스포츠 > 스포츠 서비스 > 당구장
+            - 매장이름 : 369당구클럽
+            - 화양동 업소수 : 2265개 / 9.4점
+            - 화양동 지역 평균매출 : 41020000원 / 8.2점
+            - 화양동 월 평균소득 : 2220000원 / 0.2점
+            - 화양동 월 평균소비 : 1050000원 / 2.8점 
+            - 화양동 유동인구 수 : 157941명 / 8.4점
+            - 화양동 주거인구 수 : 25095명 / 7.8점
+            - 화양동 세대 수 : 18100개 / 9.6점
+
+            - 화양동 인구 분포 : 10세미만 143명, 10대 392명, 20대 5901명, 30대 2307명, 40대 934명, 50대 873명, 60대 1725 명, 여성 53%, 남성 47% 
+
+
+        """
+        openai_api_key = os.getenv("GPT_KEY")
+        # OpenAI API 키 설정
+        openai.api_key = openai_api_key
+        completion = openai.ChatCompletion.create(model="gpt-4o", messages=[{"role": "system", "content": gpt_content}, {"role": "user", "content": content}])
+        report = completion.choices[0].message.content
+        return report
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Service GPTAnswerByRisingMenu Error: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Service GPTAnswerByRisingMenu Error: {str(e)}"
+        )
 
 
 
