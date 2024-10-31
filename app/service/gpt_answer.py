@@ -2,7 +2,7 @@ import os
 from app.db.connect import *
 import openai
 from dotenv import load_dotenv
-import openai
+from openai import OpenAI
 from datetime import datetime
 from app.schemas.report import GPTAnswerByRisingMenu,LocalStoreTop5Menu, LocalStoreRedux
 import logging
@@ -54,15 +54,24 @@ def get_gpt_answer_by_rising_business(
             - 적용날짜 : {current_time}  {weekday} 
 
         """
-        openai_api_key = os.getenv("GPT_KEY")
+
+
+        client = OpenAI(api_key=os.getenv("GPT_KEY"))
         # OpenAI API 키 설정
-        openai.api_key = openai_api_key
-        completion = openai.ChatCompletion.create(model="gpt-4o", messages=[{"role": "system", "content": gpt_content}, {"role": "user", "content": content}])
+ 
+        completion = client.chat.completions.create(
+            model="gpt-4o",  
+            messages=[
+                {"role": "system", "content": gpt_content},
+                {"role": "user", "content": content}
+            ]
+        )
         report = completion.choices[0].message.content
+
         result = GPTAnswerByRisingMenu(
             gpt_answer = report
         )
-        return result
+        return result 
     
     except HTTPException:
         raise
