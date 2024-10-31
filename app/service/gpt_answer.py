@@ -59,7 +59,10 @@ def get_gpt_answer_by_rising_business(
         openai.api_key = openai_api_key
         completion = openai.ChatCompletion.create(model="gpt-4o", messages=[{"role": "system", "content": gpt_content}, {"role": "user", "content": content}])
         report = completion.choices[0].message.content
-        return report
+        result = GPTAnswerByRisingMenu(
+            gpt_answer = report
+        )
+        return result
     
     except HTTPException:
         raise

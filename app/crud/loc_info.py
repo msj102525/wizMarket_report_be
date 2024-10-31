@@ -52,7 +52,7 @@ def select_loc_info_j_score_average_by_store_business_number(
                     ),
                 )
 
-                logger.info(f"Result for business ID {store_business_id}: {result}")
+                # logger.info(f"Result for business ID {store_business_id}: {result}")
                 return result
 
     except pymysql.Error as e:
@@ -156,7 +156,6 @@ def select_loc_info_resident_work_compare_by_store_business_number(
                 cursor.execute(select_query, (store_business_id,))
 
                 row = cursor.fetchone()
-                logger.info(f"{row}")
 
                 if not row:
                     raise HTTPException(
@@ -175,7 +174,7 @@ def select_loc_info_resident_work_compare_by_store_business_number(
                     ),
                 )
 
-                logger.info(f"Result for business ID {store_business_id}: {result}")
+                # logger.info(f"Result for business ID {store_business_id}: {result}")
                 return result
 
     except pymysql.Error as e:
@@ -212,7 +211,6 @@ def select_loc_info_move_pop_by_store_business_number(
                 cursor.execute(select_query, (store_business_id,))
 
                 row = cursor.fetchone()
-                logger.info(f"{row}")
 
                 if not row:
                     raise HTTPException(
@@ -228,7 +226,7 @@ def select_loc_info_move_pop_by_store_business_number(
                     loc_info_city_move_pop=row.get("LOC_INFO_CITY_MOVE_POP"),
                 )
 
-                logger.info(f"Result for business ID {store_business_id}: {result}")
+                # logger.info(f"Result for business ID {store_business_id}: {result}")
                 return result
 
     except pymysql.Error as e:

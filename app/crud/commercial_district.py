@@ -183,8 +183,6 @@ def select_c_d_main_category_count_by_store_business_number(
                     ),
                 )
 
-                logger.info(f"Result for business ID {store_business_id}: {result}")
-
                 # logger.info(f"Result for business ID {store_business_id}: {result}")
                 return result
 
@@ -323,7 +321,7 @@ def select_commercial_district_weekday_average_sales_by_store_business_number(
                     ),
                 )
 
-                logger.info(f"Result for business ID {store_business_id}: {result}")
+                # logger.info(f"Result for business ID {store_business_id}: {result}")
                 return result
 
     except pymysql.Error as e:
@@ -398,7 +396,7 @@ def select_commercial_district_time_average_sales_by_store_business_number(
                     ),
                 )
 
-                logger.info(f"Result for business ID {store_business_id}: {result}")
+                # logger.info(f"Result for business ID {store_business_id}: {result}")
                 return result
 
     except pymysql.Error as e:
@@ -439,7 +437,7 @@ def select_commercial_district_rising_sales_by_store_business_number(
 
                 row = cursor.fetchone()
 
-                logger.info(f"row: {row} with business ID: {store_business_id}")
+                # logger.info(f"row: {row} with business ID: {store_business_id}")
 
                 if not row:
                     raise HTTPException(
@@ -467,7 +465,7 @@ def select_commercial_district_rising_sales_by_store_business_number(
                     ),
                 )
 
-                logger.info(f"Result for business ID {store_business_id}: {result}")
+                # logger.info(f"Result for business ID {store_business_id}: {result}")
                 return result
 
     except pymysql.Error as e:
@@ -541,22 +539,83 @@ def select_commercial_district_commercial_district_by_store_business_number(
                     "COMMERCIAL_DISTRICT_AVG_CLIENT_PER_M_30S": "30대 남성",
                     "COMMERCIAL_DISTRICT_AVG_CLIENT_PER_M_40S": "40대 남성",
                     "COMMERCIAL_DISTRICT_AVG_CLIENT_PER_M_50S": "50대 남성",
-                    "COMMERCIAL_DISTRICT_AVG_CLIENT_PER_M_60_over": "60대이상 남성",
+                    "COMMERCIAL_DISTRICT_AVG_CLIENT_PER_M_60_over": "60대 이상 남성",
                     "COMMERCIAL_DISTRICT_AVG_CLIENT_PER_F_20S": "20대 여성",
                     "COMMERCIAL_DISTRICT_AVG_CLIENT_PER_F_30S": "30대 여성",
                     "COMMERCIAL_DISTRICT_AVG_CLIENT_PER_F_40S": "40대 여성",
                     "COMMERCIAL_DISTRICT_AVG_CLIENT_PER_F_50S": "50대 여성",
-                    "COMMERCIAL_DISTRICT_AVG_CLIENT_PER_F_60_over": "60대이상 여성",
+                    "COMMERCIAL_DISTRICT_AVG_CLIENT_PER_F_60_over": "60대 이상 여성",
                 }
 
                 # 주요 고객 비율 중 최고 2개 추출
                 sorted_client_data = sorted(
-                    ((k, v) for k, v in row.items() if k in age_gender_mapping),
-                    key=lambda item: item[1],
+                    (
+                        (k, v)
+                        for k, v in row.items()
+                        if k in age_gender_mapping and v is not None
+                    ),
+                    key=lambda item: item[1] or 0,  # None일 경우 0으로 처리
                     reverse=True,
                 )
 
-                top1, top2 = sorted_client_data[0], sorted_client_data[1]
+                top1 = (
+                    sorted_client_data[0] if len(sorted_client_data) > 0 else (None, 0)
+                )
+                top2 = (
+                    sorted_client_data[1] if len(sorted_client_data) > 1 else (None, 0)
+                )
+
+                # 요일별 최대 및 최소 판매 비율 찾기
+                weekdays = [
+                    ("월요일", row["COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_MON"]),
+                    ("화요일", row["COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_TUE"]),
+                    ("수요일", row["COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_WED"]),
+                    ("목요일", row["COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_THU"]),
+                    ("금요일", row["COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_FRI"]),
+                    ("토요일", row["COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_SAT"]),
+                    ("일요일", row["COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_SUN"]),
+                ]
+
+                # None이거나 0인 경우 필터링
+                weekdays_filtered = [
+                    (day, percent)
+                    for day, percent in weekdays
+                    if percent is not None and percent != 0
+                ]
+
+                max_weekday = (
+                    max(weekdays_filtered, key=lambda x: x[1])
+                    if weekdays_filtered
+                    else ("-", 0)
+                )
+                min_weekday = (
+                    min(weekdays_filtered, key=lambda x: x[1])
+                    if weekdays_filtered
+                    else ("-", 0)
+                )
+
+                # 시간대별 최대 판매 비율 찾기
+                time_slots = [
+                    ("06_09", row["COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_06_09"]),
+                    ("09_12", row["COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_09_12"]),
+                    ("12_15", row["COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_12_15"]),
+                    ("15_18", row["COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_15_18"]),
+                    ("18_21", row["COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_18_21"]),
+                    ("21_24", row["COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_21_24"]),
+                ]
+
+                # None이거나 0인 경우 필터링
+                time_slots_filtered = [
+                    (slot, percent)
+                    for slot, percent in time_slots
+                    if percent is not None and percent != 0
+                ]
+
+                max_time = (
+                    max(time_slots_filtered, key=lambda x: x[1])
+                    if time_slots_filtered
+                    else ("-", 0)
+                )
 
                 # LocalStoreCDCommercialDistrict 인스턴스 생성 및 값 할당
                 result = LocalStoreCDCommercialDistrict(
@@ -566,30 +625,43 @@ def select_commercial_district_commercial_district_by_store_business_number(
                     commercial_district_sub_district_density_average=row.get(
                         "COMMERCIAL_DISTRICT_SUB_DISTRICT_DENSITY_AVERAGE", 0.0
                     ),
-                    commercial_district_national_average_sales=int(
-                        row.get("COMMERCIAL_DISTRICT_NATIONAL_AVERAGE_SALES", 0)
+                    commercial_district_national_average_sales=row.get(
+                        "COMMERCIAL_DISTRICT_NATIONAL_AVERAGE_SALES"
+                    )
+                    or 0,
+                    commercial_district_sub_district_average_sales=row.get(
+                        "COMMERCIAL_DISTRICT_SUB_DISTRICT_AVERAGE_SALES"
+                    )
+                    or 0,
+                    commercial_district_national_average_payment=row.get(
+                        "COMMERCIAL_DISTRICT_NATIONAL_AVERAGE_PAYMENT"
+                    )
+                    or 0,
+                    commercial_district_sub_district_average_payment=row.get(
+                        "COMMERCIAL_DISTRICT_SUB_DISTRICT_AVERAGE_PAYMENT"
+                    )
+                    or 0,
+                    commercial_district_national_usage_count=row.get(
+                        "COMMERCIAL_DISTRICT_NATIONAL_USAGE_COUNT"
+                    )
+                    or 0,
+                    commercial_district_sub_district_usage_count=row.get(
+                        "COMMERCIAL_DISTRICT_SUB_DISTRICT_USAGE_COUNT"
+                    )
+                    or 0,
+                    commercial_district_average_sales_max_percent_client_top1=age_gender_mapping.get(
+                        top1[0], "-"
                     ),
-                    commercial_district_sub_district_average_sales=int(
-                        row.get("COMMERCIAL_DISTRICT_SUB_DISTRICT_AVERAGE_SALES", 0)
+                    commercial_district_average_sales_max_percent_client_top2=age_gender_mapping.get(
+                        top2[0], "-"
                     ),
-                    commercial_district_national_average_payment=int(
-                        row.get("COMMERCIAL_DISTRICT_NATIONAL_AVERAGE_PAYMENT", 0)
-                    ),
-                    commercial_district_sub_district_average_payment=int(
-                        row.get("COMMERCIAL_DISTRICT_SUB_DISTRICT_AVERAGE_PAYMENT", 0)
-                    ),
-                    commercial_district_national_usage_count=int(
-                        row.get("COMMERCIAL_DISTRICT_NATIONAL_USAGE_COUNT", 0)
-                    ),
-                    commercial_district_sub_district_usage_count=int(
-                        row.get("COMMERCIAL_DISTRICT_SUB_DISTRICT_USAGE_COUNT", 0)
-                    ),
-                    commercial_district_average_sales_max_percent_client_top1=age_gender_mapping[
-                        top1[0]
+                    commercial_district_average_sales_max_percent_weekday=max_weekday[
+                        0
                     ],
-                    commercial_district_average_sales_max_percent_client_top2=age_gender_mapping[
-                        top2[0]
+                    commercial_district_average_sales_min_percent_weekday=min_weekday[
+                        0
                     ],
+                    commercial_district_average_sales_max_percent_time=max_time[0],
                 )
 
                 return result
