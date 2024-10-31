@@ -170,9 +170,9 @@ def get_report_rising_menu_gpt(
             service_select_rising_menu_top5_by_store_business_number(store_business_id)
         )
         logger.info(f"rising_menu_top5: {rising_menu_top5}")
+        store_info_redux = select_report_store_info_redux(store_business_id)
+        # report_content = service_get_gpt_answer_by_rising_business(rising_menu_top5, store_info_redux)
 
-        report_content = service_get_gpt_answer_by_rising_business(store_business_id, rising_menu_top5)
-        # # report = PlainTextResponse(report_content)
         report_dummy = """Dummy Data<br/> 삼겹살이랑 돼지갈비가 인기가 많으니까,<br/> 그 두 가지를 묶어서 세트 메뉴로 한번 내봐유.<br/>금요일엔 사람들이 술도 많이 먹으니까 병맥주나<br/>소주 할인 이벤트 하나 해주면 딱 좋을 거여.<br/>된장찌개는 그냥 기본으로 맛있게 준비해주면 손님들 만족도가 더 높아질 거유!"""
 
         result = LocalStoreTop5MenuAdviceOutput(
