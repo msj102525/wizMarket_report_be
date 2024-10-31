@@ -6,6 +6,7 @@ from fastapi.responses import PlainTextResponse
 from app.schemas.common_information import CommonInformationOutput
 from app.schemas.report import (
     AqiInfo,
+    LocalStoreCDCommercialDistrict,
     LocalStoreCDDistrictAverageSalesTop5,
     LocalStoreCDJSWeightedAverage,
     LocalStoreCDTiemAverageSalesPercent,
@@ -52,6 +53,7 @@ from app.service.commercial_district import (
     select_commercial_district_weekday_average_sales_by_store_business_number as service_select_commercial_district_weekday_average_sales_by_store_business_number,
     select_commercial_district_time_average_sales_by_store_business_number as service_select_commercial_district_time_average_sales_by_store_business_number,
     select_commercial_district_rising_sales_by_store_business_number as service_select_commercial_district_rising_sales_by_store_business_number,
+    select_commercial_district_commercial_district_by_store_business_number as crud_select_commercial_district_commercial_district_by_store_business_number,
 )
 from app.service.commercial_district import (
     select_c_d_main_category_count_by_store_business_number as service_select_c_d_main_category_count_by_store_business_number,
@@ -171,7 +173,9 @@ def get_report_rising_menu_gpt(
         )
         logger.info(f"rising_menu_top5: {rising_menu_top5}")
 
-        report_content = service_get_gpt_answer_by_rising_business(store_business_id, rising_menu_top5)
+        report_content = service_get_gpt_answer_by_rising_business(
+            store_business_id, rising_menu_top5
+        )
         # # report = PlainTextResponse(report_content)
         report_dummy = """Dummy Data<br/> 삼겹살이랑 돼지갈비가 인기가 많으니까,<br/> 그 두 가지를 묶어서 세트 메뉴로 한번 내봐유.<br/>금요일엔 사람들이 술도 많이 먹으니까 병맥주나<br/>소주 할인 이벤트 하나 해주면 딱 좋을 거여.<br/>된장찌개는 그냥 기본으로 맛있게 준비해주면 손님들 만족도가 더 높아질 거유!"""
 
@@ -442,6 +446,26 @@ def select_rising_business_by_store_business_id(store_business_id: str):
     try:
 
         return service_select_rising_business_by_store_business_id(store_business_id)
+
+    except HTTPException as http_ex:
+        logger.error(f"HTTP error occurred: {http_ex.detail}")
+        raise http_ex
+
+    except Exception as e:
+        error_msg = f"Unexpected error while processing request: {str(e)}"
+        logger.error(error_msg)
+        raise HTTPException(status_code=500, detail=error_msg)
+
+
+@router.get(
+    "/commercialDistrict",
+    response_model=LocalStoreCDCommercialDistrict,
+)
+def select_commercial_district_commercial_district_by_store_business_number(store_business_id: str):
+    # print(store_business_id)
+    try:
+
+        return crud_select_commercial_district_commercial_district_by_store_business_number(store_business_id)
 
     except HTTPException as http_ex:
         logger.error(f"HTTP error occurred: {http_ex.detail}")

@@ -214,6 +214,14 @@ class LocalStoreTop5MenuAdviceOutput(BaseModel):
 
 
 #######################################################################
+# 읍/면/동 소분류 업종 상권분석
+class LocalStoreCommercialDistrict(BaseModel):
+
+    class Config:
+        from_attributes = True
+
+
+#######################################################################
 # 동별 인구 분포
 class LocalStorePopulationDataOutPut(BaseModel):
     population_total: Optional[int] = None
@@ -566,6 +574,53 @@ class LocalStoreRisingBusinessNTop5SDTop3(BaseModel):
 
 
 #######################################################################
+
+
+# 상권분석 읍/면/동 소분류 상권분석
+class LocalStoreCDCommercialDistrict(BaseModel):
+    commercial_district_national_density_average: Optional[float]
+    commercial_district_sub_district_density_average: Optional[float]
+    commercial_district_national_average_sales: Optional[int]
+    commercial_district_sub_district_average_sales: Optional[int]
+    commercial_district_national_average_payment: Optional[int]
+    commercial_district_sub_district_average_payment: Optional[int]
+    commercial_district_national_usage_count: Optional[int]
+    commercial_district_sub_district_usage_count: Optional[int]
+
+    commercial_district_average_sales_max_percent_weekday: Optional[str]
+    commercial_district_average_sales_min_percent_weekday: Optional[str]
+    commercial_district_average_sales_max_percent_time: Optional[str]
+    commercial_district_average_sales_max_percent_client_top1: Optional[str]
+    commercial_district_average_sales_max_percent_client_top2: Optional[str]
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        if self.commercial_district_national_density_average is None:
+            self.commercial_district_national_density_average = 0.0
+
+        if self.commercial_district_sub_district_density_average is None:
+            self.commercial_district_sub_district_density_average = 0.0
+
+        if self.commercial_district_national_average_sales is None:
+            self.commercial_district_national_average_sales = 0.0
+
+        if self.commercial_district_sub_district_average_sales is None:
+            self.commercial_district_sub_district_average_sales = 0.0
+
+        if self.commercial_district_national_average_payment is None:
+            self.commercial_district_national_average_payment = 0.0
+
+        if self.commercial_district_sub_district_average_payment is None:
+            self.commercial_district_sub_district_average_payment = 0.0
+
+        if self.commercial_district_national_usage_count is None:
+            self.commercial_district_national_usage_count = 0.0
+
+        if self.commercial_district_sub_district_usage_count is None:
+            self.commercial_district_sub_district_usage_count = 0.0
+
+
+#######################################################################
 #######################################################################
 #######################################################################
 #######################################################################
@@ -627,11 +682,11 @@ class LocalStoreMappingSubDistrictDetailCategoryId(BaseModel):
         from_attributes = True
 
 
+#######################################################################
+#######################################################################
+#######################################################################
+#######################################################################
 
-#######################################################################
-#######################################################################
-#######################################################################
-#######################################################################
 
 # gpt 대답 생성용
 class GPTAnswerByRisingMenu(BaseModel):

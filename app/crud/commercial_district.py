@@ -8,6 +8,7 @@ from app.db.connect import (
     get_db_connection,
 )
 from app.schemas.report import (
+    LocalStoreCDCommercialDistrict,
     LocalStoreCDDistrictAverageSalesTop5,
     LocalStoreCDJSWeightedAverage,
     LocalStoreCDTiemAverageSalesPercent,
@@ -475,5 +476,129 @@ def select_commercial_district_rising_sales_by_store_business_number(
     except Exception as e:
         logger.error(
             f"Unexpected error occurred in select_commercial_district_rising_sales_by_store_business_number: {str(e)}"
+        )
+        raise HTTPException(status_code=500, detail=f"내부 서버 오류: {str(e)}")
+
+
+# 상권분석 읍/면/동 소분류 상권분석
+def select_commercial_district_commercial_district_by_store_business_number(
+    store_business_id: str,
+) -> LocalStoreCDCommercialDistrict:
+
+    try:
+        with get_db_connection() as connection:
+            with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+                select_query = """
+                    SELECT 
+                        COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_MON,
+                        COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_TUE,
+                        COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_WED,
+                        COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_THU,
+                        COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_FRI,
+                        COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_SAT,
+                        COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_SUN,
+                        COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_06_09,
+                        COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_09_12,
+                        COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_12_15,
+                        COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_15_18,
+                        COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_18_21,
+                        COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_21_24,
+                        COMMERCIAL_DISTRICT_AVG_CLIENT_PER_M_20S,
+                        COMMERCIAL_DISTRICT_AVG_CLIENT_PER_M_30S,
+                        COMMERCIAL_DISTRICT_AVG_CLIENT_PER_M_40S,
+                        COMMERCIAL_DISTRICT_AVG_CLIENT_PER_M_50S,
+                        COMMERCIAL_DISTRICT_AVG_CLIENT_PER_M_60_over,
+                        COMMERCIAL_DISTRICT_AVG_CLIENT_PER_F_20S,
+                        COMMERCIAL_DISTRICT_AVG_CLIENT_PER_F_30S,
+                        COMMERCIAL_DISTRICT_AVG_CLIENT_PER_F_40S,
+                        COMMERCIAL_DISTRICT_AVG_CLIENT_PER_F_50S,
+                        COMMERCIAL_DISTRICT_AVG_CLIENT_PER_F_60_over,
+                        COMMERCIAL_DISTRICT_NATIONAL_DENSITY_AVERAGE,
+                        COMMERCIAL_DISTRICT_SUB_DISTRICT_DENSITY_AVERAGE,
+                        COMMERCIAL_DISTRICT_NATIONAL_AVERAGE_SALES,
+                        COMMERCIAL_DISTRICT_SUB_DISTRICT_AVERAGE_SALES,
+                        COMMERCIAL_DISTRICT_NATIONAL_AVERAGE_PAYMENT,
+                        COMMERCIAL_DISTRICT_SUB_DISTRICT_AVERAGE_PAYMENT,
+                        COMMERCIAL_DISTRICT_NATIONAL_USAGE_COUNT,
+                        COMMERCIAL_DISTRICT_SUB_DISTRICT_USAGE_COUNT
+                    FROM
+                        REPORT 
+                    WHERE STORE_BUSINESS_NUMBER = %s
+                """
+
+                cursor.execute(select_query, (store_business_id,))
+                row = cursor.fetchone()
+
+                if not row:
+                    raise HTTPException(
+                        status_code=404,
+                        detail=f"LocalStoreCDCommercialDistrict {store_business_id}에 해당하는 매장 정보를 찾을 수 없습니다.",
+                    )
+
+                # 주요 고객 비율 비교 (예: 최고 비율 2개 찾기)
+                age_gender_mapping = {
+                    "COMMERCIAL_DISTRICT_AVG_CLIENT_PER_M_20S": "20대 남성",
+                    "COMMERCIAL_DISTRICT_AVG_CLIENT_PER_M_30S": "30대 남성",
+                    "COMMERCIAL_DISTRICT_AVG_CLIENT_PER_M_40S": "40대 남성",
+                    "COMMERCIAL_DISTRICT_AVG_CLIENT_PER_M_50S": "50대 남성",
+                    "COMMERCIAL_DISTRICT_AVG_CLIENT_PER_M_60_over": "60대이상 남성",
+                    "COMMERCIAL_DISTRICT_AVG_CLIENT_PER_F_20S": "20대 여성",
+                    "COMMERCIAL_DISTRICT_AVG_CLIENT_PER_F_30S": "30대 여성",
+                    "COMMERCIAL_DISTRICT_AVG_CLIENT_PER_F_40S": "40대 여성",
+                    "COMMERCIAL_DISTRICT_AVG_CLIENT_PER_F_50S": "50대 여성",
+                    "COMMERCIAL_DISTRICT_AVG_CLIENT_PER_F_60_over": "60대이상 여성",
+                }
+
+                # 주요 고객 비율 중 최고 2개 추출
+                sorted_client_data = sorted(
+                    ((k, v) for k, v in row.items() if k in age_gender_mapping),
+                    key=lambda item: item[1],
+                    reverse=True,
+                )
+
+                top1, top2 = sorted_client_data[0], sorted_client_data[1]
+
+                # LocalStoreCDCommercialDistrict 인스턴스 생성 및 값 할당
+                result = LocalStoreCDCommercialDistrict(
+                    commercial_district_national_density_average=row.get(
+                        "COMMERCIAL_DISTRICT_NATIONAL_DENSITY_AVERAGE", 0.0
+                    ),
+                    commercial_district_sub_district_density_average=row.get(
+                        "COMMERCIAL_DISTRICT_SUB_DISTRICT_DENSITY_AVERAGE", 0.0
+                    ),
+                    commercial_district_national_average_sales=int(
+                        row.get("COMMERCIAL_DISTRICT_NATIONAL_AVERAGE_SALES", 0)
+                    ),
+                    commercial_district_sub_district_average_sales=int(
+                        row.get("COMMERCIAL_DISTRICT_SUB_DISTRICT_AVERAGE_SALES", 0)
+                    ),
+                    commercial_district_national_average_payment=int(
+                        row.get("COMMERCIAL_DISTRICT_NATIONAL_AVERAGE_PAYMENT", 0)
+                    ),
+                    commercial_district_sub_district_average_payment=int(
+                        row.get("COMMERCIAL_DISTRICT_SUB_DISTRICT_AVERAGE_PAYMENT", 0)
+                    ),
+                    commercial_district_national_usage_count=int(
+                        row.get("COMMERCIAL_DISTRICT_NATIONAL_USAGE_COUNT", 0)
+                    ),
+                    commercial_district_sub_district_usage_count=int(
+                        row.get("COMMERCIAL_DISTRICT_SUB_DISTRICT_USAGE_COUNT", 0)
+                    ),
+                    commercial_district_average_sales_max_percent_client_top1=age_gender_mapping[
+                        top1[0]
+                    ],
+                    commercial_district_average_sales_max_percent_client_top2=age_gender_mapping[
+                        top2[0]
+                    ],
+                )
+
+                return result
+
+    except pymysql.Error as e:
+        logger.error(f"Database error occurred: {str(e)}")
+        raise HTTPException(status_code=503, detail=f"데이터베이스 연결 오류: {str(e)}")
+    except Exception as e:
+        logger.error(
+            f"Unexpected error in select_commercial_district_commercial_district_by_store_business_number: {str(e)}"
         )
         raise HTTPException(status_code=500, detail=f"내부 서버 오류: {str(e)}")
