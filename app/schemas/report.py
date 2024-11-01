@@ -293,6 +293,12 @@ class LocalStoreLIJSWeightedAverage(BaseModel):
 
 # 매장별 입지정보 J_Score
 class LocalStoreLocInfoJscoreData(BaseModel):
+    city_name: str
+    district_name: str
+    sub_district_name: str
+    detail_category_name: str
+    store_name: str
+
     loc_info_resident_j_score: Optional[float] = None
     loc_info_move_pop_j_score: Optional[float] = None
     loc_info_shop_j_score: Optional[float] = None
@@ -301,6 +307,17 @@ class LocalStoreLocInfoJscoreData(BaseModel):
     loc_info_average_sales_j_score: Optional[float] = None
     loc_info_house_j_score: Optional[float] = None
     population_mz_population_j_score: Optional[float] = None
+
+    population_total: Optional[int] = None
+    population_male_percent: Optional[float] = None
+    population_female_percent: Optional[float] = None
+    population_age_10_under: Optional[int] = None
+    population_age_10s: Optional[int] = None
+    population_age_20s: Optional[int] = None
+    population_age_30s: Optional[int] = None
+    population_age_40s: Optional[int] = None
+    population_age_50s: Optional[int] = None
+    population_age_60_over: Optional[int] = None
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -327,6 +344,44 @@ class LocalStoreLocInfoJscoreData(BaseModel):
 
         if self.loc_info_house_j_score is None:
             self.loc_info_house_j_score = 0.0
+
+        if self.population_total is None:
+            self.population_total = 0
+
+        if self.population_male_percent is None:
+            self.population_male_percent = 0.0
+
+        if self.population_female_percent is None:
+            self.population_female_percent = 0.0
+
+        if self.population_age_10_under is None:
+            self.population_age_10_under = 0
+
+        if self.population_age_10s is None:
+            self.population_age_10s = 0
+
+        if self.population_age_20s is None:
+            self.population_age_20s = 0
+
+        if self.population_age_30s is None:
+            self.population_age_30s = 0
+
+        if self.population_age_40s is None:
+            self.population_age_40s = 0
+
+        if self.population_age_50s is None:
+            self.population_age_50s = 0
+
+        if self.population_age_60_over is None:
+            self.population_age_60_over = 0
+
+    class Config:
+        from_attributes = True
+
+
+class LocalStoreLocInfoJscoreDataOutput(BaseModel):
+    local_store_loc_info_j_score_data: LocalStoreLocInfoJscoreData
+    loc_info_advice: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -726,24 +781,7 @@ class LocalStoreMappingSubDistrictDetailCategoryId(BaseModel):
 
 
 # gpt 대답 생성용
-class GPTAnswerByRisingMenu(BaseModel):
-    gpt_answer: str
-
-    class Config:
-        from_attributes = True
-
-
-class GPTAnswerRegionDetailCategoryName(BaseModel):
-    city_name: str
-    district_name: str
-    sub_district_name: str
-    detail_category_name: str
-
-    class Config:
-        from_attributes = True
-
-
-class GPTAnswerByLocInfo(BaseModel):
+class GPTAnswer(BaseModel):
     gpt_answer: str
 
     class Config:

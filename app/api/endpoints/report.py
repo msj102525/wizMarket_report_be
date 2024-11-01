@@ -24,7 +24,7 @@ from app.schemas.report import (
     LocalStoreTop5Menu,
     LocalStoreTop5MenuAdviceOutput,
     WeatherInfo,
-    GPTAnswerByLocInfo,
+    GPTAnswer,
 )
 from app.service.local_store_basic_info import (
     select_local_store_info_redux_by_store_business_number as service_select_local_store_info_redux_by_store_business_number,
@@ -64,8 +64,8 @@ from app.service.rising_business import (
 )
 
 from app.service.gpt_answer import (
-    get_gpt_answer_by_rising_business as service_get_gpt_answer_by_rising_business,
-    get_gpt_answer_by_loc_info_strategy as service_get_gpt_answer_by_loc_info_strategy,
+    get_rising_business_gpt_answer_by_local_store_top5_menu as service_get_rising_business_gpt_answer_by_local_store_top5_menu,
+    get_loc_info_gpt_answer_by_local_store_loc_info as service_get_loc_info_gpt_answer_by_local_store_loc_info,
 )
 
 router = APIRouter()
@@ -175,8 +175,7 @@ def get_report_rising_menu_gpt(
         )
         # logger.info(f"rising_menu_top5: {rising_menu_top5}")
 
-        # store_info_redux = select_report_store_info_redux(store_business_id)
-        # report_advice = service_get_gpt_answer_by_rising_business(rising_menu_top5) # GPT API
+        # report_advice = service_get_rising_business_gpt_answer_by_local_store_top5_menu(rising_menu_top5) # GPT API
         # logger.info(f"report_advice: {report_advice}")
 
         report_dummy = """Dummy Data<br/> 삼겹살이랑 돼지갈비가 인기가 많으니까,<br/> 그 두 가지를 묶어서 세트 메뉴로 한번 내봐유.<br/>금요일엔 사람들이 술도 많이 먹으니까 병맥주나<br/>소주 할인 이벤트 하나 해주면 딱 좋을 거여.<br/>된장찌개는 그냥 기본으로 맛있게 준비해주면 손님들 만족도가 더 높아질 거유!"""
@@ -184,7 +183,7 @@ def get_report_rising_menu_gpt(
         result = LocalStoreTop5MenuAdviceOutput(
             local_store_top5_orderd_menu=rising_menu_top5,
             # rising_menu_advice=report_advice.gpt_answer, # GPT API
-            rising_menu_advice=report_dummy, # Dummy
+            rising_menu_advice=report_dummy,  # Dummy
         )
 
         return result
@@ -248,12 +247,17 @@ def select_loc_info_j_score_average_by_store_business_number(store_business_id: 
 
 @router.get("/location/jscore", response_model=LocalStoreLocInfoJscoreData)
 def select_loc_info_j_scorereport_data(store_business_id: str):
-    # print(store_business_id)
     try:
 
-        return service_select_loc_info_j_score_by_store_business_number(
-            store_business_id
+        local_store_loc_info_data = (
+            service_select_loc_info_j_score_by_store_business_number(store_business_id)
         )
+
+        # logger.info(f"local_store_loc_info_data: {local_store_loc_info_data}")
+
+        # report_advice = service_get_loc_info_gpt_answer_by_local_store_loc_info(local_store_loc_info_data)
+
+        return local_store_loc_info_data
 
     except HTTPException as http_ex:
         logger.error(f"HTTP error occurred: {http_ex.detail}")
@@ -314,45 +318,6 @@ def select_loc_info_move_pop_by_store_business_number(store_business_id: str):
         return service_select_loc_info_move_pop_by_store_business_number(
             store_business_id
         )
-
-    except HTTPException as http_ex:
-        logger.error(f"HTTP error occurred: {http_ex.detail}")
-        raise http_ex
-
-    except Exception as e:
-        error_msg = f"Unexpected error while processing request: {str(e)}"
-        logger.error(error_msg)
-        raise HTTPException(status_code=500, detail=error_msg)
-
-
-@router.get("/loc_info/strategy/advice", response_model=GPTAnswerByLocInfo)
-def select_loc_info_move_pop_by_store_business_number(
-    store_business_id: str,
-):
-    # logger.info(
-    #     f"Received request for store info with business ID: {store_business_id}"
-    # )
-
-    try:
-        # logger.info(
-        #     f"Successfully retrieved store info for business ID: {store_business_id}"
-        # )
-        store_info_redux = select_report_store_info_redux(store_business_id)
-        pop_loc_info = service_select_population_by_store_business_number(
-            store_business_id
-        )
-        loc_info_j_score = service_select_loc_info_j_score_by_store_business_number(
-            store_business_id
-        )
-        # report_content = service_get_gpt_answer_by_loc_info_strategy(store_info_redux)
-
-        report_dummy = """Dummy Data<br/> 삼겹살이랑 돼지갈비가 인기가 많으니까,<br/> 그 두 가지를 묶어서 세트 메뉴로 한번 내봐유.<br/>금요일엔 사람들이 술도 많이 먹으니까 병맥주나<br/>소주 할인 이벤트 하나 해주면 딱 좋을 거여.<br/>된장찌개는 그냥 기본으로 맛있게 준비해주면 손님들 만족도가 더 높아질 거유!"""
-
-        result = GPTAnswerByLocInfo(
-            loc_info_strategy_advice=report_dummy,
-        )
-
-        return result
 
     except HTTPException as http_ex:
         logger.error(f"HTTP error occurred: {http_ex.detail}")

@@ -73,7 +73,12 @@ def select_loc_info_j_score_by_store_business_number(
         with get_db_connection() as connection:
             with connection.cursor(pymysql.cursors.DictCursor) as cursor:
                 select_query = """
-                    SELECT 
+                    SELECT
+                        CITY_NAME,
+                        DISTRICT_NAME,
+                        SUB_DISTRICT_NAME,
+                        DETAIL_CATEGORY_NAME,
+                        STORE_NAME,
                         LOC_INFO_MZ_POPULATION_J_SCORE,
                         LOC_INFO_SHOP_J_SCORE,
                         LOC_INFO_MOVE_POP_J_SCORE,
@@ -81,7 +86,17 @@ def select_loc_info_j_score_by_store_business_number(
                         LOC_INFO_HOUSE_J_SCORE,
                         LOC_INFO_INCOME_J_SCORE,
                         LOC_INFO_AVERAGE_SPEND_J_SCORE,
-                        LOC_INFO_AVERAGE_SALES_J_SCORE
+                        LOC_INFO_AVERAGE_SALES_J_SCORE,
+                        POPULATION_TOTAL,
+                        POPULATION_MALE_PERCENT,
+                        POPULATION_FEMALE_PERCENT,
+                        POPULATION_AGE_10_UNDER,
+                        POPULATION_AGE_10S,
+                        POPULATION_AGE_20S,
+                        POPULATION_AGE_30S,
+                        POPULATION_AGE_40S,
+                        POPULATION_AGE_50S,
+                        POPULATION_AGE_60_OVER
                     FROM
                         REPORT 
                     WHERE STORE_BUSINESS_NUMBER = %s
@@ -102,6 +117,11 @@ def select_loc_info_j_score_by_store_business_number(
                     )
 
                 result = LocalStoreLocInfoJscoreData(
+                    city_name=row["CITY_NAME"],
+                    district_name=row["DISTRICT_NAME"],
+                    sub_district_name=row["SUB_DISTRICT_NAME"],
+                    detail_category_name=row["DETAIL_CATEGORY_NAME"],
+                    store_name=row["STORE_NAME"],
                     population_mz_population_j_score=round(
                         row.get("LOC_INFO_MZ_POPULATION_J_SCORE", 0) or 0, 1
                     ),
@@ -126,6 +146,16 @@ def select_loc_info_j_score_by_store_business_number(
                     loc_info_average_sales_j_score=round(
                         row.get("LOC_INFO_AVERAGE_SALES_J_SCORE", 0) or 0, 1
                     ),
+                    population_total=row.get("POPULATION_TOTAL"),
+                    population_male_percent=row.get("POPULATION_MALE_PERCENT"),
+                    population_female_percent=row.get("POPULATION_FEMALE_PERCENT"),
+                    population_age_10_under=row.get("POPULATION_AGE_10_UNDER"),
+                    population_age_10s=row.get("POPULATION_AGE_10S"),
+                    population_age_20s=row.get("POPULATION_AGE_20S"),
+                    population_age_30s=row.get("POPULATION_AGE_30S"),
+                    population_age_40s=row.get("POPULATION_AGE_40S"),
+                    population_age_50s=row.get("POPULATION_AGE_50S"),
+                    population_age_60_over=row.get("POPULATION_AGE_60_OVER"),
                 )
 
                 # logger.info(f"Result for business ID {store_business_id}: {result}")
@@ -227,8 +257,6 @@ def select_loc_info_move_pop_by_store_business_number(
                         status_code=404,
                         detail=f"LocalStoreMovePopData {store_business_id}에 해당하는 매장 정보를 찾을 수 없습니다.",
                     )
-                
-                
 
                 result = LocalStoreMovePopData(
                     loc_info_move_pop_j_score=round(
