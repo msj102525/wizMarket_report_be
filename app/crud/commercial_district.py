@@ -29,7 +29,11 @@ def select_rising_menu_top5_by_store_business_number(
         with get_db_connection() as connection:
             with connection.cursor(pymysql.cursors.DictCursor) as cursor:
                 select_query = """
-                    SELECT 
+                    SELECT
+                        CITY_NAME,
+                        DISTRICT_NAME,
+                        SUB_DISTRICT_NAME,
+                        DETAIL_CATEGORY_NAME,
                         DETAIL_CATEGORY_TOP1_ORDERED_MENU,
                         DETAIL_CATEGORY_TOP2_ORDERED_MENU,
                         DETAIL_CATEGORY_TOP3_ORDERED_MENU,
@@ -53,6 +57,10 @@ def select_rising_menu_top5_by_store_business_number(
                     )
 
                 result = LocalStoreTop5Menu(
+                    city_name=row["CITY_NAME"],
+                    district_name=row["DISTRICT_NAME"],
+                    sub_district_name=row["SUB_DISTRICT_NAME"],
+                    detail_category_name=row["DETAIL_CATEGORY_NAME"],
                     detail_category_top1_ordered_menu=row[
                         "DETAIL_CATEGORY_TOP1_ORDERED_MENU"
                     ],

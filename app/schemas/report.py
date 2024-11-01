@@ -195,6 +195,10 @@ class LocalStoreInfoWeaterInfoOutput(BaseModel):
 #################################################################
 # 매장별 top5 메뉴
 class LocalStoreTop5Menu(BaseModel):
+    city_name: str
+    district_name: str
+    sub_district_name: str
+    detail_category_name: str
     detail_category_top1_ordered_menu: Optional[str] = None
     detail_category_top2_ordered_menu: Optional[str] = None
     detail_category_top3_ordered_menu: Optional[str] = None

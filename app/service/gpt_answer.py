@@ -4,7 +4,11 @@ import openai
 from dotenv import load_dotenv
 from openai import OpenAI
 from datetime import datetime
-from app.schemas.report import GPTAnswerByRisingMenu,LocalStoreTop5Menu, LocalStoreRedux
+from app.schemas.report import (
+    GPTAnswerByRisingMenu,
+    LocalStoreTop5Menu,
+    LocalStoreRedux,
+)
 import logging
 from fastapi import HTTPException
 
@@ -24,16 +28,16 @@ weekday = now.strftime("%A")
 
 # 업종 별 뜨는 메뉴 gpt 대답 생성
 def get_gpt_answer_by_rising_business(
-    rising_menu_top5: LocalStoreTop5Menu , store_info_redux = LocalStoreRedux
+    rising_menu_top5: LocalStoreTop5Menu,
 ) -> GPTAnswerByRisingMenu:
     # 상권정보 소분류 카테고리, 지역 동까지, 날짜
 
     try:
         # 각 속성을 직접 가져오기
-        city_name = store_info_redux.city_name
-        district_name = store_info_redux.district_name
-        sub_district_name = store_info_redux.sub_district_name
-        detail_category_name = store_info_redux.detail_category_name
+        city_name = rising_menu_top5.city_name
+        district_name = rising_menu_top5.district_name
+        sub_district_name = rising_menu_top5.sub_district_name
+        detail_category_name = rising_menu_top5.detail_category_name
         region_name = f"{city_name} {district_name} {sub_district_name}"
 
         top_menu_1 = rising_menu_top5.detail_category_top1_ordered_menu
@@ -43,10 +47,21 @@ def get_gpt_answer_by_rising_business(
         top_menu_5 = rising_menu_top5.detail_category_top5_ordered_menu
 
         # 3. 보낼 프롬프트 설정
+        # content = f"""
+        #     아래 지역 업종의 뜨는 메뉴가 다음과 같습니다.
+        #     해당 업종의 매장이 고객을 위해 주요 전략으로 가져가야 할 점이 무엇일지 백종원 쉐프 스타일로 조언을 해주세요.
+        #     단, 말투나 전문적 용어는 점주 성향에 맞추고 조언은 4줄 이하로 해주며 html 요소를 칸 나눔과 함께 포함시켜 주세요.
+
+        #     - 매장 업종 : {detail_category_name}
+        #     - 매장 위치 : {region_name}
+        #     - 뜨는 메뉴 : 1위 {top_menu_1}, 2위 {top_menu_2}, 3위 {top_menu_3}, 4위 {top_menu_4}, 5위 {top_menu_5}
+        #     - 적용날짜 : {current_time}  {weekday}
+
+        # """
         content = f"""
             아래 지역 업종의 뜨는 메뉴가 다음과 같습니다. 
-            해당 업종의 매장이 고객을 위해 주요 전략으로 가져가야 할 점이 무엇일지 백종원 쉐프 스타일로 조언을 해주세요.
-            단, 말투나 전문적 용어는 점주 성향에 맞추고 조언은 4줄 이하로 해주며 html 요소를 칸 나눔과 함께 포함시켜 주세요. 
+            해당 업종의 매장이 고객을 위해 주요 전략으로 가져가야 할 점이 무엇일지 백종원 쉐프 스타일로(~~요를 ~~유로 바꾸면 됨) 조언을 해주세요.
+            단, 말투나 전문적 용어는 점주 성향에 맞추고 조언은 4줄 이하로 해주며 <br/>으로 한번씩만 줄바꿈을 해줘. 
 
             - 매장 업종 : {detail_category_name}
             - 매장 위치 : {region_name}
@@ -55,24 +70,23 @@ def get_gpt_answer_by_rising_business(
 
         """
 
+        # logger.info(f"gpt prompt: {content}")
 
         client = OpenAI(api_key=os.getenv("GPT_KEY"))
         # OpenAI API 키 설정
- 
+
         completion = client.chat.completions.create(
-            model="gpt-4o",  
+            model="gpt-4o",
             messages=[
                 {"role": "system", "content": gpt_content},
-                {"role": "user", "content": content}
-            ]
+                {"role": "user", "content": content},
+            ],
         )
         report = completion.choices[0].message.content
 
-        result = GPTAnswerByRisingMenu(
-            gpt_answer = report
-        )
-        return result 
-    
+        result = GPTAnswerByRisingMenu(gpt_answer=report)
+        return result
+
     except HTTPException:
         raise
     except Exception as e:
@@ -84,7 +98,7 @@ def get_gpt_answer_by_rising_business(
 
 # 입지 정보 전략 gpt 대답 생성
 def get_gpt_answer_by_loc_info_strategy(
-    store_info_redux = LocalStoreRedux
+    store_info_redux=LocalStoreRedux,
 ) -> GPTAnswerByRisingMenu:
     # 상권정보 소분류 카테고리, 지역 동까지, 날짜
 
@@ -128,10 +142,16 @@ def get_gpt_answer_by_loc_info_strategy(
         openai_api_key = os.getenv("GPT_KEY")
         # OpenAI API 키 설정
         openai.api_key = openai_api_key
-        completion = openai.ChatCompletion.create(model="gpt-4o", messages=[{"role": "system", "content": gpt_content}, {"role": "user", "content": content}])
+        completion = openai.ChatCompletion.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": gpt_content},
+                {"role": "user", "content": content},
+            ],
+        )
         report = completion.choices[0].message.content
         return report
-    
+
     except HTTPException:
         raise
     except Exception as e:
@@ -141,14 +161,12 @@ def get_gpt_answer_by_loc_info_strategy(
         )
 
 
-
-
 ################ 클로드 결제 후 사용 #################
 # import anthropic
 
 # def testCLAUDE():
 #     api_key = os.getenv("CLAUDE_KEY")
-    
+
 #     # OpenAI API 키 설정
 #     openai.api_key = api_key
 #     client = anthropic.Anthropic(
@@ -179,9 +197,6 @@ def get_gpt_answer_by_loc_info_strategy(
 #     },
 #     ])
 #     print(response['message']['content'])
-
-
-
 
 
 if __name__ == "__main__":
