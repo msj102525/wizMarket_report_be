@@ -15,6 +15,7 @@ from app.schemas.report import (
     LocalStoreInfoWeaterInfoOutput,
     LocalStoreLIJSWeightedAverage,
     LocalStoreLocInfoJscoreData,
+    LocalStoreLocInfoJscoreDataOutput,
     LocalStoreMainCategoryCount,
     LocalStoreMovePopData,
     LocalStorePopulationDataOutPut,
@@ -245,19 +246,34 @@ def select_loc_info_j_score_average_by_store_business_number(store_business_id: 
         raise HTTPException(status_code=500, detail=error_msg)
 
 
-@router.get("/location/jscore", response_model=LocalStoreLocInfoJscoreData)
+@router.get("/location/jscore", response_model=LocalStoreLocInfoJscoreDataOutput)
 def select_loc_info_j_scorereport_data(store_business_id: str):
     try:
 
-        local_store_loc_info_data = (
+        local_store_loc_info_data: LocalStoreLocInfoJscoreData = (
             service_select_loc_info_j_score_by_store_business_number(store_business_id)
         )
 
         # logger.info(f"local_store_loc_info_data: {local_store_loc_info_data}")
 
-        # report_advice = service_get_loc_info_gpt_answer_by_local_store_loc_info(local_store_loc_info_data)
+        # report_advice: GPTAnswer = (
+        #     service_get_loc_info_gpt_answer_by_local_store_loc_info(
+        #         local_store_loc_info_data
+        #     )
+        # )
+        report_dummy = """Dummy Data
+                                결론
+                                전국적 트렌드와 지역 매출 증가업종 데이터를 바탕으로, **이자카야의 인기를 반영한 프리미엄 주류와 삼겹살의 결합** 및 **젊은층을 겨냥한 효율적인 메뉴 제공**이 당산2동에서 성공적인 전략이 될 수 있습니다.
+                                또한 **배달 및 테이크아웃 강화**는 실용적인 소비 경향을 반영한 중요한 요소가 될 것입니다.
+                        """
 
-        return local_store_loc_info_data
+        result = LocalStoreLocInfoJscoreDataOutput(
+            local_store_loc_info_j_score_data=local_store_loc_info_data,
+            # loc_info_advice=report_advice.gpt_answer,
+            loc_info_advice=report_dummy,
+        )
+
+        return result
 
     except HTTPException as http_ex:
         logger.error(f"HTTP error occurred: {http_ex.detail}")

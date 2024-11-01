@@ -79,6 +79,15 @@ def select_loc_info_j_score_by_store_business_number(
                         SUB_DISTRICT_NAME,
                         DETAIL_CATEGORY_NAME,
                         STORE_NAME,
+
+                        LOC_INFO_RESIDENT_K,
+                        LOC_INFO_MOVE_POP_K,
+                        LOC_INFO_SHOP_K,
+                        LOC_INFO_INCOME_WON,
+                        LOC_INFO_AVERAGE_SALES_K,
+                        LOC_INFO_AVERAGE_SPEND_K,
+                        LOC_INFO_HOUSE_K,
+
                         LOC_INFO_MZ_POPULATION_J_SCORE,
                         LOC_INFO_SHOP_J_SCORE,
                         LOC_INFO_MOVE_POP_J_SCORE,
@@ -122,6 +131,13 @@ def select_loc_info_j_score_by_store_business_number(
                     sub_district_name=row["SUB_DISTRICT_NAME"],
                     detail_category_name=row["DETAIL_CATEGORY_NAME"],
                     store_name=row["STORE_NAME"],
+                    loc_info_resident_k=row["LOC_INFO_RESIDENT_K"],
+                    loc_info_move_pop_k=row["LOC_INFO_MOVE_POP_K"],
+                    loc_info_shop_k=row["LOC_INFO_SHOP_K"],
+                    loc_info_income_won=row["LOC_INFO_INCOME_WON"],
+                    loc_info_average_sales_k=row["LOC_INFO_AVERAGE_SALES_K"],
+                    loc_info_average_spend_k=row["LOC_INFO_AVERAGE_SPEND_K"],
+                    loc_info_house_k=row["LOC_INFO_HOUSE_K"],
                     population_mz_population_j_score=round(
                         row.get("LOC_INFO_MZ_POPULATION_J_SCORE", 0) or 0, 1
                     ),

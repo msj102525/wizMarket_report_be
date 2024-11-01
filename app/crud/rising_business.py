@@ -22,7 +22,10 @@ def select_rising_business_by_store_business_id(
         with get_db_connection() as connection:
             with connection.cursor(pymysql.cursors.DictCursor) as cursor:
                 select_query = """
-                    SELECT 
+                    SELECT
+                        SUB_DISTRICT_NAME,
+                        STORE_NAME,
+                        NICE_BIZ_MAP_DATA_REF_DATE,
                         RISING_BUSINESS_NATIONAL_RISING_SALES_TOP1_INFO,
                         RISING_BUSINESS_NATIONAL_RISING_SALES_TOP2_INFO,
                         RISING_BUSINESS_NATIONAL_RISING_SALES_TOP3_INFO,
@@ -49,6 +52,9 @@ def select_rising_business_by_store_business_id(
                     )
 
                 result = LocalStoreRisingBusinessNTop5SDTop3(
+                    sub_district_name=row["SUB_DISTRICT_NAME"],
+                    store_name=row["STORE_NAME"],
+                    nice_biz_map_data_ref_date=row["NICE_BIZ_MAP_DATA_REF_DATE"],
                     rising_business_national_rising_sales_top1_info=row[
                         "RISING_BUSINESS_NATIONAL_RISING_SALES_TOP1_INFO"
                     ],

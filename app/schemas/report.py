@@ -299,6 +299,14 @@ class LocalStoreLocInfoJscoreData(BaseModel):
     detail_category_name: str
     store_name: str
 
+    loc_info_resident_k: Optional[float] = None
+    loc_info_move_pop_k: Optional[float] = None
+    loc_info_shop_k: Optional[float] = None
+    loc_info_income_won: Optional[int] = None
+    loc_info_average_sales_k: Optional[float] = None
+    loc_info_average_spend_k: Optional[float] = None
+    loc_info_house_k: Optional[float] = None
+
     loc_info_resident_j_score: Optional[float] = None
     loc_info_move_pop_j_score: Optional[float] = None
     loc_info_shop_j_score: Optional[float] = None
@@ -614,6 +622,10 @@ class LocalStoreCDDistrictAverageSalesTop5(BaseModel):
 
 # 상권 분석 시/군/구에서 매핑된 소분류들 매출합 TOP5
 class LocalStoreRisingBusinessNTop5SDTop3(BaseModel):
+    sub_district_name: str
+    store_name: str
+    nice_biz_map_data_ref_date: Optional[date] = None
+
     rising_business_national_rising_sales_top1_info: Optional[str] = None
     rising_business_national_rising_sales_top2_info: Optional[str] = None
     rising_business_national_rising_sales_top3_info: Optional[str] = None
