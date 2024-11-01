@@ -102,19 +102,29 @@ def select_loc_info_j_score_by_store_business_number(
                     )
 
                 result = LocalStoreLocInfoJscoreData(
-                    population_mz_population_j_score=row.get(
-                        "LOC_INFO_MZ_POPULATION_J_SCORE"
+                    population_mz_population_j_score=round(
+                        row.get("LOC_INFO_MZ_POPULATION_J_SCORE", 0) or 0, 1
                     ),
-                    loc_info_shop_j_score=row.get("LOC_INFO_SHOP_J_SCORE"),
-                    loc_info_move_pop_j_score=row.get("LOC_INFO_MOVE_POP_J_SCORE"),
-                    loc_info_resident_j_score=row.get("LOC_INFO_RESIDENT_J_SCORE"),
-                    loc_info_house_j_score=row.get("LOC_INFO_HOUSE_J_SCORE"),
-                    loc_info_income_j_score=row.get("LOC_INFO_INCOME_J_SCORE"),
-                    loc_info_average_spend_j_score=row.get(
-                        "LOC_INFO_AVERAGE_SPEND_J_SCORE"
+                    loc_info_shop_j_score=round(
+                        row.get("LOC_INFO_SHOP_J_SCORE", 0) or 0, 1
                     ),
-                    loc_info_average_sales_j_score=row.get(
-                        "LOC_INFO_AVERAGE_SALES_J_SCORE"
+                    loc_info_move_pop_j_score=round(
+                        row.get("LOC_INFO_MOVE_POP_J_SCORE", 0) or 0, 1
+                    ),
+                    loc_info_resident_j_score=round(
+                        row.get("LOC_INFO_RESIDENT_J_SCORE", 0) or 0, 1
+                    ),
+                    loc_info_house_j_score=round(
+                        row.get("LOC_INFO_HOUSE_J_SCORE", 0) or 0, 1
+                    ),
+                    loc_info_income_j_score=round(
+                        row.get("LOC_INFO_INCOME_J_SCORE", 0) or 0, 1
+                    ),
+                    loc_info_average_spend_j_score=round(
+                        row.get("LOC_INFO_AVERAGE_SPEND_J_SCORE", 0) or 0, 1
+                    ),
+                    loc_info_average_sales_j_score=round(
+                        row.get("LOC_INFO_AVERAGE_SALES_J_SCORE", 0) or 0, 1
                     ),
                 )
 
@@ -167,10 +177,10 @@ def select_loc_info_resident_work_compare_by_store_business_number(
                     loc_info_resident=row.get("LOC_INFO_RESIDENT"),
                     loc_info_work_pop=row.get("LOC_INFO_WORK_POP"),
                     loc_info_resident_percent=round(
-                        row.get("LOC_INFO_RESIDENT_PERCENT")
+                        row.get("LOC_INFO_RESIDENT_PERCENT", 0) or 0
                     ),
                     loc_info_work_pop_percent=round(
-                        row.get("LOC_INFO_WORK_POP_PERCENT")
+                        row.get("LOC_INFO_WORK_POP_PERCENT", 0) or 0
                     ),
                 )
 
@@ -217,6 +227,8 @@ def select_loc_info_move_pop_by_store_business_number(
                         status_code=404,
                         detail=f"LocalStoreMovePopData {store_business_id}에 해당하는 매장 정보를 찾을 수 없습니다.",
                     )
+                
+                
 
                 result = LocalStoreMovePopData(
                     loc_info_move_pop_j_score=round(

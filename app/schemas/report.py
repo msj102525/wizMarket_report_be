@@ -201,6 +201,28 @@ class LocalStoreTop5Menu(BaseModel):
     detail_category_top4_ordered_menu: Optional[str] = None
     detail_category_top5_ordered_menu: Optional[str] = None
 
+    def __init__(self, **data):
+        super().__init__(**data)
+
+        def set_default_if_empty(value):
+            return value if value and value != ",,," else "-"
+
+        self.detail_category_top1_ordered_menu = set_default_if_empty(
+            self.detail_category_top1_ordered_menu
+        )
+        self.detail_category_top2_ordered_menu = set_default_if_empty(
+            self.detail_category_top2_ordered_menu
+        )
+        self.detail_category_top3_ordered_menu = set_default_if_empty(
+            self.detail_category_top3_ordered_menu
+        )
+        self.detail_category_top4_ordered_menu = set_default_if_empty(
+            self.detail_category_top4_ordered_menu
+        )
+        self.detail_category_top5_ordered_menu = set_default_if_empty(
+            self.detail_category_top5_ordered_menu
+        )
+
     class Config:
         from_attributes = True
 
@@ -545,29 +567,40 @@ class LocalStoreRisingBusinessNTop5SDTop3(BaseModel):
 
     def __init__(self, **data):
         super().__init__(**data)
-        if self.rising_business_national_rising_sales_top1_info == ",,,":
-            self.rising_business_national_rising_sales_top1_info = "-,-,-,0.0"
 
-        if self.rising_business_national_rising_sales_top2_info == ",,,":
-            self.rising_business_national_rising_sales_top2_info = "-,-,-,0.0"
+        # 기본 값 설정 함수
+        def set_default_if_empty(value):
+            return value if value and value != ",,," else "-,-,-,0.0"
 
-        if self.rising_business_national_rising_sales_top3_info == ",,,":
-            self.rising_business_national_rising_sales_top3_info = "-,-,-,0.0"
+        # 필드 값 검사 및 기본 값 설정
+        self.rising_business_national_rising_sales_top1_info = set_default_if_empty(
+            self.rising_business_national_rising_sales_top1_info
+        )
+        self.rising_business_national_rising_sales_top2_info = set_default_if_empty(
+            self.rising_business_national_rising_sales_top2_info
+        )
+        self.rising_business_national_rising_sales_top3_info = set_default_if_empty(
+            self.rising_business_national_rising_sales_top3_info
+        )
+        self.rising_business_national_rising_sales_top4_info = set_default_if_empty(
+            self.rising_business_national_rising_sales_top4_info
+        )
+        self.rising_business_national_rising_sales_top5_info = set_default_if_empty(
+            self.rising_business_national_rising_sales_top5_info
+        )
 
-        if self.rising_business_national_rising_sales_top4_info == ",,,":
-            self.rising_business_national_rising_sales_top4_info = "-,-,-,0.0"
+        self.rising_business_sub_district_rising_sales_top1_info = set_default_if_empty(
+            self.rising_business_sub_district_rising_sales_top1_info
+        )
+        self.rising_business_sub_district_rising_sales_top2_info = set_default_if_empty(
+            self.rising_business_sub_district_rising_sales_top2_info
+        )
+        self.rising_business_sub_district_rising_sales_top3_info = set_default_if_empty(
+            self.rising_business_sub_district_rising_sales_top3_info
+        )
 
-        if self.rising_business_national_rising_sales_top5_info == ",,,":
-            self.rising_business_national_rising_sales_top5_info = "-,-,-,0.0"
-
-        if self.rising_business_sub_district_rising_sales_top1_info == ",,,":
-            self.rising_business_sub_district_rising_sales_top1_info = "-,-,-,0.0"
-
-        if self.rising_business_sub_district_rising_sales_top2_info == ",,,":
-            self.rising_business_sub_district_rising_sales_top2_info = "-,-,-,0.0"
-
-        if self.rising_business_sub_district_rising_sales_top3_info == ",,,":
-            self.rising_business_sub_district_rising_sales_top3_info = "-,-,-,0.0"
+    class Config:
+        from_attributes = True
 
     class Config:
         from_attributes = True
