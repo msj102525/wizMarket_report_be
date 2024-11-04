@@ -604,12 +604,12 @@ def select_commercial_district_commercial_district_by_store_business_number(
 
                 # 시간대별 최대 판매 비율 찾기
                 time_slots = [
-                    ("06_09", row["COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_06_09"]),
-                    ("09_12", row["COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_09_12"]),
-                    ("12_15", row["COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_12_15"]),
-                    ("15_18", row["COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_15_18"]),
-                    ("18_21", row["COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_18_21"]),
-                    ("21_24", row["COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_21_24"]),
+                    ("06~09", row["COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_06_09"]),
+                    ("09~12", row["COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_09_12"]),
+                    ("12~15", row["COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_12_15"]),
+                    ("15~18", row["COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_15_18"]),
+                    ("18~21", row["COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_18_21"]),
+                    ("21~24", row["COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_21_24"]),
                 ]
 
                 # None이거나 0인 경우 필터링
