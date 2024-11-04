@@ -180,25 +180,25 @@ def get_loc_info_gpt_answer_by_local_store_commercial_district(
 
 
 # 뜨는업종 Gpt Prompt
-def get_loc_info_gpt_answer_by_local_store_rising_business(
+def get_rising_business_gpt_answer_by_rising_business(
     rising_data=LocalStoreRisingBusinessNTop5SDTop3,
 ) -> GPTAnswer:
     try:
 
         # 보낼 프롬프트 설정
         content = f"""
-                2024년 8월
+                날짜: {rising_data.nice_biz_map_data_ref_date}
                 전국 매출 증가 업종 TOP5 
-                1위 : 경상남도	통영시 북신동	소매/유통	인테리어/소품	보일러/냉난방용품  22911.8%
-                2위 : 인천광역시	미추홀구	도화1동	소매/유통	인테리어/소품 보일러/냉난방용품 21067.5%
-                3위 : 부산광역시	금정구	서3동	소매/유통	패션잡화	구두제화/캐주얼화 11598.3%
-                4위 : 경기도	안양시	관양동	소매/유통	가전제품	이동통신기기 10410.2%
-                5위 : 부산광역시	강서구	녹산동	음식	양식	정통양식/경양식  7172.1%
+                1위 : {rising_data.rising_business_national_rising_sales_top1_info}%
+                2위 : {rising_data.rising_business_national_rising_sales_top2_info}%
+                3위 : {rising_data.rising_business_national_rising_sales_top3_info}%
+                4위 : {rising_data.rising_business_national_rising_sales_top4_info}%
+                5위 : {rising_data.rising_business_national_rising_sales_top5_info}%
                 당산2동 매출 증가 업종 Top3
-                1위 : 음식	간이주점	이자까야	904.8%
-                2위 : 학문/교육	독서실/고시원	독서실/장소대여	127.1%
-                3위 : 소매/유통	패션잡화	잡화점	57% 
-                위 정보를 바탕으로 당산2동에서 돼지고기 구이 찜 업종 매장인 '일차3.5숙성고기' 점포의 영업전략 분석과 조언을 해주세요. 
+                1위 : {rising_data.rising_business_sub_district_rising_sales_top1_info}
+                2위 : {rising_data.rising_business_sub_district_rising_sales_top2_info}
+                3위 : {rising_data.rising_business_sub_district_rising_sales_top3_info}
+                위 정보를 바탕으로 {rising_data.sub_district_name}에서 {rising_data.detail_category_name} 업종 매장인 {rising_data.store_name} 점포의 영업전략 분석과 조언을 해주세요. 
         """
         client = OpenAI(api_key=os.getenv("GPT_KEY"))
         # OpenAI API 키 설정
@@ -224,7 +224,7 @@ def get_loc_info_gpt_answer_by_local_store_rising_business(
         logger.error(f"Service GPTAnswer Error: {str(e)}")
         raise HTTPException(
             status_code=500,
-            detail=f"Service get_loc_info_gpt_answer_by_local_store_rising_business Error: {str(e)}",
+            detail=f"Service get_rising_business_gpt_answer_by_rising_business Error: {str(e)}",
         )
 
 

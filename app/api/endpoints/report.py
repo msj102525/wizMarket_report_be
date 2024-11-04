@@ -22,6 +22,7 @@ from app.schemas.report import (
     LocalStoreRedux,
     LocalStoreResidentWorkPopData,
     LocalStoreRisingBusinessNTop5SDTop3,
+    LocalStoreRisingBusinessNTop5SDTop3Output,
     LocalStoreTop5Menu,
     LocalStoreTop5MenuAdviceOutput,
     WeatherInfo,
@@ -67,6 +68,7 @@ from app.service.rising_business import (
 from app.service.gpt_answer import (
     get_rising_business_gpt_answer_by_local_store_top5_menu as service_get_rising_business_gpt_answer_by_local_store_top5_menu,
     get_loc_info_gpt_answer_by_local_store_loc_info as service_get_loc_info_gpt_answer_by_local_store_loc_info,
+    get_rising_business_gpt_answer_by_rising_business as service_get_rising_business_gpt_answer_by_rising_business,
 )
 
 router = APIRouter()
@@ -461,13 +463,40 @@ def select_commercial_district_rising_sales_by_store_business_number(
 
 @router.get(
     "/rising/business",
-    response_model=LocalStoreRisingBusinessNTop5SDTop3,
+    response_model=LocalStoreRisingBusinessNTop5SDTop3Output,
 )
 def select_rising_business_by_store_business_id(store_business_id: str):
     # print(store_business_id)
     try:
 
-        return service_select_rising_business_by_store_business_id(store_business_id)
+        rising_business_data = service_select_rising_business_by_store_business_id(
+            store_business_id
+        )
+
+        # logger.info(f"rising_business_data: {rising_business_data}")
+
+        # report_advice: GPTAnswer = (
+        #     service_get_rising_business_gpt_answer_by_rising_business(
+        #         rising_business_data
+        #     )
+        # )
+
+        report_advice_dummy = """Dummy 당산2동에서 삼겹살집을 운영하는 점주님에게, 전국 및 지역 매출 증가업종 순위를 바탕으로 분석한 결과와 이에 대한 조언을 드리겠습니다.
+                                1. 전국 매출 증가업종 순위 분석
+                                전국적으로 매출 증가업종 상위 5개를 보면, **레저용품, 건강식품, 이동통신기기, 자전거, 열쇠/철물/건설자재** 같은 매우 다양한 업종들이 있습니다. 특히 레저 및 건강 관련 상품들이 크게 성장하고 있는데, 이는 현재 소비자들이 여가를 즐기고 건강에 대한 관심이 높아진 트렌드를 반영합니다.
+                                이러한 트렌드는 외식 업종과도 연관이 있습니다. 예를 들어, **레저와 야외활동**에 대한 관심이 높아지면서 활동 후 즐길 수 있는 외식 옵션이나 건강식과 연관된 음식이 인기를 끌 가능성이 큽니다. 삼겹살 역시 이런 소비자의 활동 후 즐기기 좋은 메뉴 중 하나일 수 있기 때문에, **건강한 이미지**나 **야외 활동과 연계한 마케팅**을 고려해 볼 수 있습니다.
+                                2. 당산2동 매출 증가업종 순위 분석
+                                - 1위: 음식 - 이자카야 904.8% 증가
+                                - 이는 **이자카야**와 같은 편안한 주류 및 식사 공간에 대한 수요가 크게 증가한 것을 보여줍니다. 삼겹살집도 술을 함께 즐길 수 있는 공간이라는 점에서 비슷한 수요를 일부 공유할 수 있습니다. 점주님도 **소주, 막걸리와 함께 즐기는 고기 메뉴**를 강화하거나 **이자카야처럼 다소 프리미엄한 분위기**나 소규모 고객 타겟팅 전략을 검토해 볼 수 있습니다.
+                            """
+
+        result = LocalStoreRisingBusinessNTop5SDTop3Output(
+            rising_business_data=rising_business_data,
+            # rising_business_advice = report_advice.gpt_answer,
+            rising_business_advice=report_advice_dummy,
+        )
+
+        return result
 
     except HTTPException as http_ex:
         logger.error(f"HTTP error occurred: {http_ex.detail}")

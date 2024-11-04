@@ -625,6 +625,7 @@ class LocalStoreRisingBusinessNTop5SDTop3(BaseModel):
     sub_district_name: str
     store_name: str
     nice_biz_map_data_ref_date: Optional[date] = None
+    detail_category_name: str
 
     rising_business_national_rising_sales_top1_info: Optional[str] = None
     rising_business_national_rising_sales_top2_info: Optional[str] = None
@@ -672,6 +673,11 @@ class LocalStoreRisingBusinessNTop5SDTop3(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class LocalStoreRisingBusinessNTop5SDTop3Output(BaseModel):
+    rising_business_data: LocalStoreRisingBusinessNTop5SDTop3
+    rising_business_advice: str
 
     class Config:
         from_attributes = True

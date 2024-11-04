@@ -26,6 +26,7 @@ def select_rising_business_by_store_business_id(
                         SUB_DISTRICT_NAME,
                         STORE_NAME,
                         NICE_BIZ_MAP_DATA_REF_DATE,
+                        DETAIL_CATEGORY_NAME,
                         RISING_BUSINESS_NATIONAL_RISING_SALES_TOP1_INFO,
                         RISING_BUSINESS_NATIONAL_RISING_SALES_TOP2_INFO,
                         RISING_BUSINESS_NATIONAL_RISING_SALES_TOP3_INFO,
@@ -55,6 +56,7 @@ def select_rising_business_by_store_business_id(
                     sub_district_name=row["SUB_DISTRICT_NAME"],
                     store_name=row["STORE_NAME"],
                     nice_biz_map_data_ref_date=row["NICE_BIZ_MAP_DATA_REF_DATE"],
+                    detail_category_name=row["DETAIL_CATEGORY_NAME"],
                     rising_business_national_rising_sales_top1_info=row[
                         "RISING_BUSINESS_NATIONAL_RISING_SALES_TOP1_INFO"
                     ],
