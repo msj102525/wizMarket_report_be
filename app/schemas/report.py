@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 from pydantic import BaseModel, Field
 from datetime import date, datetime
 
@@ -146,8 +146,7 @@ class LocalStoreBasicInfo(BaseModel):
     floor_info: Optional[str] = None
     latitude: Optional[float] = None
     longitude: Optional[float] = None
-
-    local_store_image_url: Optional[str] = None
+    local_store_image_url: List[str] = []
 
     class Config:
         from_attributes = True
@@ -160,10 +159,10 @@ class LocalStoreBasicInfo(BaseModel):
         if self.longitude is None:
             self.longitude = "126.9814663"  # 남산 경도
 
-        if self.local_store_image_url is None:
-            self.local_store_image_url = (
-                "/static/images/store/basic_store_img.png"  # 기본 이미지
-            )
+        if not self.local_store_image_url:
+            self.local_store_image_url = [
+                "/static/images/store/basic_store_img.png"
+            ]  # 기본 이미지
 
 
 class WeatherInfo(BaseModel):

@@ -92,26 +92,34 @@ def select_local_store_info_by_store_business_number(
                     WHERE R.STORE_BUSINESS_NUMBER = %s
                     ;
                 """
-
+                
                 # logger.info(f"Executing query: {select_query}")
                 cursor.execute(select_query, (store_business_id,))
-
-                row = cursor.fetchone()
-
-                if not row:
+                
+                rows = cursor.fetchall()  # 모든 행 가져오기
+                
+                if not rows:
                     raise HTTPException(
                         status_code=404,
                         detail=f"LocalStoreBasicInfo {store_business_id}에 해당하는 매장 정보를 찾을 수 없습니다.",
                     )
 
+                # 매장 기본 정보는 첫 행에서 가져오고, 이미지 URL은 리스트로 수집
+                first_row = rows[0]
+                image_urls = [
+                    row["LOCAL_STORE_IMAGE_URL"]
+                    for row in rows
+                    if row["LOCAL_STORE_IMAGE_URL"] is not None
+                ]
+
                 result = LocalStoreBasicInfo(
-                    store_name=row["STORE_NAME"],
-                    road_name=row["ROAD_NAME"],
-                    building_name=row["BUILDING_NAME"],
-                    floor_info=row["FLOOR_INFO"],
-                    latitude=row["LATITUDE"],
-                    longitude=row["LONGITUDE"],
-                    local_store_image_url=row["LOCAL_STORE_IMAGE_URL"],
+                    store_name=first_row["STORE_NAME"],
+                    road_name=first_row["ROAD_NAME"],
+                    building_name=first_row["BUILDING_NAME"],
+                    floor_info=first_row["FLOOR_INFO"],
+                    latitude=first_row["LATITUDE"],
+                    longitude=first_row["LONGITUDE"],
+                    local_store_image_url=image_urls,
                 )
 
                 return result
