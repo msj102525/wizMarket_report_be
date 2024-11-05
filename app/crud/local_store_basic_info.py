@@ -85,11 +85,26 @@ def select_local_store_info_by_store_business_number(
                         R.FLOOR_INFO,
                         R.LATITUDE,
                         R.LONGITUDE,
-                        LSI.LOCAL_STORE_IMAGE_URL
+                        LSI.LOCAL_STORE_IMAGE_URL,
+                        R.CITY_NAME,
+                        R.SUB_DISTRICT_NAME,
+                        R.DETAIL_CATEGORY_NAME,
+                        R.DETAIL_CATEGORY_NAME,
+                        R.LOC_INFO_SHOP_K,
+                        R.LOC_INFO_AVERAGE_SALES_K,
+                        R.LOC_INFO_INCOME_WON,
+                        R.LOC_INFO_AVERAGE_SPEND_K,
+                        R.LOC_INFO_MOVE_POP_K,
+                        R.LOC_INFO_RESIDENT_K,
+                        R.LOC_INFO_HOUSE_K,
+                        R.COMMERCIAL_DISTRICT_SUB_DISTRICT_AVERAGE_SALES,
+                        R.COMMERCIAL_DISTRICT_SUB_DISTRICT_AVERAGE_PAYMENT,
+                        R.COMMERCIAL_DISTRICT_SUB_DISTRICT_USAGE_COUNT
                     FROM
                         REPORT R
                     LEFT JOIN LOCAL_STORE_IMAGE LSI ON LSI.STORE_BUSINESS_NUMBER = R.STORE_BUSINESS_NUMBER
                     WHERE R.STORE_BUSINESS_NUMBER = %s
+                    AND LSI.STATUS = 'Y'
                     ;
                 """
                 

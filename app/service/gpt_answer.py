@@ -27,6 +27,73 @@ now = datetime.now()
 current_time = now.strftime("%Y년 %m월 %d일 %H:%M")
 weekday = now.strftime("%A")
 
+# 매장정보 Gpt Prompt
+def get_store_info_gpt_answer_by_store_info(
+    rising_data=LocalStoreRisingBusinessNTop5SDTop3,
+) -> GPTAnswer:
+    try:
+
+        # 보낼 프롬프트 설정
+        content = f"""
+                다음과 같은 매장정보 입지 및 상권 현황과 현재 환경상황에 맞게 '현재 매장 운영 팁' 이라는 내용으로 매장 운영 가이드를 주세요. 
+                매장 정보 입지 및 상권 현황
+                - 위치 : 서울시 영등포구 당산2동 
+                - 업종 : 음식 > 한식 > 돼지고기 구이 찜 
+                - 매장이름 : 일차3.5숙성고기 O
+                - 당산2동 업소수 : 1904개 
+                - 당산2동 지역 평균매출 : 39870000원 
+                - 당산2동 월 평균소득 : 3640000원 
+                - 당산2동 월 평균소비 : 39870000원 
+                - 당산2동 유동인구 수 : 36720명 
+                - 당산2동 주거인구 수 : 30158명 
+                - 당산2동 세대 수 : 18927개 
+                - 당산2동 돼지고기 구이 찜 시장규모 : 72927 개 X
+                - 당산2동 돼지고기 구이 찜 업종 평균매출 : 34730000원 
+                - 당산2동 돼지고기 구이 찜 업종 평균결제액 : 67112원 
+                - 당산2동 돼지고기 구이 찜 업종 평균건수 : 10867건 
+                - 당산2동 돼지고기 구이 찜 업종 가장 매출이 높은 요일 : 목요일 X
+                - 당산2동 돼지고기 구이 찜 업종 가장 매출이 높은 시간대 : 18시~21시 X
+                - 당산2동 돼지고기 구이 찜 업종 가장 매출이 높은 연령.성별 : 50대 남성 X
+                현재 환경상황
+                - 날씨 : 맑음 O
+                - 기온 : 22도 O
+                - 미세먼지 : 2 등급 O
+                - 일몰시간 : 18:05 X
+                - 현재 시간 : 10월8일 화요일 17:25 O
+                작성 가이드 : 
+                1. 매장 운영가이드 내용은 아래 점주의 성향에 맞는 문체로 작성해주세요.
+                2. 5항목 이하, 항목당 2줄 이내로 작성해주세요.
+                - 점주 연령대 : 50대
+                - 점주 성별 : 남성
+                - 점주 성향 : IT나 트랜드 기술을 잘 알지 못함 
+        """
+        client = OpenAI(api_key=os.getenv("GPT_KEY"))
+        # OpenAI API 키 설정
+
+        completion = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": gpt_content},
+                {"role": "user", "content": content},
+            ],
+        )
+        report = completion.choices[0].message.content
+
+        # logger.info(f"loc_info_prompt: {content}")
+        # logger.info(f"loc_info_gpt: {report}")
+
+        result = GPTAnswer(gpt_answer=report)
+        return result
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Service GPTAnswer Error: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Service get_rising_business_gpt_answer_by_rising_business Error: {str(e)}",
+        )
+
 
 # 뜨는 메뉴 GPT Prompt
 def get_rising_business_gpt_answer_by_local_store_top5_menu(
@@ -226,6 +293,8 @@ def get_rising_business_gpt_answer_by_rising_business(
             status_code=500,
             detail=f"Service get_rising_business_gpt_answer_by_rising_business Error: {str(e)}",
         )
+        
+
 
 
 ################ 클로드 결제 후 사용 #################
