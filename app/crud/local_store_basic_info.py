@@ -88,14 +88,15 @@ def select_local_store_info_by_store_business_number(
                         LATITUDE,
                         LONGITUDE,
                         CITY_NAME,
+                        DISTRICT_NAME,
                         SUB_DISTRICT_NAME,
                         DETAIL_CATEGORY_NAME,
-                        LOC_INFO_SHOP_K,
-                        LOC_INFO_AVERAGE_SALES_K,
-                        LOC_INFO_INCOME_WON,
-                        LOC_INFO_AVERAGE_SPEND_K,
-                        LOC_INFO_MOVE_POP_K,
                         LOC_INFO_RESIDENT_K,
+                        LOC_INFO_MOVE_POP_K,
+                        LOC_INFO_SHOP_K,
+                        LOC_INFO_INCOME_WON,
+                        LOC_INFO_AVERAGE_SALES_K,
+                        LOC_INFO_AVERAGE_SPEND_K,
                         LOC_INFO_HOUSE_K,
                         COMMERCIAL_DISTRICT_SUB_DISTRICT_MARKET_SIZE,
                         COMMERCIAL_DISTRICT_SUB_DISTRICT_AVERAGE_SALES,
@@ -203,7 +204,6 @@ def select_local_store_info_by_store_business_number(
                     else ("-", 0)
                 )
 
-
                 # 시간대별 최대 판매 비율 찾기
                 time_slots = [
                     ("06~09", row["COMMERCIAL_DISTRICT_AVERAGE_SALES_PERCENT_06_09"]),
@@ -227,11 +227,10 @@ def select_local_store_info_by_store_business_number(
                     else ("-", 0)
                 )
 
+                # logger.info(f"top1 : {top1}")
+                # logger.info(f"max_weekday : {max_weekday}")
+                # logger.info(f"max_time : {max_time}")
 
-                logger.info(f'top1 : {top1}')
-                logger.info(f'max_weekday : {max_weekday}')
-                logger.info(f'max_time : {max_time}')
-                
                 # LocalStoreBasicInfo 객체 생성
                 result = LocalStoreBasicInfo(
                     store_name=row["STORE_NAME"],
@@ -241,6 +240,32 @@ def select_local_store_info_by_store_business_number(
                     latitude=row["LATITUDE"],
                     longitude=row["LONGITUDE"],
                     local_store_image_url=image_urls,
+                    city_name=row["CITY_NAME"],
+                    district_name=row["DISTRICT_NAME"],
+                    sub_district_name=row["SUB_DISTRICT_NAME"],
+                    detail_category_name=row["DETAIL_CATEGORY_NAME"],
+                    loc_info_resident_k=row["LOC_INFO_RESIDENT_K"],
+                    loc_info_move_pop_k=row["LOC_INFO_MOVE_POP_K"],
+                    loc_info_shop_k=row["LOC_INFO_SHOP_K"],
+                    loc_info_income_won=row["LOC_INFO_INCOME_WON"],
+                    loc_info_average_sales_k=row["LOC_INFO_AVERAGE_SALES_K"],
+                    loc_info_average_spend_k=row["LOC_INFO_AVERAGE_SPEND_K"],
+                    loc_info_house_k=row["LOC_INFO_HOUSE_K"],
+                    commercial_district_sub_district_market_size=row[
+                        "COMMERCIAL_DISTRICT_SUB_DISTRICT_MARKET_SIZE"
+                    ],
+                    commercial_district_sub_district_average_sales=row[
+                        "COMMERCIAL_DISTRICT_SUB_DISTRICT_AVERAGE_SALES"
+                    ],
+                    commercial_district_sub_district_average_payment=row[
+                        "COMMERCIAL_DISTRICT_SUB_DISTRICT_AVERAGE_PAYMENT"
+                    ],
+                    commercial_district_sub_district_usage_count=row[
+                        "COMMERCIAL_DISTRICT_SUB_DISTRICT_USAGE_COUNT"
+                    ],
+                    commercial_district_max_weekday=max_weekday[0],
+                    commercial_district_max_time=max_time[0],
+                    commercial_district_max_clinet=age_gender_mapping[top1[0]],
                 )
 
                 return result

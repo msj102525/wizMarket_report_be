@@ -44,7 +44,7 @@ class Report(BaseModel):
     loc_info_average_sales_k: Optional[float] = None  # INT
     loc_info_average_spend_k: Optional[float] = None  # INT
     loc_info_house_k: Optional[float] = None  # INT
-    
+
     loc_info_resident_j_score: Optional[float] = None  # FLOAT
     loc_info_work_pop_j_score: Optional[float] = None  # FLOAT
     loc_info_move_pop_j_score: Optional[float] = None  # FLOAT
@@ -187,6 +187,28 @@ class LocalStoreBasicInfo(BaseModel):
     longitude: Optional[float] = None
     local_store_image_url: List[str] = []
 
+    city_name: Optional[str] = None  # VARCHAR(50)
+    district_name: Optional[str] = None  # VARCHAR(50)
+    sub_district_name: Optional[str] = None  # VARCHAR(50)
+    detail_category_name: Optional[str]  # VARCHAR(100)
+
+    loc_info_resident_k: Optional[float] = None
+    loc_info_move_pop_k: Optional[float] = None
+    loc_info_shop_k: Optional[float] = None
+    loc_info_income_won: Optional[int] = None
+    loc_info_average_sales_k: Optional[float] = None
+    loc_info_average_spend_k: Optional[float] = None
+    loc_info_house_k: Optional[float] = None
+
+    commercial_district_sub_district_market_size: Optional[int] = None
+    commercial_district_sub_district_average_sales: Optional[int] = None
+    commercial_district_sub_district_average_payment: Optional[int] = None
+    commercial_district_sub_district_usage_count: Optional[int] = None
+
+    commercial_district_max_weekday: Optional[str] = None
+    commercial_district_max_time: Optional[str] = None
+    commercial_district_max_clinet: Optional[str] = None
+
     class Config:
         from_attributes = True
 
@@ -205,6 +227,7 @@ class LocalStoreBasicInfo(BaseModel):
 
 
 class WeatherInfo(BaseModel):
+    main: str
     icon: str
     temp: float
 
@@ -225,6 +248,7 @@ class LocalStoreInfoWeaterInfoOutput(BaseModel):
     weatherInfo: WeatherInfo
     aqi_info: AqiInfo
     format_current_datetime: str
+    store_info_advice: Optional[str] = None
 
     class Config:
         from_attributes = True

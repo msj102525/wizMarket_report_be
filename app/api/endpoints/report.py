@@ -69,6 +69,7 @@ from app.service.gpt_answer import (
     get_rising_business_gpt_answer_by_local_store_top5_menu as service_get_rising_business_gpt_answer_by_local_store_top5_menu,
     get_loc_info_gpt_answer_by_local_store_loc_info as service_get_loc_info_gpt_answer_by_local_store_loc_info,
     get_rising_business_gpt_answer_by_rising_business as service_get_rising_business_gpt_answer_by_rising_business,
+    get_store_info_gpt_answer_by_store_info as service_get_store_info_gpt_answer_by_store_info,
 )
 
 router = APIRouter()
@@ -141,13 +142,22 @@ def select_report_store_info(store_business_id: str):
 
         format_current_datetime: str = service_get_currnet_datetime()
 
-        response_data = LocalStoreInfoWeaterInfoOutput(
+        store_all_data = LocalStoreInfoWeaterInfoOutput(
             localStoreInfo=local_store_info,
             weatherInfo=weather_data,
             aqi_info=pm_data,
             format_current_datetime=format_current_datetime,
         )
-        return response_data
+        store_advice = service_get_store_info_gpt_answer_by_store_info(store_all_data)
+
+        result = LocalStoreInfoWeaterInfoOutput(
+            localStoreInfo=local_store_info,
+            weatherInfo=weather_data,
+            aqi_info=pm_data,
+            format_current_datetime=format_current_datetime,
+            store_info_advice=store_advice.gpt_answer,
+        )
+        return result
 
     except HTTPException as http_ex:
         logger.error(f"HTTP error occurred: {http_ex.detail}")

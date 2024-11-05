@@ -84,6 +84,7 @@ def get_weather_info_by_lat_lng(
         # logger.info(f"Weather API response: {weather_data}")
 
         weather_info = WeatherInfo(
+            main = weather_data["weather"][0]["main"],
             icon=weather_data["weather"][0]["icon"],
             temp=weather_data["main"]["temp"],
         )
