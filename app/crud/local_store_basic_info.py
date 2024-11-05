@@ -111,6 +111,7 @@ def select_local_store_info_by_store_business_number(
                     floor_info=row["FLOOR_INFO"],
                     latitude=row["LATITUDE"],
                     longitude=row["LONGITUDE"],
+                    local_store_image_url=row["LOCAL_STORE_IMAGE_URL"],
                 )
 
                 return result

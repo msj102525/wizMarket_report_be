@@ -162,7 +162,7 @@ class LocalStoreBasicInfo(BaseModel):
 
         if self.local_store_image_url is None:
             self.local_store_image_url = (
-                "/static/images/report/basic_store_img.png"  # 기본 이미지
+                "/static/images/store/basic_store_img.png"  # 기본 이미지
             )
 
 
