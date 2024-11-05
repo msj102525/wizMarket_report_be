@@ -148,14 +148,28 @@ def select_report_store_info(store_business_id: str):
             aqi_info=pm_data,
             format_current_datetime=format_current_datetime,
         )
-        store_advice = service_get_store_info_gpt_answer_by_store_info(store_all_data)
+        # store_advice = service_get_store_info_gpt_answer_by_store_info(store_all_data)
+
+        store_advice_dummy = """Dummy 
+                                1.점심 시간대 집중 전략
+                                분평동에서 가장 매출이 높은 시간대는 12시부터 15시 사이입니다. 이 시간에 특별 메뉴나 할인 이벤트로 고객을 유치해보세요.
+                                    2.	주말 프로모션 강화
+                                토요일에 매출이 가장 높으니, 주말에 가족 단위 고객을 대상으로 하는 패키지 프로모션을 고려하세요.
+                                    3.	IT 기술 활용한 예약 시스템 최적화
+                                IT에 익숙하시면, 예약 시스템을 강화해 고객 대기 시간을 줄이고, 방문 경험을 더욱 편리하게 만드세요.
+                                    4.	50대 여성 고객 맞춤 서비스 제공
+                                가장 큰 고객층인 50대 여성을 위한 특별한 메뉴나 세트 구성, VIP 프로그램 등을 도입하여 고객 충성도를 높이세요.
+                                    5.	날씨에 맞춘 테라스 좌석 활용
+                                오늘처럼 맑은 날씨에는 테라스나 창가 자리를 강조해 고객에게 특별한 분위기를 제공하세요.
+                                """
 
         result = LocalStoreInfoWeaterInfoOutput(
             localStoreInfo=local_store_info,
             weatherInfo=weather_data,
             aqi_info=pm_data,
             format_current_datetime=format_current_datetime,
-            store_info_advice=store_advice.gpt_answer,
+            # store_info_advice=store_advice.gpt_answer, #GPT
+            store_info_advice=store_advice_dummy, # Dummy
         )
         return result
 
