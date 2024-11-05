@@ -854,6 +854,17 @@ class LocalStoreMappingSubDistrictDetailCategoryId(BaseModel):
         from_attributes = True
 
 
+# 매장 소분류 비즈맵 매핑 대표 id
+class LocalStoreContent(BaseModel):
+    local_store_content_id: int
+    store_description_title: str
+    store_description_content: Optional[str]
+    store_description_img_url: List[Optional[str]]
+
+    class Config:
+        from_attributes = True
+
+
 #######################################################################
 #######################################################################
 #######################################################################
