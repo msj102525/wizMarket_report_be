@@ -153,7 +153,10 @@ def select_report_store_info(store_business_id: str):
             aqi_info=pm_data,
             format_current_datetime=format_current_datetime,
         )
-        # store_advice = service_get_store_info_gpt_answer_by_store_info(store_all_data)
+
+        # GPT ###########################################################################
+        # store_advice: GPTAnswer = service_get_store_info_gpt_answer_by_store_info(store_all_data)
+        # GPT ###########################################################################
 
         store_advice_dummy = """Dummy 
                                 1.점심 시간대 집중 전략
@@ -207,8 +210,10 @@ def get_report_rising_menu_gpt(
         )
         # logger.info(f"rising_menu_top5: {rising_menu_top5}")
 
+        # GPT ###########################################################################
         # report_advice = service_get_rising_business_gpt_answer_by_local_store_top5_menu(rising_menu_top5) # GPT API
         # logger.info(f"report_advice: {report_advice}")
+        # GPT ###########################################################################
 
         report_dummy = """Dummy Data<br/> 삼겹살이랑 돼지갈비가 인기가 많으니까,<br/> 그 두 가지를 묶어서 세트 메뉴로 한번 내봐유.<br/>금요일엔 사람들이 술도 많이 먹으니까 병맥주나<br/>소주 할인 이벤트 하나 해주면 딱 좋을 거여.<br/>된장찌개는 그냥 기본으로 맛있게 준비해주면 손님들 만족도가 더 높아질 거유!"""
 
@@ -287,11 +292,13 @@ def select_loc_info_j_scorereport_data(store_business_id: str):
 
         # logger.info(f"local_store_loc_info_data: {local_store_loc_info_data}")
 
+        # GPT ###########################################################################
         # report_advice: GPTAnswer = (
         #     service_get_loc_info_gpt_answer_by_local_store_loc_info(
         #         local_store_loc_info_data
         #     )
         # )
+        # GPT ###########################################################################
         report_dummy = """Dummy Data
                                 결론
                                 전국적 트렌드와 지역 매출 증가업종 데이터를 바탕으로, **이자카야의 인기를 반영한 프리미엄 주류와 삼겹살의 결합** 및 **젊은층을 겨냥한 효율적인 메뉴 제공**이 당산2동에서 성공적인 전략이 될 수 있습니다.
@@ -504,11 +511,13 @@ def select_rising_business_by_store_business_id(store_business_id: str):
 
         # logger.info(f"rising_business_data: {rising_business_data}")
 
+        # GPT ###########################################################################
         # report_advice: GPTAnswer = (
         #     service_get_rising_business_gpt_answer_by_rising_business(
         #         rising_business_data
         #     )
         # )
+        # GPT ###########################################################################
 
         report_advice_dummy = """Dummy 당산2동에서 삼겹살집을 운영하는 점주님에게, 전국 및 지역 매출 증가업종 순위를 바탕으로 분석한 결과와 이에 대한 조언을 드리겠습니다.
 
