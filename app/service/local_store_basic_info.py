@@ -1,9 +1,7 @@
-from datetime import datetime
+from fastapi import HTTPException
 import logging
 import os
-from typing import List
-from dotenv import load_dotenv
-from fastapi import HTTPException
+from datetime import datetime, timezone, timedelta
 import pytz
 import requests
 
@@ -83,15 +81,22 @@ def get_weather_info_by_lat_lng(
 
         # logger.info(f"Weather API response: {weather_data}")
 
+        sunrise_timestamp = weather_data["sys"]["sunrise"]
+        sunset_timestamp = weather_data["sys"]["sunset"]
+
+        kst_timezone = timezone(timedelta(hours=9))
+        sunrise = datetime.fromtimestamp(sunrise_timestamp, tz=kst_timezone).strftime("%H:%M")
+        sunset = datetime.fromtimestamp(sunset_timestamp, tz=kst_timezone).strftime("%H:%M")
+
         weather_info = WeatherInfo(
-            main = weather_data["weather"][0]["main"],
+            main=weather_data["weather"][0]["main"],
             icon=weather_data["weather"][0]["icon"],
             temp=weather_data["main"]["temp"],
+            sunrise=sunrise,
+            sunset=sunset,
         )
 
-        # logger.info(
-        #     f"Processed weather info: icon='{weather_info.icon}' temp={weather_info.temp}"
-        # )
+        # logger.info(f"Processed weather info: {weather_info}")
         return weather_info
 
     except requests.RequestException as e:
@@ -165,10 +170,6 @@ def get_pm_info_by_city_name(lat: float, lng: float, lang: str = "kr") -> AqiInf
         error_msg = f"Weather service AQI error: {str(e)}"
         logger.error(error_msg)
         raise HTTPException(status_code=500, detail=error_msg)
-
-
-from datetime import datetime
-import pytz
 
 
 def get_currnet_datetime() -> str:

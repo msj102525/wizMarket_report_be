@@ -44,27 +44,36 @@ def get_store_info_gpt_answer_by_store_info(
             - 위치: {store_all_data.localStoreInfo.city_name} {store_all_data.localStoreInfo.district_name} {store_all_data.localStoreInfo.sub_district_name}
             - 업종: {store_all_data.localStoreInfo.detail_category_name}
             - 매장 이름: {store_all_data.localStoreInfo.store_name}
-            - 매장 주소: {store_all_data.localStoreInfo.road_name}, {store_all_data.localStoreInfo.building_name} {store_all_data.localStoreInfo.floor_info}층
-            - 주거 인구 수: {store_all_data.localStoreInfo.loc_info_resident_k}K
-            - 유동 인구 수: {store_all_data.localStoreInfo.loc_info_move_pop_k}K
-            - 평균 매출: {store_all_data.localStoreInfo.loc_info_average_sales_k}천원
-            - 평균 결제 금액: {store_all_data.localStoreInfo.loc_info_average_spend_k}천원
-            - 상권 내 가장 매출이 높은 요일: {store_all_data.localStoreInfo.commercial_district_max_weekday}
-            - 상권 내 가장 매출이 높은 시간대: {store_all_data.localStoreInfo.commercial_district_max_time}
+            - {store_all_data.localStoreInfo.sub_district_name} 업소수 :{store_all_data.localStoreInfo.loc_info_shop_k}천개
+            - {store_all_data.localStoreInfo.sub_district_name} 지역 평균매출 : {store_all_data.localStoreInfo.loc_info_average_sales_k * 1000}원
+            - {store_all_data.localStoreInfo.sub_district_name} 월 평균소득 : {store_all_data.localStoreInfo.loc_info_income_won * 10000}원
+            - {store_all_data.localStoreInfo.sub_district_name} 월 평균소비 : {store_all_data.localStoreInfo.loc_info_average_spend_k * 1000}원
+            - {store_all_data.localStoreInfo.sub_district_name} 세대 수 : {store_all_data.localStoreInfo.loc_info_house_k * 1000}개
+            - {store_all_data.localStoreInfo.sub_district_name} 돼지고기 구이 찜 시장규모 : {store_all_data.localStoreInfo.commercial_district_sub_district_market_size}원
+            - {store_all_data.localStoreInfo.sub_district_name} 주거 인구 수: {store_all_data.localStoreInfo.loc_info_resident_k}K
+            - {store_all_data.localStoreInfo.sub_district_name} 유동 인구 수: {store_all_data.localStoreInfo.loc_info_move_pop_k}K
+            - {store_all_data.localStoreInfo.sub_district_name} 돼지고기 구이 찜 업종 평균 이용건수 : {store_all_data.localStoreInfo.commercial_district_sub_district_usage_count}건
+            - {store_all_data.localStoreInfo.sub_district_name} 평균 결제 금액: {store_all_data.localStoreInfo.commercial_district_sub_district_average_payment}원
+            - {store_all_data.localStoreInfo.sub_district_name} 가장 매출이 높은 요일: {store_all_data.localStoreInfo.commercial_district_max_weekday}
+            - {store_all_data.localStoreInfo.sub_district_name} 가장 매출이 높은 시간대: {store_all_data.localStoreInfo.commercial_district_max_time}
             - 주 고객층: {store_all_data.localStoreInfo.commercial_district_max_clinet}
+
 
             [현재 환경 상황]
             - 날씨 상태: {store_all_data.weatherInfo.main}
             - 현재 기온: {store_all_data.weatherInfo.temp}도
             - 미세먼지 등급: {store_all_data.aqi_info.description} (등급: {store_all_data.aqi_info.aqi})
+            - 일출시간 : {store_all_data.weatherInfo.sunrise}
+            - 일몰시간 : {store_all_data.weatherInfo.sunset}
             - 현재 시간: {store_all_data.format_current_datetime}
+            
+            작성 가이드 : 
+            1. 매장 운영가이드 내용은 아래 점주의 성향에 맞는 문체로 작성해주세요.
+            2. 5항목 이하, 항목당 2줄 이내로 작성해주세요.
 
-            [작성 가이드]
-            1. 매장 운영 팁을 점주의 성향에 맞추어 작성해주세요.
-            2. 5개 이하 항목으로, 각 항목은 2줄 이내로 간단하게 작성해주세요.
-            - 점주 연령대: 50대
-            - 점주 성별: 남성
-            - 점주 성향: IT나 트렌드 기술에 익숙하지 않음
+            - 점주 연령대 : 50대
+            - 점주 성별 : 남성
+            - 점주 성향 : IT나 트랜드 기술을 잘 알지 못함 
         """
         client = OpenAI(api_key=os.getenv("GPT_KEY"))
         # OpenAI API 키 설정

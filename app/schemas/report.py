@@ -74,7 +74,6 @@ class Report(BaseModel):
 
     commercial_district_national_market_size: Optional[int] = None  # Int
     commercial_district_sub_district_market_size: Optional[int] = None  # Int
-
     commercial_district_national_density_average: Optional[float] = None  # Int
     commercial_district_sub_district_density_average: Optional[float] = None  # Int
     commercial_district_national_average_sales: Optional[int] = None  # Int
@@ -230,6 +229,8 @@ class WeatherInfo(BaseModel):
     main: str
     icon: str
     temp: float
+    sunrise: str
+    sunset: str
 
     class Config:
         from_attributes = True
