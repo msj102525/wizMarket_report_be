@@ -6,6 +6,7 @@ from openai import OpenAI
 from datetime import datetime
 from app.schemas.report import (
     GPTAnswer,
+    LocalStoreCommercialDistrictJscoreAverage,
     LocalStoreInfoWeaterInfoOutput,
     LocalStoreLocInfoJscoreData,
     LocalStoreRisingBusinessNTop5SDTop3,
@@ -124,7 +125,6 @@ def get_rising_business_gpt_answer_by_local_store_top5_menu(
         # logger.info(f"gpt prompt: {content}")
 
         client = OpenAI(api_key=os.getenv("GPT_KEY"))
-        # OpenAI API 키 설정
 
         completion = client.chat.completions.create(
             model="gpt-4o",
@@ -155,7 +155,6 @@ def get_loc_info_gpt_answer_by_local_store_loc_info(
     try:
         region_name = f"{loc_data.city_name} {loc_data.district_name} {loc_data.sub_district_name}"
 
-        # 보낼 프롬프트 설정
         content = f"""
             다음과 같은 매장정보 입지 현황을 바탕으로 매장 입지 특징을 분석하시고 입지에 따른 매장운영 가이드를 제시해주세요. 
             각 항목의 점수는 전체 지역 대비 순위를 나타낸것으로 0~10점으로 구성됩니다.
@@ -178,7 +177,6 @@ def get_loc_info_gpt_answer_by_local_store_loc_info(
 
         """
         client = OpenAI(api_key=os.getenv("GPT_KEY"))
-        # OpenAI API 키 설정
 
         completion = client.chat.completions.create(
             model="gpt-4o",
@@ -212,12 +210,10 @@ def get_loc_info_gpt_answer_by_local_store_commercial_district(
     try:
         region_name = f"{loc_data.city_name} {loc_data.district_name} {loc_data.sub_district_name}"
 
-        # 보낼 프롬프트 설정
         content = f"""
 
         """
         client = OpenAI(api_key=os.getenv("GPT_KEY"))
-        # OpenAI API 키 설정
 
         completion = client.chat.completions.create(
             model="gpt-4o",
@@ -244,13 +240,48 @@ def get_loc_info_gpt_answer_by_local_store_commercial_district(
         )
 
 
+# 상권분석 J_Score Gpt Prompt
+def get_commercial_district_gpt_answer_by_cd_j_score_average(
+    cd_data=LocalStoreCommercialDistrictJscoreAverage,
+) -> GPTAnswer:
+    try:
+
+        content = f"""
+            
+        """
+        client = OpenAI(api_key=os.getenv("GPT_KEY"))
+
+        completion = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": gpt_content},
+                {"role": "user", "content": content},
+            ],
+        )
+        report = completion.choices[0].message.content
+
+        # logger.info(f"loc_info_prompt: {content}")
+        # logger.info(f"loc_info_gpt: {report}")
+
+        result = GPTAnswer(gpt_answer=report)
+        return result
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Service GPTAnswer Error: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Service get_rising_business_gpt_answer_by_rising_business Error: {str(e)}",
+        )
+
+
 # 뜨는업종 Gpt Prompt
 def get_rising_business_gpt_answer_by_rising_business(
     rising_data=LocalStoreRisingBusinessNTop5SDTop3,
 ) -> GPTAnswer:
     try:
 
-        # 보낼 프롬프트 설정
         content = f"""
                 날짜: {rising_data.nice_biz_map_data_ref_date}
                 전국 매출 증가 업종 TOP5 
@@ -266,7 +297,6 @@ def get_rising_business_gpt_answer_by_rising_business(
                 위 정보를 바탕으로 {rising_data.sub_district_name}에서 {rising_data.detail_category_name} 업종 매장인 {rising_data.store_name} 점포의 영업전략 분석과 조언을 해주세요. 
         """
         client = OpenAI(api_key=os.getenv("GPT_KEY"))
-        # OpenAI API 키 설정
 
         completion = client.chat.completions.create(
             model="gpt-4o",

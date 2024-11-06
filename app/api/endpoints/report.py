@@ -74,6 +74,7 @@ from app.service.gpt_answer import (
     get_rising_business_gpt_answer_by_local_store_top5_menu as service_get_rising_business_gpt_answer_by_local_store_top5_menu,
     get_loc_info_gpt_answer_by_local_store_loc_info as service_get_loc_info_gpt_answer_by_local_store_loc_info,
     get_rising_business_gpt_answer_by_rising_business as service_get_rising_business_gpt_answer_by_rising_business,
+    get_commercial_district_gpt_answer_by_cd_j_score_average as service_get_commercial_district_gpt_answer_by_cd_j_score_average,
     get_store_info_gpt_answer_by_store_info as service_get_store_info_gpt_answer_by_store_info,
 )
 
@@ -411,9 +412,19 @@ def select_commercial_district_j_score_by_store_business_number(store_business_i
     # print(store_business_id)
     try:
 
-        return service_select_commercial_district_j_score_by_store_business_number(
-            store_business_id
+        cd_j_score_data = (
+            service_select_commercial_district_j_score_by_store_business_number(
+                store_business_id
+            )
         )
+
+        # GPT ###########################################################################
+        # cd_j_score_advice: GPTAnswer = (
+        #     service_get_commercial_district_gpt_answer_by_cd_j_score_average()
+        # )
+        # GPT ###########################################################################
+
+        return cd_j_score_data
 
     except HTTPException as http_ex:
         logger.error(f"HTTP error occurred: {http_ex.detail}")
