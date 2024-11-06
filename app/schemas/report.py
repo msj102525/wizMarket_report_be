@@ -223,6 +223,7 @@ class LocalStoreBasicInfo(BaseModel):
             self.local_store_image_url = [
                 "/static/images/store/basic_store_img.png"
             ]  # 기본 이미지
+        
 
 
 class WeatherInfo(BaseModel):
