@@ -74,7 +74,6 @@ class Report(BaseModel):
 
     commercial_district_national_market_size: Optional[int] = None  # Int
     commercial_district_sub_district_market_size: Optional[int] = None  # Int
-
     commercial_district_national_density_average: Optional[float] = None  # Int
     commercial_district_sub_district_density_average: Optional[float] = None  # Int
     commercial_district_national_average_sales: Optional[int] = None  # Int
@@ -224,12 +223,15 @@ class LocalStoreBasicInfo(BaseModel):
             self.local_store_image_url = [
                 "/static/images/store/basic_store_img.png"
             ]  # 기본 이미지
+        
 
 
 class WeatherInfo(BaseModel):
     main: str
     icon: str
     temp: float
+    sunrise: str
+    sunset: str
 
     class Config:
         from_attributes = True
@@ -849,6 +851,17 @@ class LocalStoreMappingSubDistrictDetailCategoryId(BaseModel):
     store_business_number: str
     sub_district_id: int
     detail_category_id: Optional[int] = 3  # 3: 비즈맵 소분류 없음 default 값
+
+    class Config:
+        from_attributes = True
+
+
+# 매장 소분류 비즈맵 매핑 대표 id
+class LocalStoreContent(BaseModel):
+    local_store_content_id: int
+    store_description_title: str
+    store_description_content: Optional[str]
+    store_description_img_url: List[Optional[str]]
 
     class Config:
         from_attributes = True

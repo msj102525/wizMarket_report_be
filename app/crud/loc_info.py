@@ -276,7 +276,7 @@ def select_loc_info_move_pop_by_store_business_number(
 
                 result = LocalStoreMovePopData(
                     loc_info_move_pop_j_score=round(
-                        row.get("LOC_INFO_MOVE_POP_J_SCORE")
+                        row.get("LOC_INFO_MOVE_POP_J_SCORE"), 1
                     ),
                     loc_info_move_pop=row.get("LOC_INFO_MOVE_POP"),
                     loc_info_city_move_pop=row.get("LOC_INFO_CITY_MOVE_POP"),

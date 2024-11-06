@@ -176,9 +176,8 @@ def select_local_store_info_by_store_business_number(
                     reverse=True,
                 )
 
-                top1 = (
-                    sorted_client_data[0] if len(sorted_client_data) > 0 else (None, 0)
-                )
+                top1_key = sorted_client_data[0][0] if sorted_client_data else None
+                max_client_type = age_gender_mapping.get(top1_key, "정보 없음")
 
                 # 요일별 최대 및 최소 판매 비율 찾기
                 weekdays = [
@@ -199,9 +198,9 @@ def select_local_store_info_by_store_business_number(
                 ]
 
                 max_weekday = (
-                    max(weekdays_filtered, key=lambda x: x[1])
+                    max(weekdays_filtered, key=lambda x: x[1])[0]
                     if weekdays_filtered
-                    else ("-", 0)
+                    else "정보 없음"
                 )
 
                 # 시간대별 최대 판매 비율 찾기
@@ -222,14 +221,10 @@ def select_local_store_info_by_store_business_number(
                 ]
 
                 max_time = (
-                    max(time_slots_filtered, key=lambda x: x[1])
+                    max(time_slots_filtered, key=lambda x: x[1])[0]
                     if time_slots_filtered
-                    else ("-", 0)
+                    else "정보 없음"
                 )
-
-                # logger.info(f"top1 : {top1}")
-                # logger.info(f"max_weekday : {max_weekday}")
-                # logger.info(f"max_time : {max_time}")
 
                 # LocalStoreBasicInfo 객체 생성
                 result = LocalStoreBasicInfo(
@@ -263,9 +258,9 @@ def select_local_store_info_by_store_business_number(
                     commercial_district_sub_district_usage_count=row[
                         "COMMERCIAL_DISTRICT_SUB_DISTRICT_USAGE_COUNT"
                     ],
-                    commercial_district_max_weekday=max_weekday[0],
-                    commercial_district_max_time=max_time[0],
-                    commercial_district_max_clinet=age_gender_mapping[top1[0]],
+                    commercial_district_max_weekday=max_weekday,
+                    commercial_district_max_time=max_time,
+                    commercial_district_max_clinet=max_client_type,
                 )
 
                 return result
