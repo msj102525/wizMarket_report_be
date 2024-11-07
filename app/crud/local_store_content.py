@@ -31,7 +31,7 @@ def select_local_store_content_by_store_business_number(
                         lsci.LOCAL_STORE_CONTENT_IMAGE_URL
                     FROM
                         LOCAL_STORE_CONTENT ls
-                    JOIN LOCAL_STORE_CONTENT_IMAGE lsci ON lsci.LOCAL_STORE_CONTENT_ID = ls.LOCAL_STORE_CONTENT_ID
+                    LEFT JOIN LOCAL_STORE_CONTENT_IMAGE lsci ON lsci.LOCAL_STORE_CONTENT_ID = ls.LOCAL_STORE_CONTENT_ID
                     WHERE STORE_BUSINESS_NUMBER = %s
                     AND ls.STATUS != 'D'
                     ;
