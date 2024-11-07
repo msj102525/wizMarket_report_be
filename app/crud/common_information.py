@@ -52,18 +52,19 @@ def get_all_report_common_information() -> List[CommonInformationOutput]:
                         f.mod_date AS f_mod_date
                     FROM 
                         t_common_information ci
-                    JOIN 
+                    LEFT JOIN 
                         t_file_group fg ON ci.file_group_id = fg.file_group_id
-                    JOIN 
-                        t_file f ON fg.file_group_id = f.file_group_id
+                    LEFT JOIN 
+                        t_file f ON fg.file_group_id = f.file_group_id AND f.is_deleted = 'N'
                     WHERE 
                         ci.is_deleted = 'N'
-                        AND f.is_deleted = 'N'
                     ORDER BY ci.common_information_id DESC
                     ;
                 """
                 cursor.execute(select_query)
                 rows = cursor.fetchall()
+
+                # print(rows)
 
                 # 결과가 없으면 빈 리스트 반환
                 if not rows:
@@ -101,22 +102,25 @@ def get_all_report_common_information() -> List[CommonInformationOutput]:
                             file_group_output
                         )
 
-                    file_output = FileOutput(
-                        file_id=row["file_id"],
-                        file_group_id=row["fg_file_group_id"],
-                        original_name=row["original_name"],
-                        save_path=row["save_path"],
-                        save_name=row["save_name"],
-                        url=row["url"],
-                        is_deleted=row["f_is_deleted"],
-                        etc=row["f_etc"],
-                        reg_id=row["f_reg_id"],
-                        reg_date=row["f_reg_date"],
-                        mod_id=row.get("f_mod_id"),
-                        mod_date=row.get("f_mod_date"),
-                    )
-                    if file_output not in results[common_information_id].files:
-                        results[common_information_id].files.append(file_output)
+                    if (
+                        row["file_id"] is not None
+                    ):  # 파일이 있는 경우에만 FileOutput 생성
+                        file_output = FileOutput(
+                            file_id=row["file_id"],
+                            file_group_id=row["fg_file_group_id"],
+                            original_name=row["original_name"],
+                            save_path=row["save_path"],
+                            save_name=row["save_name"],
+                            url=row["url"],
+                            is_deleted=row["f_is_deleted"],
+                            etc=row["f_etc"],
+                            reg_id=row["f_reg_id"],
+                            reg_date=row["f_reg_date"],
+                            mod_id=row.get("f_mod_id"),
+                            mod_date=row.get("f_mod_date"),
+                        )
+                        if file_output not in results[common_information_id].files:
+                            results[common_information_id].files.append(file_output)
 
         return list(results.values())
 
