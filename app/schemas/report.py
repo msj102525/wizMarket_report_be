@@ -157,12 +157,16 @@ class LocalStoreRedux(BaseModel):
     district_name: str
     sub_district_name: str
     detail_category_name: str
+    biz_detail_category_rep_name: Optional[str] = None
     loc_info_data_ref_date: Optional[date] = None
     nice_biz_map_data_ref_date: Optional[date] = None
     population_data_ref_date: Optional[date] = None
 
     def __init__(self, **data):
         super().__init__(**data)
+        if self.biz_detail_category_rep_name is None:
+            self.biz_detail_category_rep_name = "비즈맵소분류명없음"
+
         if self.loc_info_data_ref_date is None:
             self.loc_info_data_ref_date = date(2024, 1, 1)
 

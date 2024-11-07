@@ -28,6 +28,7 @@ def select_local_store_info_redux_by_store_business_number(
                         DISTRICT_NAME,
                         SUB_DISTRICT_NAME,
                         DETAIL_CATEGORY_NAME,
+                        BIZ_DETAIL_CATEGORY_REP_NAME,
                         LOC_INFO_DATA_REF_DATE,
                         NICE_BIZ_MAP_DATA_REF_DATE,
                         POPULATION_DATA_REF_DATE
@@ -50,11 +51,15 @@ def select_local_store_info_redux_by_store_business_number(
                         detail=f"LocalStoreBasicInfo {store_business_id}에 해당하는 매장 정보를 찾을 수 없습니다.",
                     )
 
+                detail_category_name = row["DETAIL_CATEGORY_NAME"]
+
                 result = LocalStoreRedux(
                     city_name=row["CITY_NAME"],
                     district_name=row["DISTRICT_NAME"],
                     sub_district_name=row["SUB_DISTRICT_NAME"],
-                    detail_category_name=row["DETAIL_CATEGORY_NAME"],
+                    detail_category_name=detail_category_name,
+                    biz_detail_category_rep_name=row["BIZ_DETAIL_CATEGORY_REP_NAME"]
+                    or detail_category_name,
                     loc_info_data_ref_date=row["LOC_INFO_DATA_REF_DATE"],
                     nice_biz_map_data_ref_date=row["NICE_BIZ_MAP_DATA_REF_DATE"],
                     population_data_ref_date=row["POPULATION_DATA_REF_DATE"],
