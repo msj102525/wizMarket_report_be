@@ -870,6 +870,16 @@ class LocalStoreContent(BaseModel):
     class Config:
         from_attributes = True
 
+# 매장 소분류 비즈맵 매핑 대표 id
+class BizDetailCategoryContent(BaseModel):
+    biz_detail_category_content_id: int
+    detail_category_description_title: str
+    detail_category_description_content: Optional[str]
+    detail_category_description_img_url: List[Optional[str]]
+
+    class Config:
+        from_attributes = True
+
 
 #######################################################################
 #######################################################################

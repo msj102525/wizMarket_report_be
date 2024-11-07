@@ -6,6 +6,7 @@ from fastapi.responses import PlainTextResponse
 from app.schemas.common_information import CommonInformationOutput
 from app.schemas.report import (
     AqiInfo,
+    BizDetailCategoryContent,
     LocalStoreCDCommercialDistrict,
     LocalStoreCDDistrictAverageSalesTop5,
     LocalStoreCDJSWeightedAverage,
@@ -67,6 +68,7 @@ from app.service.rising_business import (
 )
 from app.service.local_store_content import (
     select_local_store_content_by_store_business_number as service_select_local_store_content_by_store_business_number,
+    select_detail_category_content_by_store_business_number as service_select_detail_category_content_by_store_business_number,
 )
 
 
@@ -594,6 +596,29 @@ def select_local_store_content_by_store_business_number(
     try:
 
         return service_select_local_store_content_by_store_business_number(
+            store_business_id
+        )
+
+    except HTTPException as http_ex:
+        logger.error(f"HTTP error occurred: {http_ex.detail}")
+        raise http_ex
+
+    except Exception as e:
+        error_msg = f"Unexpected error while processing request: {str(e)}"
+        logger.error(error_msg)
+        raise HTTPException(status_code=500, detail=error_msg)
+
+
+@router.get(
+    "/detail/category/content",
+    response_model=List[BizDetailCategoryContent],
+)
+def select_detail_category_content_by_store_business_number(
+    store_business_id: str,
+):
+    # print(store_business_id)
+    try:
+        return service_select_detail_category_content_by_store_business_number(
             store_business_id
         )
 
