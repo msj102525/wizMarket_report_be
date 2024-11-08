@@ -164,6 +164,7 @@ class LocalStoreRedux(BaseModel):
     loc_info_data_ref_date: Optional[date] = None
     nice_biz_map_data_ref_date: Optional[date] = None
     population_data_ref_date: Optional[date] = None
+    biz_main_category_id: Optional[int] = None
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -178,6 +179,9 @@ class LocalStoreRedux(BaseModel):
 
         if self.population_data_ref_date is None:
             self.population_data_ref_date = date(2024, 1, 1)
+
+        if self.biz_main_category_id is None:
+            self.biz_main_category_id = 2
 
     class Config:
         from_attributes = True

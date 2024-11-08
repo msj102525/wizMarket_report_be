@@ -31,7 +31,8 @@ def select_local_store_info_redux_by_store_business_number(
                         BIZ_DETAIL_CATEGORY_REP_NAME,
                         LOC_INFO_DATA_REF_DATE,
                         NICE_BIZ_MAP_DATA_REF_DATE,
-                        POPULATION_DATA_REF_DATE
+                        POPULATION_DATA_REF_DATE,
+                        BIZ_MAIN_CATEGORY_ID
                     FROM
                         REPORT 
                     WHERE STORE_BUSINESS_NUMBER = %s
@@ -63,6 +64,7 @@ def select_local_store_info_redux_by_store_business_number(
                     loc_info_data_ref_date=row["LOC_INFO_DATA_REF_DATE"],
                     nice_biz_map_data_ref_date=row["NICE_BIZ_MAP_DATA_REF_DATE"],
                     population_data_ref_date=row["POPULATION_DATA_REF_DATE"],
+                    biz_main_category_id=row["BIZ_MAIN_CATEGORY_ID"],
                 )
 
                 return result
