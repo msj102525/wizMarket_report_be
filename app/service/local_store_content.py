@@ -43,7 +43,7 @@ def select_detail_category_content_by_store_business_number(
                 store_business_id
             )
         )
-        logger.info(f"detail_category_id_list: {detail_category_id_list}")
+        # logger.info(f"detail_category_id_list: {detail_category_id_list}")
 
         return crud_select_detail_category_content_by_biz_detail_category_id_list(
             detail_category_id_list
