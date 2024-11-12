@@ -48,7 +48,12 @@ def select_loc_info_j_score_average_by_store_business_number(
 
                 result = LocalStoreLIJSWeightedAverage(
                     loc_info_j_score_average=round(
-                        row.get("LOC_INFO_J_SCORE_AVERAGE"), 1
+                        (
+                            row.get("LOC_INFO_J_SCORE_AVERAGE")
+                            if row.get("LOC_INFO_J_SCORE_AVERAGE") is not None
+                            else 0
+                        ),
+                        1,
                     ),
                 )
 
@@ -276,7 +281,12 @@ def select_loc_info_move_pop_by_store_business_number(
 
                 result = LocalStoreMovePopData(
                     loc_info_move_pop_j_score=round(
-                        row.get("LOC_INFO_MOVE_POP_J_SCORE"), 1
+                        (
+                            row.get("LOC_INFO_MOVE_POP_J_SCORE")
+                            if row.get("LOC_INFO_MOVE_POP_J_SCORE") is not None
+                            else 0
+                        ),
+                        1,
                     ),
                     loc_info_move_pop=row.get("LOC_INFO_MOVE_POP"),
                     loc_info_city_move_pop=row.get("LOC_INFO_CITY_MOVE_POP"),

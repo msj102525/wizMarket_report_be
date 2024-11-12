@@ -88,14 +88,14 @@ def select_biz_detail_category_id_list_by_store_business_number(
             with connection.cursor(pymysql.cursors.DictCursor) as cursor:
                 select_query = """
                     SELECT
-                    R.BUSINESS_AREA_CATEGORY_ID,
-                    DCM.DETAIL_CATEGORY_ID
-                FROM
-                    REPORT R
-                JOIN DETAIL_CATEGORY_MAPPING DCM ON DCM.BUSINESS_AREA_CATEGORY_ID = R.BUSINESS_AREA_CATEGORY_ID
-                WHERE
-                    STORE_BUSINESS_NUMBER = %s
-                ;
+                        R.BUSINESS_AREA_CATEGORY_ID,
+                        DCM.DETAIL_CATEGORY_ID
+                    FROM
+                        REPORT R
+                    JOIN DETAIL_CATEGORY_MAPPING DCM ON DCM.BUSINESS_AREA_CATEGORY_ID = R.BUSINESS_AREA_CATEGORY_ID
+                    WHERE
+                        STORE_BUSINESS_NUMBER = %s
+                    ;
                 """
 
                 cursor.execute(select_query, (store_business_id,))
@@ -137,7 +137,7 @@ def select_detail_category_content_by_biz_detail_category_id_list(
                         BDCCI.BIZ_DETAIL_CATEGORY_CONTENT_IMAGE_URL
                     FROM
                         BIZ_DETAIL_CATEGORY_CONTENT BDCC
-                    JOIN BIZ_DETAIL_CATEGORY_CONTENT_IMAGE BDCCI 
+                    LEFT JOIN BIZ_DETAIL_CATEGORY_CONTENT_IMAGE BDCCI 
                         ON BDCCI.BIZ_DETAIL_CATEGORY_CONTENT_ID = BDCC.BIZ_DETAIL_CATEGORY_CONTENT_ID
                     WHERE 
                         BDCC.DETAIL_CATEGORY_ID IN ({detail_category_ids})
