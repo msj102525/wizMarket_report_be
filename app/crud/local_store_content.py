@@ -33,7 +33,7 @@ def select_local_store_content_by_store_business_number(
                         LOCAL_STORE_CONTENT ls
                     LEFT JOIN LOCAL_STORE_CONTENT_IMAGE lsci ON lsci.LOCAL_STORE_CONTENT_ID = ls.LOCAL_STORE_CONTENT_ID
                     WHERE STORE_BUSINESS_NUMBER = %s
-                    AND ls.STATUS != 'D'
+                    AND ls.STATUS = 'Y'
                     ;
                 """
 
@@ -141,7 +141,7 @@ def select_detail_category_content_by_biz_detail_category_id_list(
                         ON BDCCI.BIZ_DETAIL_CATEGORY_CONTENT_ID = BDCC.BIZ_DETAIL_CATEGORY_CONTENT_ID
                     WHERE 
                         BDCC.DETAIL_CATEGORY_ID IN ({detail_category_ids})
-                        AND BDCC.STATUS != 'D'
+                        AND BDCC.STATUS = 'Y'
                     ;
                 """
 
