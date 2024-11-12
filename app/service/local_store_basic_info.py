@@ -85,8 +85,12 @@ def get_weather_info_by_lat_lng(
         sunset_timestamp = weather_data["sys"]["sunset"]
 
         kst_timezone = timezone(timedelta(hours=9))
-        sunrise = datetime.fromtimestamp(sunrise_timestamp, tz=kst_timezone).strftime("%H:%M")
-        sunset = datetime.fromtimestamp(sunset_timestamp, tz=kst_timezone).strftime("%H:%M")
+        sunrise = datetime.fromtimestamp(sunrise_timestamp, tz=kst_timezone).strftime(
+            "%H:%M"
+        )
+        sunset = datetime.fromtimestamp(sunset_timestamp, tz=kst_timezone).strftime(
+            "%H:%M"
+        )
 
         weather_info = WeatherInfo(
             main=weather_data["weather"][0]["main"],
@@ -132,6 +136,7 @@ def get_pm_info_by_city_name(lat: float, lng: float, lang: str = "kr") -> AqiInf
 
         # API 요청
         result = requests.get(api_url)
+        # logger.info(f"air_result: {result.text}")
 
         # 상태 코드 확인
         if result.status_code != 200:
