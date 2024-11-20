@@ -87,7 +87,8 @@ def select_local_store_info_by_store_business_number(
 
                 # REPORT 테이블에서 기본 매장 정보 조회
                 report_query = """
-                    SELECT 
+                    SELECT
+                        STORE_BUSINESS_NUMBER,
                         STORE_NAME,
                         ROAD_NAME,
                         BUILDING_NAME,
@@ -235,6 +236,7 @@ def select_local_store_info_by_store_business_number(
 
                 # LocalStoreBasicInfo 객체 생성
                 result = LocalStoreBasicInfo(
+                    store_business_number=row["STORE_BUSINESS_NUMBER"],
                     store_name=row["STORE_NAME"],
                     road_name=row["ROAD_NAME"],
                     building_name=row["BUILDING_NAME"],

@@ -189,6 +189,7 @@ class LocalStoreRedux(BaseModel):
 
 # 매장 기본 정보
 class LocalStoreBasicInfo(BaseModel):
+    store_business_number: str
     store_name: str
     road_name: Optional[str] = None
     building_name: Optional[str] = None
