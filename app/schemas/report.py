@@ -1,6 +1,9 @@
+import ssl
 from typing import List, Optional
 from pydantic import BaseModel, Field
 from datetime import date, datetime
+import urllib3
+from requests.adapters import HTTPAdapter
 
 class Report(BaseModel):
     store_business_number: str  # VARCHAR(100)
@@ -187,6 +190,7 @@ class LocalStoreRedux(BaseModel):
         from_attributes = True
 
 
+#################################################################
 # 매장 기본 정보
 class LocalStoreBasicInfo(BaseModel):
     store_business_number: str
@@ -235,7 +239,6 @@ class LocalStoreBasicInfo(BaseModel):
             self.local_store_image_url = [
                 "/static/images/store/basic_store_img.png"
             ]  # 기본 이미지
-        
 
 
 class WeatherInfo(BaseModel):
@@ -878,6 +881,7 @@ class LocalStoreContent(BaseModel):
     class Config:
         from_attributes = True
 
+
 # 매장 소분류 비즈맵 매핑 대표 id
 class BizDetailCategoryContent(BaseModel):
     biz_detail_category_content_id: int
@@ -901,3 +905,33 @@ class GPTAnswer(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+#######################################################################
+
+
+# 매장 위치 정보
+class LocalStoreCoordinate(BaseModel):
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        if self.latitude is None:
+            self.latitude = "37.5543836"  # 남산 위도
+
+        if self.longitude is None:
+            self.longitude = "126.9814663"  # 남산 경도
+
+# 보안 수준 조정
+class TLSAdapter(HTTPAdapter):
+    def init_poolmanager(self, connections, maxsize, block=False):
+        ctx = ssl.create_default_context()
+        ctx.set_ciphers('DEFAULT@SECLEVEL=1')
+        self.poolmanager = urllib3.PoolManager(
+            num_pools=connections,
+            maxsize=maxsize,
+            block=block,
+            ssl_version=ssl.PROTOCOL_TLS,
+            ssl_context=ctx
+        )

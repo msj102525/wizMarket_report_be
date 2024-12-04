@@ -14,6 +14,7 @@ from app.schemas.report import (
     LocalStoreCDWeekdayAverageSalesPercent,
     LocalStoreCommercialDistrictJscoreAverage,
     LocalStoreContent,
+    LocalStoreCoordinate,
     LocalStoreInfoWeaterInfoOutput,
     LocalStoreLIJSWeightedAverage,
     LocalStoreLocInfoJscoreData,
@@ -23,7 +24,6 @@ from app.schemas.report import (
     LocalStorePopulationDataOutPut,
     LocalStoreRedux,
     LocalStoreResidentWorkPopData,
-    LocalStoreRisingBusinessNTop5SDTop3,
     LocalStoreRisingBusinessNTop5SDTop3Output,
     LocalStoreTop5Menu,
     LocalStoreTop5MenuAdviceOutput,
@@ -31,10 +31,13 @@ from app.schemas.report import (
     GPTAnswer,
 )
 from app.service.local_store_basic_info import (
+    get_road_event_info_by_lat_lng,
+    get_store_local_tour_info_by_lat_lng,
     select_local_store_info_redux_by_store_business_number as service_select_local_store_info_redux_by_store_business_number,
     get_weather_info_by_lat_lng as service_get_weather_info_by_lat_lng,
     get_pm_info_by_city_name as service_get_pm_info_by_city_name,
     get_currnet_datetime as service_get_currnet_datetime,
+    select_store_coordinate_by_store_business_number as service_select_store_coordinate_by_store_business_number,
 )
 from app.service.local_store_basic_info import (
     select_local_store_info_by_store_business_number as service_select_local_store_info_by_store_business_number,
@@ -630,3 +633,73 @@ def select_detail_category_content_by_store_business_number(
         error_msg = f"Unexpected error while processing request: {str(e)}"
         logger.error(error_msg)
         raise HTTPException(status_code=500, detail=error_msg)
+
+
+@router.get("/local/tour/info")
+def select_store_local_tour_info(store_business_id: str):
+    # logger.info(
+    #     f"Received request for store info with business ID: {store_business_id}"
+    # )
+
+    try:
+        # logger.info(
+        #     f"Successfully retrieved store info for business ID: {store_business_id}"
+        # )
+
+        local_store_coordinate: LocalStoreCoordinate = (
+            service_select_store_coordinate_by_store_business_number(store_business_id)
+        )
+
+        logger.info(
+            f"local_store_coordinate: {local_store_coordinate}"
+        )
+
+        tour_info = get_store_local_tour_info_by_lat_lng(
+            local_store_coordinate.latitude, local_store_coordinate.longitude
+        )
+
+        return tour_info
+
+    except HTTPException as http_ex:
+        logger.error(f"HTTP error occurred: {http_ex.detail}")
+        raise http_ex
+
+    except Exception as e:
+        error_msg = f"Unexpected error while processing request: {str(e)}"
+        logger.error(error_msg)
+        raise HTTPException(status_code=500, detail=error_msg)
+
+@router.get("/local/road/info")
+def select_store_road_tour_info(store_business_id: str):
+    # logger.info(
+    #     f"Received request for store info with business ID: {store_business_id}"
+    # )
+
+    try:
+        # logger.info(
+        #     f"Successfully retrieved store info for business ID: {store_business_id}"
+        # )
+
+        local_store_coordinate: LocalStoreCoordinate = (
+            service_select_store_coordinate_by_store_business_number(store_business_id)
+        )
+
+        logger.info(
+            f"local_store_coordinate: {local_store_coordinate}"
+        )
+
+        road_info = get_road_event_info_by_lat_lng(
+            local_store_coordinate.latitude, local_store_coordinate.longitude
+        )
+
+        return road_info
+
+    except HTTPException as http_ex:
+        logger.error(f"HTTP error occurred: {http_ex.detail}")
+        raise http_ex
+
+    except Exception as e:
+        error_msg = f"Unexpected error while processing request: {str(e)}"
+        logger.error(error_msg)
+        raise HTTPException(status_code=500, detail=error_msg)
+

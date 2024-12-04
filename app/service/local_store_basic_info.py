@@ -1,3 +1,4 @@
+import ssl
 from fastapi import HTTPException
 import logging
 import os
@@ -5,14 +6,18 @@ from datetime import datetime, timezone, timedelta
 import pytz
 import requests
 
+
 from app.crud.local_store_basic_info import (
     select_local_store_info_redux_by_store_business_number as crud_select_local_store_info_redux_by_store_business_number,
     select_local_store_info_by_store_business_number as crud_select_local_store_info_by_store_business_number,
+    select_store_coordinate_by_store_business_number as crud_select_store_coordinate_by_store_business_number,
 )
 from app.schemas.report import (
     AqiInfo,
     LocalStoreBasicInfo,
+    LocalStoreCoordinate,
     LocalStoreRedux,
+    TLSAdapter,
     WeatherInfo,
 )
 
@@ -204,3 +209,121 @@ def get_currnet_datetime() -> str:
         raise HTTPException(
             status_code=500, detail=f"Service LocalStoreBasicInfo Error: {str(e)}"
         )
+
+
+def select_store_coordinate_by_store_business_number(
+    store_business_id: str,
+) -> LocalStoreCoordinate:
+    # logger.info(f"Fetching store info for business ID: {store_business_id}")
+
+    try:
+        return crud_select_store_coordinate_by_store_business_number(store_business_id)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Service LocalStoreCoordinate Error: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Service LocalStoreCoordinate Error: {str(e)}"
+        )
+
+
+def get_store_local_tour_info_by_lat_lng(lat: float, lng: float):
+    try:
+        apikey = os.getenv("TOUR_API_SERVICE_KEY")
+        if not apikey:
+            raise HTTPException(
+                status_code=500,
+                detail="TOUR API key not found in environment variables.",
+            )
+
+        session = requests.Session()
+        session.mount("https://", TLSAdapter())
+
+        api_url = "https://apis.data.go.kr/B551011/KorService1/locationBasedList1"
+
+        logger.info(f"lat: {lat}, lng: {lng}")
+
+        params = {
+            "numOfRows": 10,
+            "pageNo": 1,
+            "MobileOS": "ETC",
+            "MobileApp": "AppTest",
+            "_type": "json",
+            "listYN": "Y",
+            "arrange": "A",
+            "mapX": lng,
+            "mapY": lat,
+            "radius": 1500,
+            "serviceKey": apikey,
+        }
+
+        tour_response = session.get(api_url, params=params, timeout=10)
+
+        # logger.info(f"응답 상태 코드: {tour_response.status_code}")
+        # logger.info(f"요청 URL: {tour_response.url}")
+
+        tour_response.raise_for_status()
+
+        tour_data = tour_response.json()
+        # logger.info(f"Tour 데이터 응답: {tour_data}")
+
+        return tour_data
+
+    except requests.exceptions.SSLError as ssl_err:
+        logger.error(f"SSL 인증 오류: {ssl_err}")
+        raise HTTPException(status_code=503, detail=f"SSL 인증 오류: {ssl_err}")
+
+    except requests.exceptions.RequestException as e:
+        logger.error(f"tour 데이터 요청 실패: {e}")
+        raise HTTPException(status_code=503, detail=f"tour 데이터 요청 실패: {e}")
+
+    except Exception as e:
+        logger.error(f"tour 서비스 오류: {e}")
+        raise HTTPException(status_code=500, detail=f"tour 서비스 오류: {e}")
+
+
+def get_road_event_info_by_lat_lng(lat: float, lng: float):
+    try:
+        apikey = os.getenv("ROAD_API_SERVICE_KEY")
+        if not apikey:
+            raise HTTPException(
+                status_code=500,
+                detail="Road API key not found in environment variables.",
+            )
+
+        maxX = lng + 0.02  # 약 1500m
+        maxY = lat + 0.02  # 약 1500m
+
+        api_url = f"https://openapi.its.go.kr:9443/eventInfo?apiKey={apikey}&type=all&eventType=all&minX={lng}&maxX={maxX}&minY={lat}&maxY={maxY}&getType=json"
+
+        # logger.info(f"Requesting Road data for lat={lat}, lng={lng}")
+        logger.info(f"Requesting Road data for api_url: {api_url}")
+        road_event_response = requests.get(api_url)
+        road_event_data = road_event_response.json()
+
+        if road_event_response.status_code != 200:
+            error_msg = f"road_event API Error: {road_event_data.get('message', 'Unknown error')}"
+            logger.error(error_msg)
+            raise HTTPException(
+                status_code=road_event_response.status_code, detail=error_msg
+            )
+
+        # logger.info(f"road_event API response: {road_event_data}")
+
+        # logger.info(f"Processed road_event info: {road_event_info}")
+        return road_event_response.json()
+
+    except requests.RequestException as e:
+        error_msg = f"Failed to fetch road_event data: {str(e)}"
+        logger.error(error_msg)
+        raise HTTPException(status_code=503, detail=error_msg)
+
+    except (KeyError, ValueError) as e:
+        error_msg = f"Error processing road_event data: {str(e)}"
+        logger.error(error_msg)
+        raise HTTPException(status_code=500, detail=error_msg)
+
+    except Exception as e:
+        error_msg = f"road_event service error: {str(e)}"
+        logger.error(error_msg)
+        raise HTTPException(status_code=500, detail=error_msg)
