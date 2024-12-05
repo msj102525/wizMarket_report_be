@@ -650,9 +650,9 @@ def select_store_local_tour_info(store_business_id: str):
             service_select_store_coordinate_by_store_business_number(store_business_id)
         )
 
-        logger.info(
-            f"local_store_coordinate: {local_store_coordinate}"
-        )
+        # logger.info(
+        #     f"local_store_coordinate: {local_store_coordinate}"
+        # )
 
         tour_info = get_store_local_tour_info_by_lat_lng(
             local_store_coordinate.latitude, local_store_coordinate.longitude
@@ -684,9 +684,9 @@ def select_store_road_tour_info(store_business_id: str):
             service_select_store_coordinate_by_store_business_number(store_business_id)
         )
 
-        logger.info(
-            f"local_store_coordinate: {local_store_coordinate}"
-        )
+        # logger.info(
+        #     f"local_store_coordinate: {local_store_coordinate}"
+        # )
 
         road_info = get_road_event_info_by_lat_lng(
             local_store_coordinate.latitude, local_store_coordinate.longitude

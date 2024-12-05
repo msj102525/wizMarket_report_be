@@ -241,7 +241,7 @@ def get_store_local_tour_info_by_lat_lng(lat: float, lng: float):
 
         api_url = "https://apis.data.go.kr/B551011/KorService1/locationBasedList1"
 
-        logger.info(f"lat: {lat}, lng: {lng}")
+        # logger.info(f"lat: {lat}, lng: {lng}")
 
         params = {
             "numOfRows": 10,
@@ -291,13 +291,13 @@ def get_road_event_info_by_lat_lng(lat: float, lng: float):
                 detail="Road API key not found in environment variables.",
             )
 
-        maxX = lng + 0.02  # 약 1500m
-        maxY = lat + 0.02  # 약 1500m
+        maxX = lng + 0.015  # 약 1500m
+        maxY = lat + 0.015  # 약 1500m
 
         api_url = f"https://openapi.its.go.kr:9443/eventInfo?apiKey={apikey}&type=all&eventType=all&minX={lng}&maxX={maxX}&minY={lat}&maxY={maxY}&getType=json"
 
         # logger.info(f"Requesting Road data for lat={lat}, lng={lng}")
-        logger.info(f"Requesting Road data for api_url: {api_url}")
+        # logger.info(f"Requesting Road data for api_url: {api_url}")
         road_event_response = requests.get(api_url)
         road_event_data = road_event_response.json()
 
