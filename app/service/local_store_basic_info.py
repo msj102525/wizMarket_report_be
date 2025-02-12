@@ -291,8 +291,11 @@ def get_road_event_info_by_lat_lng(lat: float, lng: float):
                 detail="Road API key not found in environment variables.",
             )
 
-        maxX = lng + 0.015  # 약 1500m
-        maxY = lat + 0.015  # 약 1500m
+        # maxX = lng + 0.015  # 약 1500m
+        # maxY = lat + 0.015  # 약 1500m
+
+        maxX = lng + 0.018  # 약 2000m
+        maxY = lat + 0.018  # 약 2000m
 
         api_url = f"https://openapi.its.go.kr:9443/eventInfo?apiKey={apikey}&type=all&eventType=all&minX={lng}&maxX={maxX}&minY={lat}&maxY={maxY}&getType=json"
 
