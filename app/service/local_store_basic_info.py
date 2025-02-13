@@ -227,6 +227,87 @@ def select_store_coordinate_by_store_business_number(
         )
 
 
+def get_category_names(cat1: str, cat2: str, cat3: str) -> tuple:
+    """관광 API 카테고리 코드를 한글명으로 변환"""
+
+    # 대분류 매핑
+    cat1_mapping = {
+        "A01": "자연",
+        "A02": "인문(문화/예술/역사)",
+        "A03": "레포츠",
+        "A04": "쇼핑",
+        "A05": "음식",
+        "B02": "숙박",
+        "C01": "추천코스",
+    }
+
+    # 중분류 매핑
+    cat2_mapping = {
+        "A0101": "자연관광지",
+        "A0102": "관광자원",
+        "A0201": "역사관광지",
+        "A0202": "휴양관광지",
+        "A0203": "체험관광지",
+        "A0204": "산업관광지",
+        "A0205": "건축/조형물",
+        "A0206": "문화시설",
+        "A0207": "축제",
+        "A0208": "공연/행사",
+        "A0301": "레포츠소개",
+        "A0302": "육상 레포츠",
+        "A0303": "수상 레포츠",
+        "A0304": "항공 레포츠",
+        "A0305": "복합 레포츠",
+        "A0401": "쇼핑",
+        "A0502": "음식점",
+        "B0201": "숙박시설",
+    }
+
+    # 소분류 매핑
+    cat3_mapping = {
+        "A01010100": "국립공원",
+        "A01010200": "도립공원",
+        "A01010300": "군립공원",
+        "A01010400": "산",
+        "A01010500": "자연생태관광지",
+        "A01010600": "자연휴양림",
+        "A01010700": "수목원",
+        "A01010800": "폭포",
+        "A01010900": "계곡",
+        "A01011000": "약수터",
+        "A01011100": "해안절경",
+        "A01011200": "해수욕장",
+        "A01011300": "섬",
+        "A01011400": "항구/포구",
+        "A01011600": "등대",
+        "A01011700": "호수",
+        "A01011800": "강",
+        "A01011900": "동굴",
+        "A02010100": "고궁",
+        "A02010200": "성",
+        "A02010300": "문",
+        "A02010400": "고택",
+        "A02010500": "생가",
+        "A02010600": "민속마을",
+        "A02010700": "유적지/사적지",
+        "A02010800": "사찰",
+        "A02010900": "종교성지",
+        "A02011000": "안보관광",
+        "A05020100": "한식",
+        "A05020200": "서양식",
+        "A05020300": "일식",
+        "A05020400": "중식",
+        "A05020700": "이색음식점",
+        "A05020900": "카페/전통찻집",
+    }
+
+    return (
+        cat1_mapping.get(cat1, "기타"),
+        cat2_mapping.get(cat2, "기타"),
+        cat3_mapping.get(cat3, "기타"),
+    )
+
+
 def get_store_local_tour_info_by_lat_lng(lat: float, lng: float):
     try:
         apikey = os.getenv("TOUR_API_SERVICE_KEY")
@@ -266,6 +347,16 @@ def get_store_local_tour_info_by_lat_lng(lat: float, lng: float):
 
         tour_data = tour_response.json()
         # logger.info(f"Tour 데이터 응답: {tour_data}")
+
+        # 카테고리 한글화 처리
+        if tour_data.get("response", {}).get("body", {}).get("items", {}).get("item"):
+            for item in tour_data["response"]["body"]["items"]["item"]:
+                cat1_name, cat2_name, cat3_name = get_category_names(
+                    item.get("cat1", ""), item.get("cat2", ""), item.get("cat3", "")
+                )
+                item["cat1_name"] = cat1_name
+                item["cat2_name"] = cat2_name
+                item["cat3_name"] = cat3_name
 
         return tour_data
 
