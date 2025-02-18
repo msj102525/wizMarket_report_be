@@ -176,14 +176,12 @@ def select_report_store_info(store_business_id: str):
         #                             5.	날씨에 맞춘 테라스 좌석 활용
         #                         오늘처럼 맑은 날씨에는 테라스나 창가 자리를 강조해 고객에게 특별한 분위기를 제공하세요.
         #                         """
-        # store_advice_dummy = """Dummy 
-        #                         오늘의 장사지수:41%
 
-        #                         오늘은 추운 날씨와 월요일로 인해 30-40대 남성고객 유동인구수가 적어 유입이 많지 않을 것으로 보입니다.
-        #                         """
+        store_advice_dummy = """Dummy 
+                                오늘의 장사지수:41%
 
-        logger.info(store_advice)
-
+                                오늘은 추운 날씨와 월요일로 인해 30-40대 남성고객 유동인구수가 적어 유입이 많지 않을 것으로 보입니다.
+                                """
 
         result = LocalStoreInfoWeaterInfoOutput(
             localStoreInfo=local_store_info,
@@ -225,7 +223,7 @@ def get_report_rising_menu_gpt(
         # logger.info(f"rising_menu_top5: {rising_menu_top5}")
 
         # GPT ###########################################################################
-        # report_advice = service_get_rising_business_gpt_answer_by_local_store_top5_menu(rising_menu_top5) # GPT API
+        report_advice = service_get_rising_business_gpt_answer_by_local_store_top5_menu(rising_menu_top5) # GPT API
         # logger.info(f"report_advice: {report_advice}")
         # GPT ###########################################################################
 
@@ -240,8 +238,8 @@ def get_report_rising_menu_gpt(
 
         result = LocalStoreTop5MenuAdviceOutput(
             local_store_top5_orderd_menu=rising_menu_top5,
-            # rising_menu_advice=report_advice.gpt_answer, # GPT API
-            rising_menu_advice=report_dummy,  # Dummy
+            rising_menu_advice=report_advice.gpt_answer, # GPT API
+            # rising_menu_advice=report_dummy,  # Dummy
         )
 
         return result
@@ -557,11 +555,11 @@ def select_rising_business_by_store_business_id(store_business_id: str):
         # logger.info(f"rising_business_data: {rising_business_data}")
 
         # GPT ###########################################################################
-        # report_advice: GPTAnswer = (
-        #     service_get_rising_business_gpt_answer_by_rising_business(
-        #         rising_business_data
-        #     )
-        # )
+        report_advice: GPTAnswer = (
+            service_get_rising_business_gpt_answer_by_rising_business(
+                rising_business_data
+            )
+        )
         # GPT ###########################################################################
 
         report_advice_dummy = """Dummy 
@@ -612,8 +610,8 @@ def select_rising_business_by_store_business_id(store_business_id: str):
 
         result = LocalStoreRisingBusinessNTop5SDTop3Output(
             rising_business_data=rising_business_data,
-            # rising_business_advice = report_advice.gpt_answer,
-            rising_business_advice=report_advice_dummy,
+            rising_business_advice = report_advice.gpt_answer,
+            # rising_business_advice=report_advice_dummy,
         )
 
         return result

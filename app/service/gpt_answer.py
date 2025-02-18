@@ -38,8 +38,8 @@ weekday = now.strftime("%A")
 
 #         # 보낼 프롬프트 설정
 #         content = f"""
-#             다음과 같은 매장 정보와 입지 및 상권 현황을 참고하여 '현재 매장 운영 팁'으로 매장 운영 가이드를 작성해주세요. 
-            
+#             다음과 같은 매장 정보와 입지 및 상권 현황을 참고하여 '현재 매장 운영 팁'으로 매장 운영 가이드를 작성해주세요.
+
 #             [매장 정보 및 상권 현황]
 #             - 위치: {store_all_data.localStoreInfo.city_name} {store_all_data.localStoreInfo.district_name} {store_all_data.localStoreInfo.sub_district_name}
 #             - 업종: {store_all_data.localStoreInfo.detail_category_name}
@@ -66,15 +66,15 @@ weekday = now.strftime("%A")
 #             - 일출시간 : {store_all_data.weatherInfo.sunrise}
 #             - 일몰시간 : {store_all_data.weatherInfo.sunset}
 #             - 현재 시간: {store_all_data.format_current_datetime}
-            
-#             작성 가이드 : 
+
+#             작성 가이드 :
 #             1. 매장 운영가이드 내용은 아래 점주의 성향에 맞는 문체로 작성해주세요.
 #             2. 5항목 이하, 항목당 2줄 이내로 작성해주세요.
 #             3. 현재 기온 참고해서 작성.
 
 #             - 점주 연령대 : 50대
 #             - 점주 성별 : 남성
-#             - 점주 성향 : IT나 트랜드 기술을 잘 알지 못함 
+#             - 점주 성향 : IT나 트랜드 기술을 잘 알지 못함
 #         """
 #         client = OpenAI(api_key=os.getenv("GPT_KEY"))
 #         # OpenAI API 키 설정
@@ -103,11 +103,24 @@ weekday = now.strftime("%A")
 #             detail=f"Service get_rising_business_gpt_answer_by_rising_business Error: {str(e)}",
 #         )
 
+
 # 매장정보 Gpt Prompt 장사지수 ver
 def get_store_info_gpt_answer_by_store_info(
     store_all_data=LocalStoreInfoWeaterInfoOutput,
 ) -> GPTAnswer:
     try:
+        current_date = datetime.now()
+        weekday_map = {
+            0: "월요일",
+            1: "화요일",
+            2: "수요일",
+            3: "목요일",
+            4: "금요일",
+            5: "토요일",
+            6: "일요일",
+        }
+        weekday = weekday_map[current_date.weekday()]
+        formatted_date = f"{current_date.month}.{current_date.day}일 {weekday}"
 
         # 보낼 프롬프트 설정
         content = f"""
@@ -144,12 +157,25 @@ def get_store_info_gpt_answer_by_store_info(
             위 정보를 가진 매장의 오늘 장사지수를 파악해보려고 합니다.
             지역 및 업종, 매출정보, 핵심고객 정보, 날씨 등을 바탕으로 장사지수를 0~100% 사이의 범위에서 추론해주시고
             이유를 45자 이하의 부드러운 서술형으로 작성해주세요.
-            
-            첫번째줄 <br>제거
             ex)오늘의 장사지수 : ??%
-
             이유...
         """
+        content = f"""
+            매장명 : {store_all_data.localStoreInfo.store_name}
+            주소 : {store_all_data.localStoreInfo.city_name} {store_all_data.localStoreInfo.district_name} {store_all_data.localStoreInfo.sub_district_name}
+            업종 : {store_all_data.localStoreInfo.detail_category_name}
+            매출이 가장 높은 요일 : {store_all_data.localStoreInfo.commercial_district_max_weekday}
+            매출이 가장 높은 시간대 : {store_all_data.localStoreInfo.commercial_district_max_time}
+            주 고객층: {store_all_data.localStoreInfo.commercial_district_max_clinet}
+            오늘 날짜 : {formatted_date}
+            오늘 날씨 : {store_all_data.weatherInfo.main}, {store_all_data.weatherInfo.temp}도, 미세먼지 {store_all_data.aqi_info.description} (등급: {store_all_data.aqi_info.aqi}) 
+            현재 시간: {store_all_data.format_current_datetime}
+
+            위 정보를 가진 매장의 오늘 장사지수를 파악해보려고 합니다. 주어진 데이터(지역 및 업종, 매출정보, 핵심고객 정보, 날씨 등)를 바탕으로 아래 양식으로 작성해주세요. 한줄로
+            - 오늘의 장사지수 : 0~100% 사이의 범위에서 추론
+            - 오늘의 장사지수 이유를 45자 이하의 부드러운 서술형으로 작성해주세요. (오늘의 장사지수 이유 타이틀은 사용하지 않음)
+        """
+
         client = OpenAI(api_key=os.getenv("GPT_KEY"))
         # OpenAI API 키 설정
 
@@ -166,6 +192,7 @@ def get_store_info_gpt_answer_by_store_info(
         # logger.info(f"loc_info_gpt: {report}")
 
         result = GPTAnswer(gpt_answer=report)
+        logger.info(f"loc_info_gpt: {result}")
         return result
 
     except HTTPException:
@@ -287,7 +314,7 @@ def get_loc_info_gpt_answer_by_local_store_loc_info(
         )
 
 
-# 인구 연령별 특성 및 응대방법 GPT 
+# 인구 연령별 특성 및 응대방법 GPT
 def get_commercial_district_gpt_answer_by_cd_j_score_average(
     cd_data=LocalStoreCommercialDistrictJscoreAverage,
 ) -> GPTAnswer:
