@@ -161,7 +161,7 @@ def select_report_store_info(store_business_id: str):
         )
 
         # GPT ###########################################################################
-        # store_advice: GPTAnswer = service_get_store_info_gpt_answer_by_store_info(store_all_data)
+        store_advice: GPTAnswer = service_get_store_info_gpt_answer_by_store_info(store_all_data)
         # GPT ###########################################################################
 
         # store_advice_dummy = """Dummy
@@ -176,19 +176,22 @@ def select_report_store_info(store_business_id: str):
         #                             5.	날씨에 맞춘 테라스 좌석 활용
         #                         오늘처럼 맑은 날씨에는 테라스나 창가 자리를 강조해 고객에게 특별한 분위기를 제공하세요.
         #                         """
-        store_advice_dummy = """Dummy 
-                                오늘의 장사지수:41%
+        # store_advice_dummy = """Dummy 
+        #                         오늘의 장사지수:41%
 
-                                오늘은 추운 날씨와 월요일로 인해 30-40대 남성고객 유동인구수가 적어 유입이 많지 않을 것으로 보입니다.
-                                """
+        #                         오늘은 추운 날씨와 월요일로 인해 30-40대 남성고객 유동인구수가 적어 유입이 많지 않을 것으로 보입니다.
+        #                         """
+
+        logger.info(store_advice)
+
 
         result = LocalStoreInfoWeaterInfoOutput(
             localStoreInfo=local_store_info,
             weatherInfo=weather_data,
             aqi_info=pm_data,
             format_current_datetime=format_current_datetime,
-            # store_info_advice=store_advice.gpt_answer, #GPT
-            store_info_advice=store_advice_dummy,  # Dummy
+            store_info_advice=store_advice.gpt_answer, #GPT
+            # store_info_advice=store_advice_dummy,  # Dummy
         )
         return result
 

@@ -141,9 +141,14 @@ def get_store_info_gpt_answer_by_store_info(
             - 현재 시간: {store_all_data.format_current_datetime}
             
             작성 가이드 : 
-            위 정보를 가진 매장의 오늘(2.18일) 장사지수를 파악해보려고 합니다.
+            위 정보를 가진 매장의 오늘 장사지수를 파악해보려고 합니다.
             지역 및 업종, 매출정보, 핵심고객 정보, 날씨 등을 바탕으로 장사지수를 0~100% 사이의 범위에서 추론해주시고
-            이유를 45자 이하의 부드러운 서술형으로 작성해주세요. 
+            이유를 45자 이하의 부드러운 서술형으로 작성해주세요.
+            
+            첫번째줄 <br>제거
+            ex)오늘의 장사지수 : ??%
+
+            이유...
         """
         client = OpenAI(api_key=os.getenv("GPT_KEY"))
         # OpenAI API 키 설정
