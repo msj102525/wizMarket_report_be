@@ -30,7 +30,80 @@ current_time = now.strftime("%Y년 %m월 %d일 %H:%M")
 weekday = now.strftime("%A")
 
 
-# 매장정보 Gpt Prompt
+# # 매장정보 Gpt Prompt
+# def get_store_info_gpt_answer_by_store_info(
+#     store_all_data=LocalStoreInfoWeaterInfoOutput,
+# ) -> GPTAnswer:
+#     try:
+
+#         # 보낼 프롬프트 설정
+#         content = f"""
+#             다음과 같은 매장 정보와 입지 및 상권 현황을 참고하여 '현재 매장 운영 팁'으로 매장 운영 가이드를 작성해주세요. 
+            
+#             [매장 정보 및 상권 현황]
+#             - 위치: {store_all_data.localStoreInfo.city_name} {store_all_data.localStoreInfo.district_name} {store_all_data.localStoreInfo.sub_district_name}
+#             - 업종: {store_all_data.localStoreInfo.detail_category_name}
+#             - 매장 이름: {store_all_data.localStoreInfo.store_name}
+#             - {store_all_data.localStoreInfo.sub_district_name} 업소수 :{store_all_data.localStoreInfo.loc_info_shop_k}천개
+#             - {store_all_data.localStoreInfo.sub_district_name} 지역 평균매출 : {store_all_data.localStoreInfo.loc_info_average_sales_k * 1000}원
+#             - {store_all_data.localStoreInfo.sub_district_name} 월 평균소득 : {store_all_data.localStoreInfo.loc_info_income_won * 10000}원
+#             - {store_all_data.localStoreInfo.sub_district_name} 월 평균소비 : {store_all_data.localStoreInfo.loc_info_average_spend_k * 1000}원
+#             - {store_all_data.localStoreInfo.sub_district_name} 세대 수 : {store_all_data.localStoreInfo.loc_info_house_k * 1000}개
+#             - {store_all_data.localStoreInfo.sub_district_name} 돼지고기 구이 찜 시장규모 : {store_all_data.localStoreInfo.commercial_district_sub_district_market_size}원
+#             - {store_all_data.localStoreInfo.sub_district_name} 주거 인구 수: {store_all_data.localStoreInfo.loc_info_resident_k}K
+#             - {store_all_data.localStoreInfo.sub_district_name} 유동 인구 수: {store_all_data.localStoreInfo.loc_info_move_pop_k}K
+#             - {store_all_data.localStoreInfo.sub_district_name} 돼지고기 구이 찜 업종 평균 이용건수 : {store_all_data.localStoreInfo.commercial_district_sub_district_usage_count}건
+#             - {store_all_data.localStoreInfo.sub_district_name} 평균 결제 금액: {store_all_data.localStoreInfo.commercial_district_sub_district_average_payment}원
+#             - {store_all_data.localStoreInfo.sub_district_name} 가장 매출이 높은 요일: {store_all_data.localStoreInfo.commercial_district_max_weekday}
+#             - {store_all_data.localStoreInfo.sub_district_name} 가장 매출이 높은 시간대: {store_all_data.localStoreInfo.commercial_district_max_time}
+#             - 주 고객층: {store_all_data.localStoreInfo.commercial_district_max_clinet}
+
+
+#             [현재 환경 상황]
+#             - 날씨 상태: {store_all_data.weatherInfo.main}
+#             - 현재 기온: {store_all_data.weatherInfo.temp}도
+#             - 미세먼지 등급: {store_all_data.aqi_info.description} (등급: {store_all_data.aqi_info.aqi})
+#             - 일출시간 : {store_all_data.weatherInfo.sunrise}
+#             - 일몰시간 : {store_all_data.weatherInfo.sunset}
+#             - 현재 시간: {store_all_data.format_current_datetime}
+            
+#             작성 가이드 : 
+#             1. 매장 운영가이드 내용은 아래 점주의 성향에 맞는 문체로 작성해주세요.
+#             2. 5항목 이하, 항목당 2줄 이내로 작성해주세요.
+#             3. 현재 기온 참고해서 작성.
+
+#             - 점주 연령대 : 50대
+#             - 점주 성별 : 남성
+#             - 점주 성향 : IT나 트랜드 기술을 잘 알지 못함 
+#         """
+#         client = OpenAI(api_key=os.getenv("GPT_KEY"))
+#         # OpenAI API 키 설정
+
+#         completion = client.chat.completions.create(
+#             model="gpt-4o",
+#             messages=[
+#                 {"role": "system", "content": gpt_content},
+#                 {"role": "user", "content": content},
+#             ],
+#         )
+#         report = completion.choices[0].message.content
+
+#         # logger.info(f"loc_info_prompt: {content}")
+#         # logger.info(f"loc_info_gpt: {report}")
+
+#         result = GPTAnswer(gpt_answer=report)
+#         return result
+
+#     except HTTPException:
+#         raise
+#     except Exception as e:
+#         logger.error(f"Service GPTAnswer Error: {str(e)}")
+#         raise HTTPException(
+#             status_code=500,
+#             detail=f"Service get_rising_business_gpt_answer_by_rising_business Error: {str(e)}",
+#         )
+
+# 매장정보 Gpt Prompt 장사지수 ver
 def get_store_info_gpt_answer_by_store_info(
     store_all_data=LocalStoreInfoWeaterInfoOutput,
 ) -> GPTAnswer:
@@ -68,13 +141,9 @@ def get_store_info_gpt_answer_by_store_info(
             - 현재 시간: {store_all_data.format_current_datetime}
             
             작성 가이드 : 
-            1. 매장 운영가이드 내용은 아래 점주의 성향에 맞는 문체로 작성해주세요.
-            2. 5항목 이하, 항목당 2줄 이내로 작성해주세요.
-            3. 현재 기온 참고해서 작성.
-
-            - 점주 연령대 : 50대
-            - 점주 성별 : 남성
-            - 점주 성향 : IT나 트랜드 기술을 잘 알지 못함 
+            위 정보를 가진 매장의 오늘(2.18일) 장사지수를 파악해보려고 합니다.
+            지역 및 업종, 매출정보, 핵심고객 정보, 날씨 등을 바탕으로 장사지수를 0~100% 사이의 범위에서 추론해주시고
+            이유를 45자 이하의 부드러운 서술형으로 작성해주세요. 
         """
         client = OpenAI(api_key=os.getenv("GPT_KEY"))
         # OpenAI API 키 설정
@@ -213,44 +282,7 @@ def get_loc_info_gpt_answer_by_local_store_loc_info(
         )
 
 
-# 상권분석 J_Score Gpt Prompt
-def get_loc_info_gpt_answer_by_local_store_commercial_district(
-    loc_data=LocalStoreLocInfoJscoreData,
-) -> GPTAnswer:
-    try:
-        region_name = f"{loc_data.city_name} {loc_data.district_name} {loc_data.sub_district_name}"
-
-        content = f"""
-
-        """
-        client = OpenAI(api_key=os.getenv("GPT_KEY"))
-
-        completion = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": gpt_content},
-                {"role": "user", "content": content},
-            ],
-        )
-        report = completion.choices[0].message.content
-
-        # logger.info(f"loc_info_prompt: {content}")
-        # logger.info(f"loc_info_gpt: {report}")
-
-        result = GPTAnswer(gpt_answer=report)
-        return result
-
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Service GPTAnswer Error: {str(e)}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Service get_loc_info_gpt_answer_by_local_store_commercial_district Error: {str(e)}",
-        )
-
-
-# 상권분석 J_Score Gpt Prompt
+# 인구 연령별 특성 및 응대방법 GPT 
 def get_commercial_district_gpt_answer_by_cd_j_score_average(
     cd_data=LocalStoreCommercialDistrictJscoreAverage,
 ) -> GPTAnswer:

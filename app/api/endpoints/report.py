@@ -164,7 +164,7 @@ def select_report_store_info(store_business_id: str):
         # store_advice: GPTAnswer = service_get_store_info_gpt_answer_by_store_info(store_all_data)
         # GPT ###########################################################################
 
-        # store_advice_dummy = """Dummy 
+        # store_advice_dummy = """Dummy
         #                         1.점심 시간대 집중 전략
         #                         분평동에서 가장 매출이 높은 시간대는 12시부터 15시 사이입니다. 이 시간에 특별 메뉴나 할인 이벤트로 고객을 유치해보세요.
         #                             2.	주말 프로모션 강화
@@ -226,7 +226,14 @@ def get_report_rising_menu_gpt(
         # logger.info(f"report_advice: {report_advice}")
         # GPT ###########################################################################
 
-        report_dummy = """Dummy Data<br/> 삼겹살이랑 돼지갈비가 인기가 많으니까,<br/> 그 두 가지를 묶어서 세트 메뉴로 한번 내봐유.<br/>금요일엔 사람들이 술도 많이 먹으니까 병맥주나<br/>소주 할인 이벤트 하나 해주면 딱 좋을 거여.<br/>된장찌개는 그냥 기본으로 맛있게 준비해주면 손님들 만족도가 더 높아질 거유!"""
+        report_dummy = """
+                        Dummy Data
+                        삼겹살이랑 돼지갈비가 인기가 많으니까,
+                        그 두 가지를 묶어서 세트 메뉴로 한번 내봐유.
+                        금요일엔 사람들이 술도 많이 먹으니까 병맥주나
+                        소주 할인 이벤트 하나 해주면 딱 좋을 거여.
+                        된장찌개는 그냥 기본으로 맛있게 준비해주면 손님들 만족도가 더 높아질 거유!
+                        """
 
         result = LocalStoreTop5MenuAdviceOutput(
             local_store_top5_orderd_menu=rising_menu_top5,
@@ -265,6 +272,26 @@ def select_population_data(store_business_id: str):
     try:
 
         return service_select_population_by_store_business_number(store_business_id)
+
+        # GPT ###########################################################################
+        # report_advice = service_get_rising_business_gpt_answer_by_local_store_top5_menu(rising_menu_top5) # GPT API
+        # logger.info(f"report_advice: {report_advice}")
+        # GPT ###########################################################################
+
+        report_dummy = """
+                        Dummy Data
+                        삼겹살이랑 돼지갈비가 인기가 많으니까,
+                        그 두 가지를 묶어서 세트 메뉴로 한번 내봐유.
+                        금요일엔 사람들이 술도 많이 먹으니까 병맥주나
+                        소주 할인 이벤트 하나 해주면 딱 좋을 거여.
+                        된장찌개는 그냥 기본으로 맛있게 준비해주면 손님들 만족도가 더 높아질 거유!
+                        """
+
+        result = LocalStoreTop5MenuAdviceOutput(
+            local_store_top5_orderd_menu=rising_menu_top5,
+            # rising_menu_advice=report_advice.gpt_answer, # GPT API
+            rising_menu_advice=report_dummy,  # Dummy
+        )
 
     except HTTPException as http_ex:
         logger.error(f"HTTP error occurred: {http_ex.detail}")
@@ -427,12 +454,6 @@ def select_commercial_district_j_score_by_store_business_number(store_business_i
                 store_business_id
             )
         )
-
-        # GPT ###########################################################################
-        # cd_j_score_advice: GPTAnswer = (
-        #     service_get_commercial_district_gpt_answer_by_cd_j_score_average()
-        # )
-        # GPT ###########################################################################
 
         return cd_j_score_data
 
@@ -709,6 +730,7 @@ def select_store_local_tour_info(store_business_id: str):
         logger.error(error_msg)
         raise HTTPException(status_code=500, detail=error_msg)
 
+
 @router.get("/local/road/info")
 def select_store_road_tour_info(store_business_id: str):
     # logger.info(
@@ -742,4 +764,3 @@ def select_store_road_tour_info(store_business_id: str):
         error_msg = f"Unexpected error while processing request: {str(e)}"
         logger.error(error_msg)
         raise HTTPException(status_code=500, detail=error_msg)
-
