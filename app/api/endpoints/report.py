@@ -17,6 +17,7 @@ from app.schemas.report import (
     LocalStoreCoordinate,
     LocalStoreInfoWeaterInfoOutput,
     LocalStoreLIJSWeightedAverage,
+    LocalStoreLocInfoDistrictHotPlaceTop5,
     LocalStoreLocInfoJscoreData,
     LocalStoreLocInfoJscoreDataOutput,
     LocalStoreMainCategoryCount,
@@ -53,6 +54,7 @@ from app.service.loc_info import (
     select_loc_info_j_score_by_store_business_number as service_select_loc_info_j_score_by_store_business_number,
     select_loc_info_resident_work_compare_by_store_business_number as service_select_loc_info_resident_work_compare_by_store_business_number,
     select_loc_info_move_pop_by_store_business_number as service_select_loc_info_move_pop_by_store_business_number,
+    select_loc_info_hot_place_top5_by_store_business_number as service_select_loc_info_hot_place_top5_by_store_business_number,
 )
 from app.service.commercial_district import (
     select_rising_menu_top5_by_store_business_number as service_select_rising_menu_top5_by_store_business_number,
@@ -161,7 +163,9 @@ def select_report_store_info(store_business_id: str):
         )
 
         # GPT ###########################################################################
-        store_advice: GPTAnswer = service_get_store_info_gpt_answer_by_store_info(store_all_data)
+        store_advice: GPTAnswer = service_get_store_info_gpt_answer_by_store_info(
+            store_all_data
+        )
         # GPT ###########################################################################
 
         # store_advice_dummy = """Dummy
@@ -188,7 +192,7 @@ def select_report_store_info(store_business_id: str):
             weatherInfo=weather_data,
             aqi_info=pm_data,
             format_current_datetime=format_current_datetime,
-            store_info_advice=store_advice.gpt_answer, #GPT
+            store_info_advice=store_advice.gpt_answer,  # GPT
             # store_info_advice=store_advice_dummy,  # Dummy
         )
         return result
@@ -223,7 +227,9 @@ def get_report_rising_menu_gpt(
         # logger.info(f"rising_menu_top5: {rising_menu_top5}")
 
         # GPT ###########################################################################
-        report_advice = service_get_rising_business_gpt_answer_by_local_store_top5_menu(rising_menu_top5) # GPT API
+        report_advice = service_get_rising_business_gpt_answer_by_local_store_top5_menu(
+            rising_menu_top5
+        )  # GPT API
         # logger.info(f"report_advice: {report_advice}")
         # GPT ###########################################################################
 
@@ -238,7 +244,7 @@ def get_report_rising_menu_gpt(
 
         result = LocalStoreTop5MenuAdviceOutput(
             local_store_top5_orderd_menu=rising_menu_top5,
-            rising_menu_advice=report_advice.gpt_answer, # GPT API
+            rising_menu_advice=report_advice.gpt_answer,  # GPT API
             # rising_menu_advice=report_dummy,  # Dummy
         )
 
@@ -610,7 +616,7 @@ def select_rising_business_by_store_business_id(store_business_id: str):
 
         result = LocalStoreRisingBusinessNTop5SDTop3Output(
             rising_business_data=rising_business_data,
-            rising_business_advice = report_advice.gpt_answer,
+            rising_business_advice=report_advice.gpt_answer,
             # rising_business_advice=report_advice_dummy,
         )
 
@@ -756,6 +762,30 @@ def select_store_road_tour_info(store_business_id: str):
         )
 
         return road_info
+
+    except HTTPException as http_ex:
+        logger.error(f"HTTP error occurred: {http_ex.detail}")
+        raise http_ex
+
+    except Exception as e:
+        error_msg = f"Unexpected error while processing request: {str(e)}"
+        logger.error(error_msg)
+        raise HTTPException(status_code=500, detail=error_msg)
+
+
+# 입지분석 시/군/구 핫플레이스 TOP5 (읍/면/동, 평균유동인구, 매장평균매출, JSCORE점수)
+@router.get("/location/hotplace", response_model=LocalStoreLocInfoDistrictHotPlaceTop5)
+def select_loc_info_hot_place_top5_by_store_business_number(
+    store_business_id: str,
+):
+    # logger.info(
+    #     f"Received request for store info with business ID: {store_business_id}"
+    # )
+
+    try:
+        return service_select_loc_info_hot_place_top5_by_store_business_number(
+            store_business_id
+        )
 
     except HTTPException as http_ex:
         logger.error(f"HTTP error occurred: {http_ex.detail}")

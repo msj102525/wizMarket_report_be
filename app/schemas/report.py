@@ -5,6 +5,7 @@ from datetime import date, datetime
 import urllib3
 from requests.adapters import HTTPAdapter
 
+
 class Report(BaseModel):
     store_business_number: str  # VARCHAR(100)
     city_name: Optional[str] = None  # VARCHAR(50)
@@ -134,6 +135,12 @@ class Report(BaseModel):
     rising_business_sub_district_rising_sales_top1_info: Optional[str] = None
     rising_business_sub_district_rising_sales_top2_info: Optional[str] = None
     rising_business_sub_district_rising_sales_top3_info: Optional[str] = None
+    # VARCHAR(100)
+    loc_info_district_hot_place_top1_info: Optional[str] = None
+    loc_info_district_hot_place_top2_info: Optional[str] = None
+    loc_info_district_hot_place_top3_info: Optional[str] = None
+    loc_info_district_hot_place_top4_info: Optional[str] = None
+    loc_info_district_hot_place_top5_info: Optional[str] = None
     # VARCHAR(100)
     loc_info_data_ref_date: Optional[date] = None  # DATE
     nice_biz_map_data_ref_date: Optional[date] = None  # DATE
@@ -808,6 +815,42 @@ class LocalStoreCDCommercialDistrict(BaseModel):
         if self.commercial_district_sub_district_usage_count is None:
             self.commercial_district_sub_district_usage_count = 0.0
 
+#######################################################################
+# 입지분석 시/군/구 핫플레이스 TOP5 (읍/면/동, 평균유동인구, 매장평균매출, JSCORE점수)
+class LocalStoreLocInfoDistrictHotPlaceTop5(BaseModel):
+
+    loc_info_district_hot_place_top1_info: Optional[str] = None
+    loc_info_district_hot_place_top2_info: Optional[str] = None
+    loc_info_district_hot_place_top3_info: Optional[str] = None
+    loc_info_district_hot_place_top4_info: Optional[str] = None
+    loc_info_district_hot_place_top5_info: Optional[str] = None
+
+    def __init__(self, **data):
+        super().__init__(**data)
+
+        # 기본 값 설정 함수
+        def set_default_if_empty(value):
+            return value if value and value != ",,," else "-,-,-,0.0"
+
+        self.loc_info_district_hot_place_top1_info = set_default_if_empty(
+            self.loc_info_district_hot_place_top1_info
+        )
+        self.loc_info_district_hot_place_top2_info = set_default_if_empty(
+            self.loc_info_district_hot_place_top2_info
+        )
+        self.loc_info_district_hot_place_top3_info = set_default_if_empty(
+            self.loc_info_district_hot_place_top3_info
+        )
+        self.loc_info_district_hot_place_top4_info = set_default_if_empty(
+            self.loc_info_district_hot_place_top4_info
+        )
+        self.loc_info_district_hot_place_top5_info = set_default_if_empty(
+            self.loc_info_district_hot_place_top5_info
+        )
+
+
+    class Config:
+        from_attributes = True
 
 #######################################################################
 #######################################################################
@@ -923,15 +966,16 @@ class LocalStoreCoordinate(BaseModel):
         if self.longitude is None:
             self.longitude = "126.9814663"  # 남산 경도
 
+
 # 보안 수준 조정
 class TLSAdapter(HTTPAdapter):
     def init_poolmanager(self, connections, maxsize, block=False):
         ctx = ssl.create_default_context()
-        ctx.set_ciphers('DEFAULT@SECLEVEL=1')
+        ctx.set_ciphers("DEFAULT@SECLEVEL=1")
         self.poolmanager = urllib3.PoolManager(
             num_pools=connections,
             maxsize=maxsize,
             block=block,
             ssl_version=ssl.PROTOCOL_TLS,
-            ssl_context=ctx
+            ssl_context=ctx,
         )

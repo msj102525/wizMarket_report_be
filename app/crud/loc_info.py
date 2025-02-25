@@ -9,6 +9,7 @@ from app.db.connect import (
 )
 from app.schemas.report import (
     LocalStoreLIJSWeightedAverage,
+    LocalStoreLocInfoDistrictHotPlaceTop5,
     LocalStoreLocInfoJscoreData,
     LocalStoreMovePopData,
     LocalStoreResidentWorkPopData,
@@ -301,5 +302,59 @@ def select_loc_info_move_pop_by_store_business_number(
     except Exception as e:
         logger.error(
             f"Unexpected error occurred in select_loc_info_move_pop_by_store_business_number: {str(e)}"
+        )
+        raise HTTPException(status_code=500, detail=f"내부 서버 오류: {str(e)}")
+
+
+def select_loc_info_hot_place_top5_by_store_business_number(
+    store_business_id: str,
+) -> LocalStoreLocInfoDistrictHotPlaceTop5:
+
+    try:
+        with get_db_connection() as connection:
+            with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+                select_query = """
+                    SELECT 
+                        LOC_INFO_DISTRICT_HOT_PLACE_TOP1_INFO,
+                        LOC_INFO_DISTRICT_HOT_PLACE_TOP2_INFO,
+                        LOC_INFO_DISTRICT_HOT_PLACE_TOP3_INFO,
+                        LOC_INFO_DISTRICT_HOT_PLACE_TOP4_INFO,
+                        LOC_INFO_DISTRICT_HOT_PLACE_TOP5_INFO
+                    FROM
+                        REPORT 
+                    WHERE STORE_BUSINESS_NUMBER = %s
+                    ;
+                """
+
+                # logger.info(
+                #     f"Executing query: {select_query} with business ID: {store_business_id}"
+                # )
+                cursor.execute(select_query, (store_business_id,))
+
+                row = cursor.fetchone()
+
+                if not row:
+                    raise HTTPException(
+                        status_code=404,
+                        detail=f"LocalStoreLocInfoDistrictHotPlaceTop5 {store_business_id}에 해당하는 매장 정보를 찾을 수 없습니다.",
+                    )
+
+                result = LocalStoreLocInfoDistrictHotPlaceTop5(
+                    loc_info_district_hot_place_top1_info=row.get("LOC_INFO_DISTRICT_HOT_PLACE_TOP1_INFO"),
+                    loc_info_district_hot_place_top2_info=row.get("LOC_INFO_DISTRICT_HOT_PLACE_TOP2_INFO"),
+                    loc_info_district_hot_place_top3_info=row.get("LOC_INFO_DISTRICT_HOT_PLACE_TOP3_INFO"),
+                    loc_info_district_hot_place_top4_info=row.get("LOC_INFO_DISTRICT_HOT_PLACE_TOP4_INFO"),
+                    loc_info_district_hot_place_top5_info=row.get("LOC_INFO_DISTRICT_HOT_PLACE_TOP5_INFO"),
+                )
+
+                # logger.info(f"Result for business ID {store_business_id}: {result}")
+                return result
+
+    except pymysql.Error as e:
+        logger.error(f"Database error occurred: {str(e)}")
+        raise HTTPException(status_code=503, detail=f"데이터베이스 연결 오류: {str(e)}")
+    except Exception as e:
+        logger.error(
+            f"Unexpected error occurred in select_loc_info_district_hot_place_top5_info: {str(e)}"
         )
         raise HTTPException(status_code=500, detail=f"내부 서버 오류: {str(e)}")
