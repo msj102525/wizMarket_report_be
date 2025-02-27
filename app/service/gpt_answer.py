@@ -100,7 +100,7 @@ weekday = now.strftime("%A")
 #         logger.error(f"Service GPTAnswer Error: {str(e)}")
 #         raise HTTPException(
 #             status_code=500,
-#             detail=f"Service get_rising_business_gpt_answer_by_rising_business Error: {str(e)}",
+#             detail=f"Service service_get_store_info_gpt_answer_by_store_info Error: {str(e)}",
 #         )
 
 
@@ -131,10 +131,10 @@ def get_store_info_gpt_answer_by_store_info(
             - 업종: {store_all_data.localStoreInfo.detail_category_name}
             - 매장 이름: {store_all_data.localStoreInfo.store_name}
             - {store_all_data.localStoreInfo.sub_district_name} 업소수 :{store_all_data.localStoreInfo.loc_info_shop_k}천개
-            - {store_all_data.localStoreInfo.sub_district_name} 지역 평균매출 : {store_all_data.localStoreInfo.loc_info_average_sales_k * 1000}원
-            - {store_all_data.localStoreInfo.sub_district_name} 월 평균소득 : {store_all_data.localStoreInfo.loc_info_income_won * 10000}원
-            - {store_all_data.localStoreInfo.sub_district_name} 월 평균소비 : {store_all_data.localStoreInfo.loc_info_average_spend_k * 1000}원
-            - {store_all_data.localStoreInfo.sub_district_name} 세대 수 : {store_all_data.localStoreInfo.loc_info_house_k * 1000}개
+            - {store_all_data.localStoreInfo.sub_district_name} 지역 평균매출 : {store_all_data.localStoreInfo.loc_info_average_sales_k * 1000 if store_all_data.localStoreInfo.loc_info_average_sales_k is not None else "-"}원
+            - {store_all_data.localStoreInfo.sub_district_name} 월 평균소득 : {store_all_data.localStoreInfo.loc_info_income_won * 10000 if store_all_data.localStoreInfo.loc_info_income_won is not None else "-"}원
+            - {store_all_data.localStoreInfo.sub_district_name} 월 평균소비 : {store_all_data.localStoreInfo.loc_info_average_spend_k * 1000 if store_all_data.localStoreInfo.loc_info_average_spend_k is not None else "-"}원
+            - {store_all_data.localStoreInfo.sub_district_name} 세대 수 : {store_all_data.localStoreInfo.loc_info_house_k * 1000 if store_all_data.localStoreInfo.loc_info_house_k is not None else "-"}개
             - {store_all_data.localStoreInfo.sub_district_name} 돼지고기 구이 찜 시장규모 : {store_all_data.localStoreInfo.commercial_district_sub_district_market_size}원
             - {store_all_data.localStoreInfo.sub_district_name} 주거 인구 수: {store_all_data.localStoreInfo.loc_info_resident_k}K
             - {store_all_data.localStoreInfo.sub_district_name} 유동 인구 수: {store_all_data.localStoreInfo.loc_info_move_pop_k}K
@@ -201,7 +201,7 @@ def get_store_info_gpt_answer_by_store_info(
         logger.error(f"Service GPTAnswer Error: {str(e)}")
         raise HTTPException(
             status_code=500,
-            detail=f"Service get_rising_business_gpt_answer_by_rising_business Error: {str(e)}",
+            detail=f"Service service_get_store_info_gpt_answer_by_store_info Error: {str(e)}",
         )
 
 
@@ -277,13 +277,13 @@ def get_loc_info_gpt_answer_by_local_store_loc_info(
             - 위치 : {region_name}
             - 업종 : {loc_data.detail_category_name}
             - 매장이름 : {loc_data.store_name}
-            - 화양동 주거인구 수 : {(loc_data.loc_info_resident_k) * 1000} / {loc_data.loc_info_resident_j_score}점
-            - 화양동 유동인구 수 :  {(loc_data.loc_info_move_pop_k) * 1000} / {loc_data.loc_info_move_pop_j_score}점
-            - 화양동 업소수 :{(loc_data.loc_info_shop_k) * 1000} / {loc_data.loc_info_shop_j_score}점
-            - 화양동 지역 평균매출 : {(loc_data.loc_info_average_sales_k) * 1000} / {loc_data.loc_info_average_sales_j_score}점
-            - 화양동 월 평균소비 :  {(loc_data.loc_info_average_spend_k) * 1000} / {loc_data.loc_info_average_spend_j_score}점
-            - 화양동 월 평균소득 :  {(loc_data.loc_info_income_won) * 10000} / {loc_data.loc_info_income_j_score}점
-            - 화양동 세대 수 :  {(loc_data.loc_info_house_k) * 1000} / {loc_data.loc_info_house_j_score}점
+            - 화양동 주거인구 수 : {loc_data.loc_info_resident_k * 1000 if loc_data.loc_info_resident_k is not None else "-"} / {loc_data.loc_info_resident_j_score if loc_data.loc_info_resident_j_score is not None else "-"}점
+            - 화양동 유동인구 수 : {loc_data.loc_info_move_pop_k * 1000 if loc_data.loc_info_move_pop_k is not None else "-"} / {loc_data.loc_info_move_pop_j_score if loc_data.loc_info_move_pop_j_score is not None else "-"}점
+            - 화양동 업소수 : {loc_data.loc_info_shop_k * 1000 if loc_data.loc_info_shop_k is not None else "-"} / {loc_data.loc_info_shop_j_score if loc_data.loc_info_shop_j_score is not None else "-"}점
+            - 화양동 지역 평균매출 : {loc_data.loc_info_average_sales_k * 1000 if loc_data.loc_info_average_sales_k is not None else "-"} / {loc_data.loc_info_average_sales_j_score if loc_data.loc_info_average_sales_j_score is not None else "-"}점
+            - 화양동 월 평균소비 : {loc_data.loc_info_average_spend_k * 1000 if loc_data.loc_info_average_spend_k is not None else "-"} / {loc_data.loc_info_average_spend_j_score if loc_data.loc_info_average_spend_j_score is not None else "-"}점
+            - 화양동 월 평균소득 : {loc_data.loc_info_income_won * 10000 if loc_data.loc_info_income_won is not None else "-"} / {loc_data.loc_info_income_j_score if loc_data.loc_info_income_j_score is not None else "-"}점
+            - 화양동 세대 수 : {loc_data.loc_info_house_k * 1000 if loc_data.loc_info_house_k is not None else "-"} / {loc_data.loc_info_house_j_score if loc_data.loc_info_house_j_score is not None else "-"}점
             - 화양동 인구 분포 : 10세미만 {loc_data.population_age_10_under}명, 10대 {loc_data.population_age_10s}명, 20대 {loc_data.population_age_20s}명, 30대 {loc_data.population_age_30s}명, 40대 {loc_data.population_age_40s}명, 50대 {loc_data.population_age_50s}명, 60대 {loc_data.population_age_60_over}명, 여성 {round(loc_data.population_female_percent, 1) or 0}% , 남성 {round(loc_data.population_male_percent, 1) or 0}% 
 
         """
@@ -346,7 +346,7 @@ def get_commercial_district_gpt_answer_by_cd_j_score_average(
         logger.error(f"Service GPTAnswer Error: {str(e)}")
         raise HTTPException(
             status_code=500,
-            detail=f"Service get_rising_business_gpt_answer_by_rising_business Error: {str(e)}",
+            detail=f"Service get_commercial_district_gpt_answer_by_cd_j_score_average Error: {str(e)}",
         )
 
 
