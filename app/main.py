@@ -118,19 +118,22 @@ else:
 
 # 로깅 설정 적용
 dictConfig(log_config)
+
 # 현재 모듈의 로거 생성
 logger = logging.getLogger(__name__)
+
 # 애플리케이션 시작 로그 기록
 logger.info(f"Application starting in {ENV} mode")
 
 # FastAPI 애플리케이션 생성
 app = FastAPI()
 
-# CORS 설정 추가
+# CORS 설정 추가 (Cross-Origin Resource Sharing)
 app.add_middleware(
     CORSMiddleware,
-    # 환경 변수에서 허용된 오리진 목록 가져오기 (쉼표로 구분)
-    allow_origins=os.getenv("ALLOWED_ORIGINS", "").split(","),
+    allow_origins=os.getenv("ALLOWED_ORIGINS", "").split(
+        ","
+    ),  # 환경 변수에서 허용된 오리진 목록 가져오기 (쉼표로 구분)
     allow_credentials=True,  # 인증 정보 허용
     allow_methods=["*"],  # 모든 HTTP 메서드 허용
     allow_headers=["*"],  # 모든 HTTP 헤더 허용
@@ -139,9 +142,10 @@ app.add_middleware(
 # 허용된 오리진 로그 출력
 logger.info(f"ALLOWED_ORIGINS: {os.getenv('ALLOWED_ORIGINS', '')}")
 
-# 정적 파일 제공 설정
+# 정적 파일 제공 설정 (ex: /static 경로로 접근 가능)
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
-# 라우터 등록 - 리포트 관련 API 엔드포인트
+
+# API 라우터 등록 (report 관련 엔드포인트 추가)
 app.include_router(report.router, prefix="/report")
 
 # 스크립트를 직접 실행할 때의 진입점
@@ -154,7 +158,7 @@ if __name__ == "__main__":
         host="0.0.0.0",  # 모든 IP에서 접근 가능
         port=8001,  # 사용할 포트
         reload=True if ENV == "dev" else False,  # 개발 모드에서만 자동 리로드 활성화
-        reload_dirs=(
-            ["app/"] if ENV == "dev" else None
-        ),  # 개발 모드에서만 리로드 대상 디렉토리 지정
+        # 개발 모드에서만 리로드 대상 디렉토리 지정
+        reload_dirs=(["app/"] if ENV == "dev" else None),
+        reload_includes=["*.py"],
     )
