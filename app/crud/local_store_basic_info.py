@@ -1,10 +1,11 @@
 import logging
 import pymysql
 from fastapi import HTTPException
+import time
+
+from app.common.crud_logging import *
 
 from app.db.connect import (
-    close_connection,
-    close_cursor,
     get_db_connection,
 )
 from app.schemas.report import (
@@ -19,6 +20,11 @@ logger = logging.getLogger(__name__)
 def select_local_store_info_redux_by_store_business_number(
     store_business_id: str,
 ) -> LocalStoreRedux:
+
+    crud_name = "select_local_store_info_redux_by_store_business_number"
+    start_time = time.time()
+
+    log_crud_start(crud_name)  # CRUD 시작 로깅
 
     try:
         with get_db_connection() as connection:
@@ -40,12 +46,11 @@ def select_local_store_info_redux_by_store_business_number(
                     ;
                 """
 
-                # logger.info(f"Executing query: {select_query}")
+                log_crud_query(
+                    crud_name, select_query, (store_business_id,)
+                )  # 쿼리 실행 로깅
                 cursor.execute(select_query, (store_business_id,))
-
                 row = cursor.fetchone()
-
-                # logger.info(row)
 
                 if not row:
                     raise HTTPException(
@@ -71,10 +76,11 @@ def select_local_store_info_redux_by_store_business_number(
                 return result
 
     except pymysql.Error as e:
-        logger.error(f"Database error occurred: {str(e)}")
+        log_crud_error(crud_name, e)  # DB 오류 로깅
         raise HTTPException(status_code=503, detail=f"데이터베이스 연결 오류: {str(e)}")
+
     except Exception as e:
-        logger.error(f"Unexpected error occurred LocalStoreRedux: {str(e)}")
+        log_crud_error(crud_name, e)  # 일반 오류 로깅
         raise HTTPException(status_code=500, detail=f"내부 서버 오류: {str(e)}")
 
 

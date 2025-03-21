@@ -1,10 +1,12 @@
-import ssl
 from fastapi import HTTPException
 import logging
 import os
 from datetime import datetime, timezone, timedelta
 import pytz
 import requests
+import time
+
+from app.common.service_logging import *
 
 
 from app.crud.local_store_basic_info import (
@@ -27,19 +29,31 @@ logger = logging.getLogger(__name__)
 def select_local_store_info_redux_by_store_business_number(
     store_business_id: str,
 ) -> LocalStoreRedux:
-    # logger.info(f"Fetching store info for business ID: {store_business_id}")
+    start_time = time.time()
+    service_name = "select_local_store_info_redux_by_store_business_number"
+
+    log_service_start(service_name)  # 서비스 시작 로깅
 
     try:
-        return crud_select_local_store_info_redux_by_store_business_number(
+        log_db_fetch(service_name)  # DB 조회 시작 로깅
+        result = crud_select_local_store_info_redux_by_store_business_number(
             store_business_id
         )
-    except HTTPException:
+
+        process_time = round(time.time() - start_time, 4)
+        log_service_end(service_name, process_time)  # 서비스 종료 로깅
+
+        return result
+
+    except HTTPException as http_ex:
+        process_time = round(time.time() - start_time, 4)
+        log_service_error(service_name, process_time, http_ex)  # HTTP 예외 로깅
         raise
+
     except Exception as e:
-        logger.error(f"Service LocalStoreRedux Error: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Service LocalStoreRedux Error: {str(e)}"
-        )
+        process_time = round(time.time() - start_time, 4)
+        log_service_error(service_name, process_time, e)  # 일반 예외 로깅
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 def select_local_store_info_by_store_business_number(

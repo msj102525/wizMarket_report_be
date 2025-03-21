@@ -1,7 +1,9 @@
 import logging
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from typing import List
-from fastapi.responses import PlainTextResponse
+import time
+
+from app.common.controller_logging import *
 
 from app.schemas.common_information import CommonInformationOutput
 from app.schemas.report import (
@@ -90,36 +92,32 @@ logger = logging.getLogger(__name__)
 
 
 @router.get("/store/info/redux", response_model=LocalStoreRedux)
-def select_report_store_info_redux(store_business_id: str):
+async def select_report_store_info_redux(store_business_id: str, request: Request):
+    start_time = time.time()
+    endpoint = "select_report_store_info_redux"
 
-    # logger.info(
-    #     f"Received request for store info with business ID: {store_business_id}"
-    # )
-
+    # 전체 요청 파라미터 로깅
+    log_request_start(endpoint, request)
     try:
-        # logger.info(
-        #     f"Successfully retrieved store info for business ID: {store_business_id}"
-        # )
-
-        return service_select_local_store_info_redux_by_store_business_number(
+        result = service_select_local_store_info_redux_by_store_business_number(
             store_business_id
         )
 
+        process_time = round(time.time() - start_time, 4)
+
+        log_request_end(endpoint, process_time, result)  # 로깅 호출
+
+        return result
+
     except HTTPException as http_ex:
-        # service 계층에서 발생한 HTTP 예외는 그대로 전달
-        logger.error(f"HTTP error occurred: {http_ex.detail}")
+        process_time = round(time.time() - start_time, 4)
+        log_error(endpoint, store_business_id, process_time, http_ex)  # 로깅 호출
         raise http_ex
 
-    # except ValueError as ve:
-    #     # 입력값 검증 실패 등의 에러
-    #     error_msg = f"Invalid input: {str(ve)}"
-    #     logger.error(error_msg)
-    #     raise HTTPException(status_code=422, detail=error_msg)
-
     except Exception as e:
-        # 예상치 못한 에러
+        process_time = round(time.time() - start_time, 4)
         error_msg = f"Unexpected error while processing request: {str(e)}"
-        logger.error(error_msg)
+        log_error(endpoint, store_business_id, process_time, e)  # 로깅 호출
         raise HTTPException(status_code=500, detail=error_msg)
 
 
