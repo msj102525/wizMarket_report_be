@@ -3,7 +3,9 @@ from logging.config import dictConfig  # 사전 형태로 로깅 설정을 구�
 import sys  # 시스템 관련 기능을 위한 모듈
 import os  # 운영체제 관련 기능을 위한 모듈
 import logging  # 로깅 관련 기능을 위한 모듈
-from logging.handlers import TimedRotatingFileHandler  # 날짜별 로그 파일 관리
+from logging.handlers import TimedRotatingFileHandler
+
+from watchfiles import DefaultFilter  # 날짜별 로그 파일 관리
 
 # 상위 디렉토리를 시스템 경로에 추가하여 모듈 import가 가능하도록 함
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -148,6 +150,11 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 # API 라우터 등록 (report 관련 엔드포인트 추가)
 app.include_router(report.router, prefix="/report")
 
+def filter_git_changes(changes):
+    return {
+        change for change in changes 
+        if not any('.git' in str(changed_path) for (change, changed_path) in changes)
+    }
 # 스크립트를 직접 실행할 때의 진입점
 if __name__ == "__main__":
     import uvicorn
@@ -161,4 +168,5 @@ if __name__ == "__main__":
         # 개발 모드에서만 리로드 대상 디렉토리 지정
         reload_dirs=(["app/"] if ENV == "dev" else None),
         reload_includes=["*.py"],
+        reload_excludes=[".git", "*.pyc", "__pycache__"],
     )
